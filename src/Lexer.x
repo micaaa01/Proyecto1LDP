@@ -26,22 +26,22 @@ tokens :-
 "lambda"                       { \_ -> TokenLambda }
 "in"                           { \_ -> TokenIn }
 
-"<="                           { \_ -> TokenMenorIgual }
-">="                           { \_ -> TokenMayorIgual }
-"!="                           { \_ -> TokenDistinto }
-"<"                            { \_ -> TokenMenor }
-">"                            { \_ -> TokenMayor }
-"="                            { \_ -> TokenEq }
+'<='                           { \_ -> TokenMenorIgual }
+'>='                           { \_ -> TokenMayorIgual }
+'!='                           { \_ -> TokenDistinto }
+'<'                            { \_ -> TokenMenor }
+'>'                            { \_ -> TokenMayor }
+'='                            { \_ -> TokenEq }
 
-"+"                            { \_ -> TokenSuma }
-"-"                            { \_ -> TokenResta }
-"*"                            { \_ -> TokenMult }
-"/"                            { \_ -> TokenDiv }
-"("                            { \_ -> TokenPA }
-")"                            { \_ -> TokenPC }
-"["                            { \_ -> TokenCA }
-"]"                            { \_ -> TokenCC }
-","                            { \_ -> TokenComa }
+'+'                            { \_ -> TokenSuma }
+'-'                            { \_ -> TokenResta }
+'*'                            { \_ -> TokenMult }
+'/'                            { \_ -> TokenDiv }
+'('                            { \_ -> TokenPA }
+')'                            { \_ -> TokenPC }
+'['                            { \_ -> TokenCA }
+']'                            { \_ -> TokenCC }
+','                            { \_ -> TokenComa }
 
 $digit+                        { \s -> TokenNum (read s) }
 $alpha [$alpha $digit]*        { \s -> TokenVar s }
