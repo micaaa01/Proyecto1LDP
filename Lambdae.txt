@@ -1,0 +1,80 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[spanish]{babel}   
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}    
+\usepackage{lmodern}          
+
+\usepackage{amsmath, amssymb} 
+\usepackage{graphicx}         
+\usepackage{hyperref}         
+\usepackage{geometry}         
+\geometry{margin=2.5cm}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    {\Large \textbf{Universidad Nacional Autónoma de México} \par}
+    \vspace{0.5cm}
+    {\large Facultad de Ciencias \par}
+    \vspace{0.5cm}
+    {\large Lenguajes de Programación \par}
+
+    \vfill
+
+    {\Huge \textbf{Proyecto 1:MiniLisp} \par}
+    \vspace{1.5cm}
+
+  
+    \begin{flushleft}
+    \textbf{Integrantes:}
+    \end{flushleft}
+    
+    \begin{center}
+    Elizalde Maza Jesús Eduardo \\
+    Navarro Fierro Michelle Alanis \\
+    Peredo López Citlali Abigail \\
+    \end{center}
+
+    \vfill
+
+    {\large Profesor: Manuel Soto Romero \par}
+    \vspace{0.5cm}
+    \begin{center}
+        Diego Méndez Medina\\
+        José Alejandro Pérez Márquez\\
+        Erick Daniel Arroyo Martínez\\
+        Mauro Emiliano Chávez Zamora\\
+    \end{center}
+    {\large Fecha: \today \par}
+    \vspace{0.5cm}
+    {\large CDMX \par}
+\end{titlepage}
+
+\newpage
+\section{Introducción}
+
+En la actualidad, los lenguajes de programación constituyen una de las herramientas más fundamentales en el campo de las Ciencias de la Computación, ya que no solo permiten escribir código, sino que representan el medio mediante el cual los seres humanos comunican instrucciones complejas a las computadoras. A través de ellos es posible expresar algoritmos e ideas de forma precisa y estructurada, impulsando el desarrollo de sistemas operativos, aplicaciones móviles, inteligencia artificial y una amplia gama de tecnologías que forman parte esencial de la vida cotidiana. En términos generales, un lenguaje de programación puede definirse como un conjunto de reglas y símbolos que posibilitan la escritura de instrucciones comprensibles para la máquina, permitiendo especificar tareas y procesos de manera eficiente.
+
+La historia de los lenguajes de programación refleja la búsqueda constante por lograr una mayor abstracción, eficiencia y correctitud en la comunicación entre humanos y computadoras. En sus inicios, la programación se realizaba mediante lenguajes de bajo nivel, como el código de máquina y el ensamblador, los cuales resultaban difíciles de leer y propensos a errores. La aparición de lenguajes de alto nivel como FORTRAN y COBOL marcó un punto de inflexión, al permitir a los programadores centrarse en la lógica del problema en lugar de los detalles de la arquitectura del hardware.
+
+Posteriormente, la evolución de los lenguajes dio lugar a diversos paradigmas que transformaron la manera de desarrollar software. La programación estructurada, con lenguajes como Pascal y C, promovió la organización del código en bloques lógicos, reduciendo la complejidad y mejorando la legibilidad. Más adelante, la programación orientada a objetos, representada por C++, Java y Smalltalk, introdujo conceptos como la encapsulación, la herencia y el polimorfismo, permitiendo modelar problemas del mundo real de forma más intuitiva y fomentando la creación de sistemas modulares y reutilizables. En paralelo, la programación funcional, impulsada por lenguajes como Lisp, Haskell y Scala, cobró relevancia por su capacidad para manejar la concurrencia y el procesamiento de datos, gracias a principios como la inmutabilidad y las funciones puras, que facilitan el razonamiento y las pruebas del código.
+
+En la actualidad, la disciplina avanza hacia entornos cada vez más paralelos y concurrentes. Lenguajes contemporáneos como Go y Rust han sido diseñados con la seguridad y la eficiencia como ejes centrales: Go simplifica la concurrencia mediante goroutines y canales, mientras que Rust garantiza la seguridad de la memoria sin necesidad de un recolector de basura, consolidándose como una opción robusta para sistemas de alto rendimiento. Esta evolución constante demuestra que los lenguajes de programación no solo han acompañado el progreso tecnológico, sino que han sido motores fundamentales en la transformación de la informática moderna, respondiendo a la necesidad de abordar problemas cada vez más complejos y especializados.
+
+En este contexto, el presente proyecto se enmarca en el estudio formal de los lenguajes de programación mediante la extensión de un lenguaje de estilo Lisp denominado MiniLisp, implementado en Haskell con apoyo de la herramienta Happy. Este trabajo busca recorrer las etapas esenciales de la formalización de un lenguaje, desde la definición de su sintaxis léxica y libre de contexto hasta la especificación de su semántica operacional, con el propósito de integrar la teoría y la práctica en el diseño de intérpretes. De esta manera, el proyecto MiniLisp constituye una oportunidad para aplicar los fundamentos teóricos de los lenguajes de programación en un entorno funcional real, fortaleciendo la comprensión de los principios que rigen su construcción, análisis e implementación.
+
+
+\section{Objetivos}
+
+El presente proyecto tiene como propósito definir formalmente la sintaxis léxica y libre de contexto del lenguaje MiniLisp, formulando su representación en sintaxis abstracta e incorporando mecanismos de azúcar sintáctica y su correspondiente eliminación hacia un núcleo mínimo. Asimismo, se busca diseñar y especificar la semántica operacional estructural del lenguaje mediante reglas de inferencia y derivaciones que describan con precisión su comportamiento durante la evaluación, al tiempo que se modelan ambientes de evaluación y bindings que garanticen la correcta gestión de alcances, valores y consistencia semántica.
+
+Con el fin de ampliar la expresividad del lenguaje, se propone incorporar nuevos operadores aritméticos, predicados, estructuras de datos, listas, condicionales y funciones variádicas, sustentando formalmente cada decisión de diseño. De igual manera, se plantea la implementación de un intérprete funcional completo de MiniLisp en Haskell, estructurado a partir de un pipeline modular que abarque las fases de análisis léxico, sintáctico, desazucarización y evaluación, asegurando una correspondencia directa entre la teoría formal y la ejecución práctica. 
+
+Finalmente, se busca demostrar la validez del modelo propuesto mediante casos de prueba y ejemplos representativos que evidencien la relación entre la formalización teórica y el comportamiento del sistema implementado, así como integrar y documentar los resultados en un informe académico que articule los fundamentos teóricos, las decisiones de diseño y los resultados experimentales, promoviendo una comprensión crítica del vínculo entre teoría y práctica en el estudio de los lenguajes de programación.
+
+\section{Referencias}
+-colocar notas de manu 
+\end{document}
+
