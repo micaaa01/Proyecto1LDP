@@ -657,8 +657,8 @@ alex_base = Data.Array.listArray (0 :: Int, 55)
   , 2317
   , 2392
   , 2467
-  , 2548
   , 0
+  , 2548
   , 2623
   , 2698
   ]
@@ -1898,7 +1898,7 @@ alex_table = Data.Array.listArray (0 :: Int, 2953)
   , 28
   , 28
   , 28
-  , 52
+  , 53
   , 28
   , 28
   , 28
@@ -3255,7 +3255,7 @@ alex_table = Data.Array.listArray (0 :: Int, 2953)
   , 28
   , 28
   , 28
-  , 53
+  , 52
   , 0
   , 0
   , 0
@@ -6762,8 +6762,8 @@ alex_action_5 = \_ -> TokenNot
 alex_action_6 = \_ -> TokenIf
 alex_action_7 = \_ -> TokenFst
 alex_action_8 = \_ -> TokenSnd
-alex_action_9 = \_ -> TokenLet
-alex_action_10 = \_ -> TokenLetVar
+alex_action_9 = \_ -> TokenLetStar
+alex_action_10 = \_ -> TokenLet
 alex_action_11 = \_ -> TokenLambda
 alex_action_12 = \_ -> TokenIn
 alex_action_13 = \_ -> TokenMenorIgual
@@ -7043,7 +7043,7 @@ data Token
     | TokenFst
     | TokenSnd
     | TokenLet
-    | TokenLetVar
+    | TokenLetStar
     | TokenLambda
     deriving (Show, Eq)
 

@@ -34,7 +34,7 @@ import Lexer (Token(..))
       "fst"           { TokenFst }
       "snd"           { TokenSnd }
       "let"           { TokenLet }
-      "let*"          { TokenLetVar }
+      "let*"          { TokenLetStar }
       "lambda"        { TokenLambda }
 
 %%
@@ -53,26 +53,17 @@ ASA
       | '(' "fst" ASA ')'            { Fst $3 } 
       | '(' "snd" ASA ')'            { Snd $3 }
       | '(' "if" ASA ASA ASA ')'     { If $3 $4 $5 }
+      | '(' "let" '(' Bindings ')' ASA ')'    { Let $4 $6 }
+      | '(' "let*" '(' Bindings ')' ASA ')'   { LetStar $4 $6 }
       | '(' "lambda" '(' var ')' ASA ')' { Fun $4 $6 }  
       | '(' ASA ASA ')'              { App $2 $3 }
 
+Bindings
+      : Binding                    { [$1] }
+      | Binding Bindings            { $1 : $2 }
 
-Exp   : "let" var '=' Exp "in" Exp   { Let $2 $4 $6 } -- De esta tengo duda de si esta bien
-      | Exp1                         { $1 }
-
-Exp1  : Exp1 '+' Term                { Add $1 $3 }
-      | Exp1 '-' Term                { Sub $1 $3 }
-      | Term                         { $1 }
-
-Term  : Term '*' Factor              { Mul $1 $3 }
-      | Term '/' Factor              { Div $1 $3 }
-      | Factor                       { $1 }
-
-Factor
-      : int                          { Num $1 }
-      | var                          { Id $1 }
-      | '(' Exp ')'                  { $2 }
-
+Binding
+      : '(' var ASA ')'             { ($2, $3) }
 
 {
 data ASA 
@@ -91,7 +82,8 @@ data ASA
       | If ASA ASA ASA
       | Fun String ASA
       | App ASA ASA
-      | Let String ASA ASA
+      | Let (String, ASA) ASA
+      | LetStar [(String, ASA)] ASA
       deriving (Show, Eq)
     
 parseError :: [Token] -> a
