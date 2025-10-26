@@ -1,7 +1,7 @@
 module Desugar where
 import Grammar (SASA(..))
 
-data ASA = NumS Int
+data ASA = Num Int
                 | BooleanS Bool
                 | IdS String
                 | Add ASA ASA
