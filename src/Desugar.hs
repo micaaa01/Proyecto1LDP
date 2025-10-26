@@ -1,26 +1,26 @@
 module Desugar where
-import Grammar (ASA(..))
+import Grammar (SASA(..))
 
-data SASA = NumS Int
+data ASA = NumS Int
                 | BooleanS Bool
                 | IdS String
-                | AddS SASA SASA
-                | SubS SASA SASA
-                | MulS SASA SASA
-                | DivS SASA SASA
-                | SqrtS SASA
-                | ExptS SASA SASA
-                | NotS SASA
-                | FstS SASA
-                | SndS SASA
-                | LetRecS String SASA SASA   --No se que hace este
-                | LetCCS String SASA   --No se que hace este 
-                | IfS SASA SASA SASA
-                | FunS String SASA
-                | AppS SASA SASA
+                | AddS ASA ASA
+                | SubS ASA ASA
+                | MulS ASA ASA
+                | DivS ASA ASA
+                | SqrtS ASA
+                | ExptS ASA ASA
+                | NotS ASA
+                | FstS ASA
+                | SndS ASA
+                | LetRecS String ASA ASA   --No se que hace este
+                | LetCCS String ASA   --No se que hace este 
+                | IfS ASA ASA ASA
+                | FunS String ASA
+                | AppS ASA ASA
                 deriving (Show, Eq)
 
-desugar :: ASA -> SASA
+desugar :: SASA -> ASA
 desugar (Num n)             = NumS n
 desugar (Boolean b)         = BooleanS b
 desugar (Id x)              = IdS x
