@@ -44,35 +44,27 @@ import Lex (Token(..), lexer)
 
       %%
 
-      ASA : int                      { Num $1 }
+      SASA : int                      { Num $1 }
           | bool                     { Boolean $1 }
           | var                      { Id $1 }
-          | '(' '+' ASA ASA ')'      { Add $3 $4 }
-          | '(' '-' ASA ASA ')'      { Sub $3 $4 }
-          | '(' "not" ASA ')'        { Not $3 }
-          | '(' '*' ASA ASA ')'      { Mul $3 $4 }
-          | '(' '/' ASA ASA ')'      { Div $3 $4 }
-          | '(' "sqrt" ASA ')'       { Sqrt $3 }
-          | '(' "expt" ASA ASA ')'   { Expt $3 $4 }
-          | '(' "fst" ASA ')'        { Fst $3 } 
-          | '(' "snd" ASA ')'.       { Snd $3 }
-          | '(' if ASA ASA ASA ')'   { If $3 $4 $5 }
-          | '(' lambda '(' var ')' ASA ')'   { Fun $4 $6 }  
-          | '(' ASA ASA ')'                  { App $2 $3 } 
-
-
-      SASA : var                                  { IdS $1 }
-           | int                                  { NumS $1 }
-           | bool                                 { BooleanS $1 }
-           | '(' '+' SASA SASA ')'                { AddS $3 $4}
-           | '(' '-' SASA SASA ')'                { SubS $3 $4}
-           | '(' "not" SASA ')'                   { NotS $3 }
-           | '(' let '(' var SASA ')' SASA ')'    { LetS $4 $5 $7 }
-           | '(' letrec '(' var SASA ')' SASA ')' { LetRecS $4 $5 $7 }
-           | '(' letcc var SASA ')'               { LetCCS $3 $4 }
-           | '(' if SASA SASA SASA ')'           { IfS $3 $4 $5 }
-           | '(' lambda '(' var ')' SASA ')'      { FunS $4 $6 }
-           | '(' SASA SASA ')'                    { AppS $2 $3 }
+          | '(' '+' SASA SASA ')'      { Add $3 $4 }
+          | '(' '-' SASA SASA ')'      { Sub $3 $4 }
+          | '(' "not" SASA ')'        { Not $3 }
+          | '(' '*' SASA SASA ')'      { Mul $3 $4 }
+          | '(' '/' SASA SASA ')'      { Div $3 $4 }
+          | '(' "sqrt" SASA ')'       { Sqrt $3 }
+          | '(' "expt" SASA SASA ')'   { Expt $3 $4 }
+          | '(' "fst" SASA ')'        { Fst $3 } 
+          | '(' "snd" SASA ')'.       { Snd $3 }
+          | '(' if SASA SASA SASA ')'   { If $3 $4 $5 }
+          | '(' lambda '(' var ')' SASA ')'   { Fun $4 $6 }  
+          | '(' SASA SASA ')'                  { App $2 $3 } 
+          | '(' let '(' var SASA ')' SASA ')'    { LetS $4 $5 $7 }
+          | '(' letrec '(' var SASA ')' SASA ')' { LetRecS $4 $5 $7 }
+          | '(' letcc var SASA ')'               { LetCCS $3 $4 }
+          | '(' if SASA SASA SASA ')'           { IfS $3 $4 $5 }
+          | '(' lambda '(' var ')' SASA ')'      { FunS $4 $6 }
+          | '(' SASA SASA ')'                    { AppS $2 $3 }
       
       parseError :: [Token] -> a
       parseError _ = error "Parse error"
@@ -123,35 +115,27 @@ import Lex (Token(..), lexer)
 
       -----------------------------------------------------------------
 
-      data ASA = Num Int
-               | Boolean Bool
-               | Id String
-               | Add ASA ASA
-               | Sub ASA ASA
-               | Not ASA
-               | Mul ASA ASA
-               | Div ASA ASA
-               | Sqrt ASA
-               | Expt ASA ASA
-               | Fst ASA
-               | Snd ASA
-               | If ASA ASA ASA
-               | Fun String ASA
-               | App ASA ASA
-               deriving (Show, Eq)
-
       data SASA = NumS Int
-                | BooleanS Bool
-                | IdS String
-                | AddS SASA SASA
-                | SubS SASA SASA
-                 NotS SASA
-                | LetS String SASA SASA
-                | LetRecS String SASA SASA
-                | LetCCS String SASA
-                | IfS SASA SASA SASA
-                | FunS String SASA
-                | AppS SASA SASA
+               | BooleanS Bool
+               | IdS String
+               | AddS SASA SASA
+               | SubS SASA SASA
+               | NotS SASA
+               | MulS SASA SASA
+               | DivS SASA SASA
+               | SqrtS SASA
+               | ExptS SASA SASA
+               | FstS SASA
+               | SndS SASA
+               | IfS SASA SASA SASA
+               | FunS String SASA
+               | AppS SASA SASA
+               | LetS String SASA SASA
+               | LetRecS String SASA SASA
+               | LetCCS String SASA
+               | IfS SASA SASA SASA
+               | FunS String SASA
+               | AppS SASA SASA
                 deriving (Show, Eq)
     
 
