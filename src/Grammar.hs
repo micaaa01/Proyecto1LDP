@@ -91,21 +91,21 @@ happy_n_starts = 1 :: Happy_Prelude.Int
 happyReduce_1 = happySpecReduce_1  0# happyReduction_1
 happyReduction_1 (HappyTerminal (TokenNum happy_var_1))
          =  HappyAbsSyn5
-                 (Num happy_var_1
+                 (NumS happy_var_1
         )
 happyReduction_1 _  = notHappyAtAll 
 
 happyReduce_2 = happySpecReduce_1  0# happyReduction_2
 happyReduction_2 (HappyTerminal (TokenBool happy_var_1))
          =  HappyAbsSyn5
-                 (Boolean happy_var_1
+                 (BooleanS happy_var_1
         )
 happyReduction_2 _  = notHappyAtAll 
 
 happyReduce_3 = happySpecReduce_1  0# happyReduction_3
 happyReduction_3 (HappyTerminal (TokenVar happy_var_1))
          =  HappyAbsSyn5
-                 (Id happy_var_1
+                 (IdS happy_var_1
         )
 happyReduction_3 _  = notHappyAtAll 
 
@@ -117,7 +117,7 @@ happyReduction_4 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (Add happy_var_3 happy_var_4
+                 (AddS happy_var_3 happy_var_4
         ) `HappyStk` happyRest
 
 happyReduce_5 = happyReduce 5# 0# happyReduction_5
@@ -128,7 +128,7 @@ happyReduction_5 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (Sub happy_var_3 happy_var_4
+                 (SubS happy_var_3 happy_var_4
         ) `HappyStk` happyRest
 
 happyReduce_6 = happyReduce 4# 0# happyReduction_6
@@ -138,7 +138,7 @@ happyReduction_6 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (Not happy_var_3
+                 (NotS happy_var_3
         ) `HappyStk` happyRest
 
 happyReduce_7 = happyReduce 5# 0# happyReduction_7
@@ -149,7 +149,7 @@ happyReduction_7 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (Mul happy_var_3 happy_var_4
+                 (MulS happy_var_3 happy_var_4
         ) `HappyStk` happyRest
 
 happyReduce_8 = happyReduce 5# 0# happyReduction_8
@@ -160,7 +160,7 @@ happyReduction_8 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (Div happy_var_3 happy_var_4
+                 (DivS happy_var_3 happy_var_4
         ) `HappyStk` happyRest
 
 happyReduce_9 = happyReduce 4# 0# happyReduction_9
@@ -170,7 +170,7 @@ happyReduction_9 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (Sqrt happy_var_3
+                 (SqrtS happy_var_3
         ) `HappyStk` happyRest
 
 happyReduce_10 = happyReduce 5# 0# happyReduction_10
@@ -181,7 +181,7 @@ happyReduction_10 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (Expt happy_var_3 happy_var_4
+                 (ExptS happy_var_3 happy_var_4
         ) `HappyStk` happyRest
 
 happyReduce_11 = happyReduce 4# 0# happyReduction_11
@@ -191,7 +191,7 @@ happyReduction_11 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (Fst happy_var_3
+                 (FstS happy_var_3
         ) `HappyStk` happyRest
 
 happyReduce_12 = happyReduce 4# 0# happyReduction_12
@@ -201,7 +201,7 @@ happyReduction_12 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (Snd happy_var_3
+                 (SndS happy_var_3
         ) `HappyStk` happyRest
 
 happyReduce_13 = happyReduce 6# 0# happyReduction_13
@@ -213,7 +213,7 @@ happyReduction_13 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (If happy_var_3 happy_var_4 happy_var_5
+                 (IfS happy_var_3 happy_var_4 happy_var_5
         ) `HappyStk` happyRest
 
 happyReduce_14 = happyReduce 7# 0# happyReduction_14
@@ -226,7 +226,7 @@ happyReduction_14 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (Let happy_var_4 happy_var_6
+                 (LetS happy_var_4 happy_var_6
         ) `HappyStk` happyRest
 
 happyReduce_15 = happyReduce 7# 0# happyReduction_15
@@ -239,7 +239,7 @@ happyReduction_15 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (LetStar happy_var_4 happy_var_6
+                 (LetStarS happy_var_4 happy_var_6
         ) `HappyStk` happyRest
 
 happyReduce_16 = happyReduce 7# 0# happyReduction_16
@@ -252,7 +252,7 @@ happyReduction_16 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (Fun happy_var_4 happy_var_6
+                 (FunS happy_var_4 happy_var_6
         ) `HappyStk` happyRest
 
 happyReduce_17 = happyReduce 4# 0# happyReduction_17
@@ -262,7 +262,7 @@ happyReduction_17 (_ `HappyStk`
         _ `HappyStk`
         happyRest)
          = HappyAbsSyn5
-                 (App happy_var_2 happy_var_3
+                 (AppS happy_var_2 happy_var_3
         ) `HappyStk` happyRest
 
 happyReduce_18 = happySpecReduce_1  1# happyReduction_18
@@ -368,23 +368,23 @@ happySeq = happyDontSeq
 
 
 data SASA 
-      = Num Int
-      | Boolean Bool
-      | Id String
-      | Add SASA SASA
-      | Sub SASA SASA
-      | Not SASA
-      | Mul SASA SASA
-      | Div SASA SASA
-      | Sqrt SASA
-      | Expt SASA SASA
-      | Fst SASA
-      | Snd SASA
-      | If SASA SASA SASA
-      | Fun String SASA
-      | App SASA SASA
-      | Let (String, SASA) SASA
-      | LetStar [(String, SASA)] SASA
+      = NumS Int
+      | BooleanS Bool
+      | IdS String
+      | AddS SASA SASA
+      | SubS SASA SASA
+      | NotS SASA
+      | MulS SASA SASA
+      | DivS SASA SASA
+      | SqrtS SASA
+      | ExptS SASA SASA
+      | FstS SASA
+      | SndS SASA
+      | IfS SASA SASA SASA
+      | FunS String SASA
+      | AppS SASA SASA
+      | LetS [(String, SASA)] SASA
+      | LetStarS [(String, SASA)] SASA
       deriving (Show, Eq)
      
     

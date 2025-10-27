@@ -40,23 +40,23 @@ import Lexer (Token(..))
 %%
 
 SASA 
-      : int                          { Num $1 }
-      | bool                         { Boolean $1 }
-      | var                          { Id $1 }
-      | '(' '+' SASA SASA ')'          { Add $3 $4 }
-      | '(' '-' SASA SASA ')'          { Sub $3 $4 }
-      | '(' "not" SASA ')'            { Not $3 }
-      | '(' '*' SASA SASA ')'          { Mul $3 $4 }
-      | '(' '/' SASA SASA ')'          { Div $3 $4 }
-      | '(' "sqrt" SASA ')'           { Sqrt $3 }
-      | '(' "expt" SASA SASA ')'       { Expt $3 $4 }
-      | '(' "fst" SASA ')'            { Fst $3 } 
-      | '(' "snd" SASA ')'            { Snd $3 }
-      | '(' "if" SASA SASA SASA ')'     { If $3 $4 $5 }
-      | '(' "let" '(' Bindings ')' SASA ')'    { Let $4 $6 }
-      | '(' "let*" '(' Bindings ')' SASA ')'   { LetStar $4 $6 }
-      | '(' "lambda" '(' var ')' SASA ')' { Fun $4 $6 }  
-      | '(' SASA SASA ')'              { App $2 $3 }
+      : int                          { NumS $1 }
+      | bool                         { BooleanS $1 }
+      | var                          { IdS $1 }
+      | '(' '+' SASA SASA ')'          { AddS $3 $4 }
+      | '(' '-' SASA SASA ')'          { SubS $3 $4 }
+      | '(' "not" SASA ')'            { NotS $3 }
+      | '(' '*' SASA SASA ')'          { MulS $3 $4 }
+      | '(' '/' SASA SASA ')'          { DivS $3 $4 }
+      | '(' "sqrt" SASA ')'           { SqrtS $3 }
+      | '(' "expt" SASA SASA ')'       { ExptS $3 $4 }
+      | '(' "fst" SASA ')'            { FstS $3 } 
+      | '(' "snd" SASA ')'            { SndS $3 }
+      | '(' "if" SASA SASA SASA ')'     { IfS $3 $4 $5 }
+      | '(' "let" '(' Bindings ')' SASA ')'    { LetS $4 $6 }
+      | '(' "let*" '(' Bindings ')' SASA ')'   { LetStarS $4 $6 }
+      | '(' "lambda" '(' var ')' SASA ')' { FunS $4 $6 }  
+      | '(' SASA SASA ')'              { AppS $2 $3 }
 
 Bindings
       : Binding                    { [$1] }
@@ -70,23 +70,23 @@ Binding
 
 {
 data SASA 
-      = Num Int
-      | Boolean Bool
-      | Id String
-      | Add SASA SASA
-      | Sub SASA SASA
-      | Not SASA
-      | Mul SASA SASA
-      | Div SASA SASA
-      | Sqrt SASA
-      | Expt SASA SASA
-      | Fst SASA
-      | Snd SASA
-      | If SASA SASA SASA
-      | Fun String SASA
-      | App SASA SASA
-      | Let (String, SASA) SASA
-      | LetStar [(String, SASA)] SASA
+      = NumS Int
+      | BooleanS Bool
+      | IdS String
+      | AddS SASA SASA
+      | SubS SASA SASA
+      | NotS SASA
+      | MulS SASA SASA
+      | DivS SASA SASA
+      | SqrtS SASA
+      | ExptS SASA SASA
+      | FstS SASA
+      | SndS SASA
+      | IfS SASA SASA SASA
+      | FunS String SASA
+      | AppS SASA SASA
+      | LetS [(String, SASA)] SASA
+      | LetStarS [(String, SASA)] SASA
       deriving (Show, Eq)
      
     
