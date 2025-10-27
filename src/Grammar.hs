@@ -367,25 +367,26 @@ parser tks = happyRunIdentity happySomeParser where
 happySeq = happyDontSeq
 
 
-data ASA 
+data SASA 
       = Num Int
       | Boolean Bool
       | Id String
-      | Add ASA ASA
-      | Sub ASA ASA
-      | Not ASA
-      | Mul ASA ASA
-      | Div ASA ASA
-      | Sqrt ASA
-      | Expt ASA ASA
-      | Fst ASA
-      | Snd ASA
-      | If ASA ASA ASA
-      | Fun String ASA
-      | App ASA ASA
-      | Let [(String, ASA)] ASA
-      | LetStar [(String, ASA)] ASA
+      | Add SASA SASA
+      | Sub SASA SASA
+      | Not SASA
+      | Mul SASA SASA
+      | Div SASA SASA
+      | Sqrt SASA
+      | Expt SASA SASA
+      | Fst SASA
+      | Snd SASA
+      | If SASA SASA SASA
+      | Fun String SASA
+      | App SASA SASA
+      | Let (String, SASA) SASA
+      | LetStar [(String, SASA)] SASA
       deriving (Show, Eq)
+     
     
 parseError :: [Token] -> a
 parseError _ = error "Error de parseo"
