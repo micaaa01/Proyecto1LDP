@@ -48,6 +48,19 @@ SASA
       | '(' "not" SASA ')'            { NotS $3 }
       | '(' '*' SASA SASA ')'          { MulS $3 $4 }
       | '(' '/' SASA SASA ')'          { DivS $3 $4 }
+      | '(' '=' SASA SASA ')'        { EqS $3 $4 }
+      | '(' '<' SASA SASA ')'        { LtS $3 $4 }
+      | '(' '>' SASA SASA ')'        { GtS $3 $4 }
+      | '(' '<=' SASA SASA ')'       { LeS $3 $4 }
+      | '(' '>=' SASA SASA ')'       { GeS $3 $4 }
+      | '(' '!=' SASA SASA ')'       { NeS $3 $4 }
+      | '(' '+' ExpList ')'   { AddListS $3 }
+      | '(' '-' ExpList ')'   { SubListS $3 }
+      | '(' '*' ExpList ')'   { MulListS $3 }
+      | '(' '/' ExpList ')'   { DivListS $3 }
+      | '(' '=' ExpList ')'   { EqListS $3 }
+      | '(' '<' ExpList ')'   { LtListS $3 }
+      | '(' '>' ExpList ')'   { GtListS $3 }
       | '(' "sqrt" SASA ')'           { SqrtS $3 }
       | '(' "expt" SASA SASA ')'       { ExptS $3 $4 }
       | '(' "fst" SASA ')'            { FstS $3 } 
@@ -57,6 +70,12 @@ SASA
       | '(' "let*" '(' Bindings ')' SASA ')'   { LetStarS $4 $6 }
       | '(' "lambda" '(' var ')' SASA ')' { FunS $4 $6 }  
       | '(' SASA SASA ')'              { AppS $2 $3 }
+
+--Esta es un auxiliar      
+ExpList
+      : SASA                  { [$1] }
+      | SASA ExpList          { $1 : $2 }
+
 
 Bindings
       : Binding                    { [$1] }
@@ -78,6 +97,19 @@ data SASA
       | NotS SASA
       | MulS SASA SASA
       | DivS SASA SASA
+      | EqS SASA SASA
+      | LtS SASA SASA
+      | GtS SASA SASA
+      | LeS SASA SASA
+      | GeS SASA SASA
+      | NeS SASA SASA
+      | AddListS [SASA]
+      | SubListS [SASA]
+      | MulListS [SASA]
+      | DivListS [SASA]
+      | EqListS [SASA]
+      | LtListS [SASA]
+      | GtListS [SASA]
       | SqrtS SASA
       | ExptS SASA SASA
       | FstS SASA
