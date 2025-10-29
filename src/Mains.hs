@@ -1,14 +1,14 @@
+-- Main.hs
 module Main where
 
 import Lexer (lexer, Token(..))
 import Grammar (parser, SASA(..))
 import Desugar (desugar, ASA(..))
-import Eval (eval)
 import Control.Exception (catch, SomeException)
 
--- Ejemplo: (let ((x 5) (y 10)) (+ x y))
--- También puedes probar: ((lambda (x) (+ x 2)) 8)
--- O un if: (if true 1 0)
+-- Ejemplo de expresión en tu lenguaje
+-- input :: String
+-- input = "(let ((x 5) (y 10)) (+ x y))"
 
 main :: IO ()
 main = do
@@ -28,16 +28,11 @@ main = do
         print ast
 
         -- Paso 3: Desugar
-        let coreAst = desugar ast
+        let sasaAst = desugar ast
         putStrLn "\nAST desazucarizado (ASA):"
-        print coreAst
-
-        -- Paso 4: Evaluación
-        let result = eval coreAst
-        putStrLn "\nResultado de la evaluación:"
-        print result
-
-      ) handler
+        print sasaAst
+      )
+      handler
 
 handler :: SomeException -> IO ()
-handler e = putStrLn $ "\nError durante la ejecución: " ++ show e
+handler e = putStrLn $ "\n Error durante la ejecución: " ++ show e

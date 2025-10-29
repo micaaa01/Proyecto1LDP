@@ -24,17 +24,7 @@ desugar :: SASA -> ASA
 desugar (NumS n)             = Num n
 desugar (BooleanS b)         = Boolean b
 desugar (IdS x)              = Id x
---desugar (AddS e1 e2)         = Add (desugar e1) (desugar e2)
---desugar (SubS e1 e2)         = Sub (desugar e1) (desugar e2)
 desugar (NotS e)             = Not (desugar e)
---desugar (MulS e1 e2)         = Mul (desugar e1) (desugar e2)
---desugar (DivS e1 e2)         = Div (desugar e1) (desugar e2)
---desugar (EqS e1 e2) = App (App (Id "=") (desugar e1)) (desugar e2)
---desugar (LtS e1 e2) = App (App (Id "<") (desugar e1)) (desugar e2)
---desugar (GtS e1 e2) = App (App (Id ">") (desugar e1)) (desugar e2)
---desugar (LeS e1 e2) = App (App (Id "<=") (desugar e1)) (desugar e2)
---desugar (GeS e1 e2) = App (App (Id ">=") (desugar e1)) (desugar e2)
---desugar (NeS e1 e2) = App (App (Id "!=") (desugar e1)) (desugar e2)
 desugar (AddListS es) = foldl1 Add (map desugar es)
 desugar (SubListS es) = foldl1 Sub (map desugar es)
 desugar (MulListS es) = foldl1 Mul (map desugar es)

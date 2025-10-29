@@ -13,8 +13,8 @@ $alpha    = [a-zA-Z]
 tokens :-
 
     $white+                        ;
-"true"                         { \_ -> TokenBool True }
-"false"                        { \_ -> TokenBool False }
+"#t"                           { \_ -> TokenBool True }
+"#f"                           { \_ -> TokenBool False }
 "sqrt"                         { \_ -> TokenSqrt }
 "expt"                         { \_ -> TokenExpt }
 "not"                          { \_ -> TokenNot }

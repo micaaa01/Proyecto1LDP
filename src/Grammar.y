@@ -23,7 +23,6 @@ import Lexer (Token(..))
       '['             { TokenCA }
       ']'             { TokenCC }
       ','             { TokenComa }
-      "in"            { TokenIn }
       '='             { TokenEq }
       '<'             { TokenMenor }      
       '>'             { TokenMayor }  
@@ -46,14 +45,7 @@ SASA
       : int                          { NumS $1 }
       | bool                         { BooleanS $1 }
       | var                          { IdS $1 }
---      | '(' '+' SASA SASA ')'          { AddS $3 $4 }
---      | '(' '-' SASA SASA ')'          { SubS $3 $4 }
       | '(' "not" SASA ')'            { NotS $3 }
---      | '(' '*' SASA SASA ')'          { MulS $3 $4 }
---      | '(' '/' SASA SASA ')'          { DivS $3 $4 }
---      | '(' '=' SASA SASA ')'        { EqS $3 $4 }
---      | '(' '<' SASA SASA ')'        { LtS $3 $4 }
---      | '(' '>' SASA SASA ')'        { GtS $3 $4 }
       | '(' '+' ExpList ')'   { AddListS $3 }
       | '(' '-' ExpList ')'   { SubListS $3 }
       | '(' '*' ExpList ')'   { MulListS $3 }
@@ -78,9 +70,7 @@ SASA
       | '[' ']'                           { ListS [] }
       | '(' "head" SASA ')'          { HeadS $3 }
       | '(' "tail" SASA ')'          { TailS $3 }
---      | '(' var CondClauses ')' 
-      | '(' var CondClauses ')' { parseCondOrApp $2 $3 }
---    | '(' "lambda" '(' var ')' SASA ')' { FunS $4 $6 }  
+      | '(' var CondClauses ')' { parseCondOrApp $2 $3 } 
       | '(' SASA SASA ')'              { AppS $2 $3 }
 
 --Esta es un auxiliar      
@@ -126,17 +116,7 @@ data SASA
       = NumS Int
       | BooleanS Bool
       | IdS String
---      | AddS SASA SASA
---      | SubS SASA SASA
       | NotS SASA
---      | MulS SASA SASA
---      | DivS SASA SASA
---      | EqS SASA SASA
---      | LtS SASA SASA
---      | GtS SASA SASA
---      | LeS SASA SASA
---      | GeS SASA SASA
---      | NeS SASA SASA
       | AddListS [SASA]
       | SubListS [SASA]
       | MulListS [SASA]
