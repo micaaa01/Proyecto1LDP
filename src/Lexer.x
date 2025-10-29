@@ -21,10 +21,13 @@ tokens :-
 "if"                           { \_ -> TokenIf }
 "fst"                          { \_ -> TokenFst }
 "snd"                          { \_ -> TokenSnd }
-"let*"                         { \_ -> TokenLetStar }
 "let"                          { \_ -> TokenLet }
+"let*"                         { \_ -> TokenLetStar }
 "lambda"                       { \_ -> TokenLambda }
 "in"                           { \_ -> TokenIn }
+"head"                         { \_ -> TokenHead }
+"tail"                         { \_ -> TokenTail }
+
 
 "<="                           { \_ -> TokenMenorIgual }
 ">="                           { \_ -> TokenMayorIgual }
@@ -77,6 +80,8 @@ data Token
     | TokenLet
     | TokenLetStar
     | TokenLambda
+    | TokenHead
+    | TokenTail
     deriving (Show, Eq)
 
 lexer :: String -> [Token]
