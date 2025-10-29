@@ -37,6 +37,9 @@ import Lexer (Token(..))
       "lambda"        { TokenLambda }
       "head"          { TokenHead }
       "tail"          { TokenTail }
+      "cond"          { TokenCond }
+      "add1"          { TokenAdd1 }
+      "sub1"          { TokenSub1 }
 
 
 %%
@@ -57,7 +60,6 @@ SASA
       | '(' '>=' ExpList ')'       { GeListS $3 }
       | '(' '!=' ExpList ')'       { NeListS $3 }
       | '(' "lambda" '(' VarList ')' SASA ')' { FunListS $4 $6 }
-      | '(' SASA SASAList ')' { foldl AppS $2 $3 }
       | '(' "sqrt" SASA ')'           { SqrtS $3 }
       | '(' "expt" SASA SASA ')'       { ExptS $3 $4 }
       | '(' "fst" SASA ')'            { FstS $3 } 
@@ -70,8 +72,13 @@ SASA
       | '[' ']'                           { ListS [] }
       | '(' "head" SASA ')'          { HeadS $3 }
       | '(' "tail" SASA ')'          { TailS $3 }
-      | '(' var CondClauses ')' { parseCondOrApp $2 $3 } 
-      | '(' SASA SASA ')'              { AppS $2 $3 }
+--      | '(' var CondClauses ')' { parseCondOrApp $2 $3 } 
+      | '(' "cond" CondClauses ')' { CondS $3 }
+--      | '(' SASA SASA ')'              { AppS $2 $3 }
+      | '(' SASA SASAList ')' { foldl AppS $2 $3 }
+      | '(' "add1" SASA ')'          { AddListS [$3, NumS 1] }
+      | '(' "sub1" SASA ')'          { SubListS [$3, NumS 1] }
+
 
 --Esta es un auxiliar      
 ExpList
@@ -86,14 +93,27 @@ ListItems
       : SASA                        { [$1] }
       | SASA ',' ListItems         { $1 : $3 }
 
-CondClauses
-    : '[' SASA SASA ']'                     { [($2, $3)] }
-    | '[' SASA SASA ']' CondClauses         { ($2, $3) : $5 }
+-- CondClauses
+--    : '[' SASA SASA ']'                     { [($2, $3)] }
+--    | '[' SASA SASA ']' CondClauses         { ($2, $3) : $5 }
+--    | '[' var SASA ']' 
+--        { case $2 of
+--            "else" -> [(BooleanS True, $3)]
+--            _      -> error "Cláusula cond mal formada: se esperaba 'else'"
+--        }
+
+CondClause
+    : '[' SASA SASA ']'         { ($2, $3) }
     | '[' var SASA ']' 
         { case $2 of
-            "else" -> [(BooleanS True, $3)]
-            _      -> error "Cláusula cond mal formada: se esperaba 'else'"
+            "else" -> (BooleanS True, $3)
+            _      -> error "Se esperaba 'else'"
         }
+
+CondClauses
+    : CondClause                { [$1] }
+    | CondClause CondClauses    { $1 : $2 }
+
       
 SASAList
   : SASA              { [$1] }
@@ -148,8 +168,8 @@ data SASA
 parseError :: [Token] -> a
 parseError _ = error "Error de parseo"
 
-parseCondOrApp :: String -> [(SASA, SASA)] -> SASA
-parseCondOrApp "cond" clauses = CondS clauses
-parseCondOrApp name clauses = AppS (IdS name) (CondS clauses)
+-- parseCondOrApp :: String -> [(SASA, SASA)] -> SASA
+-- parseCondOrApp "cond" clauses = CondS clauses
+-- parseCondOrApp name clauses = AppS (IdS name) (CondS clauses)
 
 }

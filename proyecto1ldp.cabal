@@ -1,0 +1,47 @@
+cabal-version:      3.0
+
+name:               proyecto1ldp
+version:            0.1.0.0
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             Edu
+maintainer:         pollispaps49@gmail.com
+category:           Language
+build-type:         Simple
+extra-doc-files:    CHANGELOG.md
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  Lexer, Grammar, Desugar, Eval
+    build-depends:
+        base ^>=4.18.3.0,
+        array
+    hs-source-dirs:   src
+    default-language: GHC2021
+
+executable proyecto1ldp
+    import:           warnings
+    main-is:          Main.hs
+    other-modules:    Lexer, Grammar, Desugar, Eval
+    build-depends:
+        base ^>=4.18.3.0,
+        array,
+        proyecto1ldp
+    hs-source-dirs:   src
+    default-language: GHC2021
+
+test-suite proyecto1ldp-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    main-is:          Test.hs
+    other-modules:    Lexer, Grammar, Desugar, Eval
+    build-depends:
+        base ^>=4.18.3.0,
+        array,
+        HUnit,
+        proyecto1ldp
+    hs-source-dirs:   src
+    default-language: GHC2021

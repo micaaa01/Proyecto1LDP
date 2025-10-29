@@ -27,6 +27,9 @@ tokens :-
 "in"                           { \_ -> TokenIn }
 "head"                         { \_ -> TokenHead }
 "tail"                         { \_ -> TokenTail }
+"cond"                         { \_ -> TokenCond }
+"add1"                         { \_ -> TokenAdd1 }
+"sub1"                         { \_ -> TokenSub1 }
 
 
 "<="                           { \_ -> TokenMenorIgual }
@@ -82,6 +85,9 @@ data Token
     | TokenLambda
     | TokenHead
     | TokenTail
+    | TokenCond     
+    | TokenAdd1
+    | TokenSub1
     deriving (Show, Eq)
 
 lexer :: String -> [Token]
