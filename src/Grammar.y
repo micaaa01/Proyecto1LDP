@@ -37,6 +37,7 @@ import Lexer (Token(..))
       "lambda"        { TokenLambda }
       "head"          { TokenHead }
       "tail"          { TokenTail }
+      "pair"          { TokenPair }
       "cond"          { TokenCond }
       "add1"          { TokenAdd1 }
       "sub1"          { TokenSub1 }
@@ -62,6 +63,7 @@ SASA
       | '(' "lambda" '(' VarList ')' SASA ')'               { FunListS $4 $6 }
       | '(' "sqrt" SASA ')'                                 { SqrtS $3 }
       | '(' "expt" ExpList ')' { ExptListS $3 }
+      | '(' "pair" SASA SASA ')'     { PairS $3 $4}
       | '(' "fst" SASA ')'                                  { FstS $3 } 
       | '(' "snd" SASA ')'                                  { SndS $3 }
       | '(' SASA ',' SASA ')'                               { PairS $2 $4 }

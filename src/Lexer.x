@@ -27,6 +27,7 @@ tokens :-
 "in"                           { \_ -> TokenIn }
 "head"                         { \_ -> TokenHead }
 "tail"                         { \_ -> TokenTail }
+"pair"                         { \_ -> TokenPair}
 "cond"                         { \_ -> TokenCond }
 "add1"                         { \_ -> TokenAdd1 }
 "sub1"                         { \_ -> TokenSub1 }
@@ -85,6 +86,7 @@ data Token
     | TokenLambda
     | TokenHead
     | TokenTail
+    | TokenPair 
     | TokenCond     
     | TokenAdd1
     | TokenSub1

@@ -11,10 +11,9 @@ data ASA = Num Int
                 | Sqrt ASA
                 | Expt ASA ASA
                 | Not ASA
+                | Pair ASA ASA
                 | Fst ASA
-                | Snd ASA
-                | LetRec String ASA ASA   --No se que hace este
-                | LetCC String ASA   --No se que hace este 
+                | Snd ASA 
                 | If ASA ASA ASA
                 | Fun String ASA
                 | App ASA ASA
@@ -40,9 +39,9 @@ desugar (FunListS (x:xs) body)  = Fun x (desugar (FunListS xs body))
 desugar (SqrtS e)               = Sqrt (desugar e)
 desugar (ExptS e1 e2)           = Expt (desugar e1) (desugar e2)
 desugar (ExptListS es)          = foldr1 Expt (map desugar es)
+desugar (PairS e1 e2)           = Pair (desugar e1) (desugar e2)
 desugar (FstS e)                = Fst (desugar e)
 desugar (SndS e)                = Snd (desugar e)
-desugar (PairS e1 e2)           = App (App (Id "pair") (desugar e1)) (desugar e2)
 desugar (IfS c t f)             = If (desugar c) (desugar t) (desugar f)
 desugar (FunS x body)           = Fun x (desugar body)
 desugar (AppS e1 e2)            = App (desugar e1) (desugar e2)
