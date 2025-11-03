@@ -674,11 +674,11 @@ alex_base = Data.Array.listArray (0 :: Int, 73)
   , 3374
   , 3449
   , 3524
-  , 3605
-  , 0
-  , 3680
-  , 3755
+  , 3599
+  , 3674
+  , 3749
   , 3830
+  , 0
   ]
 
 alex_table :: Data.Array.Array Int Int
@@ -1000,7 +1000,7 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 4
+  , 35
   , 35
   , 35
   , 35
@@ -1610,7 +1610,7 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 3
+  , 66
   , 35
   , 35
   , 35
@@ -1985,7 +1985,7 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 68
+  , 70
   , 35
   , 35
   , 33
@@ -2122,7 +2122,7 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 0
   , 0
   , 0
-  , 71
+  , 1
   , 35
   , 35
   , 35
@@ -2298,7 +2298,7 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 69
+  , 72
   , 35
   , 35
   , 35
@@ -2372,7 +2372,7 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 66
+  , 68
   , 35
   , 35
   , 35
@@ -2671,7 +2671,7 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 2
+  , 71
   , 35
   , 35
   , 35
@@ -2890,7 +2890,7 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 1
+  , 4
   , 35
   , 35
   , 35
@@ -3117,7 +3117,7 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 72
+  , 2
   , 35
   , 35
   , 35
@@ -3182,7 +3182,7 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 73
+  , 3
   , 35
   , 35
   , 35
@@ -4157,22 +4157,6 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
   , 65
   , 35
   , 35
@@ -4190,65 +4174,6 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 0
-  , 0
-  , 0
-  , 0
-  , 0
-  , 0
-  , 0
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 0
-  , 0
-  , 0
-  , 0
-  , 0
-  , 0
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
   , 35
   , 35
   , 35
@@ -4304,6 +4229,97 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 0
   , 0
   , 0
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 0
+  , 0
+  , 0
+  , 0
+  , 0
+  , 0
+  , 0
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 0
+  , 0
+  , 0
+  , 0
+  , 0
+  , 0
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
+  , 35
   , 35
   , 35
   , 35
@@ -4324,28 +4340,6 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 70
-  , 0
-  , 0
-  , 0
-  , 0
-  , 0
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
-  , 35
   , 0
   , 0
   , 0
@@ -4463,7 +4457,7 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
-  , 35
+  , 69
   , 35
   , 35
   , 35
@@ -4561,6 +4555,12 @@ alex_table = Data.Array.listArray (0 :: Int, 4085)
   , 35
   , 35
   , 35
+  , 73
+  , 0
+  , 0
+  , 0
+  , 0
+  , 0
   , 35
   , 35
   , 35
@@ -8420,237 +8420,237 @@ alex_check = Data.Array.listArray (0 :: Int, 4085)
   , 120
   , 121
   , 122
+  , 48
+  , 49
+  , 50
+  , 51
+  , 52
+  , 53
+  , 54
+  , 55
+  , 56
+  , 57
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , 65
+  , 66
+  , 67
+  , 68
+  , 69
+  , 70
+  , 71
+  , 72
+  , 73
+  , 74
+  , 75
+  , 76
+  , 77
+  , 78
+  , 79
+  , 80
+  , 81
+  , 82
+  , 83
+  , 84
+  , 85
+  , 86
+  , 87
+  , 88
+  , 89
+  , 90
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , 97
+  , 98
+  , 99
+  , 100
+  , 101
+  , 102
+  , 103
+  , 104
+  , 105
+  , 106
+  , 107
+  , 108
+  , 109
+  , 110
+  , 111
+  , 112
+  , 113
+  , 114
+  , 115
+  , 116
+  , 117
+  , 118
+  , 119
+  , 120
+  , 121
+  , 122
+  , 48
+  , 49
+  , 50
+  , 51
+  , 52
+  , 53
+  , 54
+  , 55
+  , 56
+  , 57
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , 65
+  , 66
+  , 67
+  , 68
+  , 69
+  , 70
+  , 71
+  , 72
+  , 73
+  , 74
+  , 75
+  , 76
+  , 77
+  , 78
+  , 79
+  , 80
+  , 81
+  , 82
+  , 83
+  , 84
+  , 85
+  , 86
+  , 87
+  , 88
+  , 89
+  , 90
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , 97
+  , 98
+  , 99
+  , 100
+  , 101
+  , 102
+  , 103
+  , 104
+  , 105
+  , 106
+  , 107
+  , 108
+  , 109
+  , 110
+  , 111
+  , 112
+  , 113
+  , 114
+  , 115
+  , 116
+  , 117
+  , 118
+  , 119
+  , 120
+  , 121
+  , 122
+  , 48
+  , 49
+  , 50
+  , 51
+  , 52
+  , 53
+  , 54
+  , 55
+  , 56
+  , 57
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , 65
+  , 66
+  , 67
+  , 68
+  , 69
+  , 70
+  , 71
+  , 72
+  , 73
+  , 74
+  , 75
+  , 76
+  , 77
+  , 78
+  , 79
+  , 80
+  , 81
+  , 82
+  , 83
+  , 84
+  , 85
+  , 86
+  , 87
+  , 88
+  , 89
+  , 90
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , -1
+  , 97
+  , 98
+  , 99
+  , 100
+  , 101
+  , 102
+  , 103
+  , 104
+  , 105
+  , 106
+  , 107
+  , 108
+  , 109
+  , 110
+  , 111
+  , 112
+  , 113
+  , 114
+  , 115
+  , 116
+  , 117
+  , 118
+  , 119
+  , 120
+  , 121
+  , 122
   , 42
   , -1
   , -1
   , -1
   , -1
   , -1
-  , 48
-  , 49
-  , 50
-  , 51
-  , 52
-  , 53
-  , 54
-  , 55
-  , 56
-  , 57
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , 65
-  , 66
-  , 67
-  , 68
-  , 69
-  , 70
-  , 71
-  , 72
-  , 73
-  , 74
-  , 75
-  , 76
-  , 77
-  , 78
-  , 79
-  , 80
-  , 81
-  , 82
-  , 83
-  , 84
-  , 85
-  , 86
-  , 87
-  , 88
-  , 89
-  , 90
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , 97
-  , 98
-  , 99
-  , 100
-  , 101
-  , 102
-  , 103
-  , 104
-  , 105
-  , 106
-  , 107
-  , 108
-  , 109
-  , 110
-  , 111
-  , 112
-  , 113
-  , 114
-  , 115
-  , 116
-  , 117
-  , 118
-  , 119
-  , 120
-  , 121
-  , 122
-  , 48
-  , 49
-  , 50
-  , 51
-  , 52
-  , 53
-  , 54
-  , 55
-  , 56
-  , 57
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , 65
-  , 66
-  , 67
-  , 68
-  , 69
-  , 70
-  , 71
-  , 72
-  , 73
-  , 74
-  , 75
-  , 76
-  , 77
-  , 78
-  , 79
-  , 80
-  , 81
-  , 82
-  , 83
-  , 84
-  , 85
-  , 86
-  , 87
-  , 88
-  , 89
-  , 90
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , 97
-  , 98
-  , 99
-  , 100
-  , 101
-  , 102
-  , 103
-  , 104
-  , 105
-  , 106
-  , 107
-  , 108
-  , 109
-  , 110
-  , 111
-  , 112
-  , 113
-  , 114
-  , 115
-  , 116
-  , 117
-  , 118
-  , 119
-  , 120
-  , 121
-  , 122
-  , 48
-  , 49
-  , 50
-  , 51
-  , 52
-  , 53
-  , 54
-  , 55
-  , 56
-  , 57
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , 65
-  , 66
-  , 67
-  , 68
-  , 69
-  , 70
-  , 71
-  , 72
-  , 73
-  , 74
-  , 75
-  , 76
-  , 77
-  , 78
-  , 79
-  , 80
-  , 81
-  , 82
-  , 83
-  , 84
-  , 85
-  , 86
-  , 87
-  , 88
-  , 89
-  , 90
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , -1
-  , 97
-  , 98
-  , 99
-  , 100
-  , 101
-  , 102
-  , 103
-  , 104
-  , 105
-  , 106
-  , 107
-  , 108
-  , 109
-  , 110
-  , 111
-  , 112
-  , 113
-  , 114
-  , 115
-  , 116
-  , 117
-  , 118
-  , 119
-  , 120
-  , 121
-  , 122
   , 48
   , 49
   , 50
@@ -9017,9 +9017,9 @@ alex_accept = Data.Array.listArray (0 :: Int, 73)
   ]
 
 alex_actions = Data.Array.array (0 :: Int, 70)
-  [ (69,alex_action_14)
-  , (68,alex_action_15)
-  , (67,alex_action_35)
+  [ (69,alex_action_13)
+  , (68,alex_action_14)
+  , (67,alex_action_15)
   , (66,alex_action_16)
   , (65,alex_action_17)
   , (64,alex_action_35)
@@ -9083,10 +9083,10 @@ alex_actions = Data.Array.array (0 :: Int, 70)
   , (6,alex_action_8)
   , (5,alex_action_35)
   , (4,alex_action_9)
-  , (3,alex_action_10)
-  , (2,alex_action_11)
-  , (1,alex_action_12)
-  , (0,alex_action_13)
+  , (3,alex_action_35)
+  , (2,alex_action_10)
+  , (1,alex_action_11)
+  , (0,alex_action_12)
   ]
 
 alex_action_1 = \_ -> TokenBool True
@@ -9095,16 +9095,16 @@ alex_action_3 = \_ -> TokenSqrt
 alex_action_4 = \_ -> TokenExpt
 alex_action_5 = \_ -> TokenNot
 alex_action_6 = \_ -> TokenIf
-alex_action_7 = \_ -> TokenFst
-alex_action_8 = \_ -> TokenSnd
-alex_action_9 = \_ -> TokenLet
-alex_action_10 = \_ -> TokenLetStar
-alex_action_11 = \_ -> TokenLambda
-alex_action_12 = \_ -> TokenIn
-alex_action_13 = \_ -> TokenHead
-alex_action_14 = \_ -> TokenTail
-alex_action_15 = \_ -> TokenPair
-alex_action_16 = \_ -> TokenCond
+alex_action_7 = \_ -> TokenCond
+alex_action_8 = \_ -> TokenFst
+alex_action_9 = \_ -> TokenSnd
+alex_action_10 = \_ -> TokenPair
+alex_action_11 = \_ -> TokenLet
+alex_action_12 = \_ -> TokenLetStar
+alex_action_13 = \_ -> TokenLambda
+alex_action_14 = \_ -> TokenIn
+alex_action_15 = \_ -> TokenHead
+alex_action_16 = \_ -> TokenTail
 alex_action_17 = \_ -> TokenAdd1
 alex_action_18 = \_ -> TokenSub1
 alex_action_19 = \_ -> TokenMenorIgual
@@ -9356,23 +9356,29 @@ alexRightContext IBOX(sc) user__ _ _ input__ =
         -- match when checking the right context, just
         -- the first match will do.
 #endif
-{-# LINE 57 "Lexer.x" #-}
+{-# LINE 74 "Lexer.x" #-}
+-- Definición del tipo de dato 'Token' que representa todos los tipos de tokens posibles.
+-- Cada constructor corresponde a una palabra reservada, símbolo u operador reconocido.
 data Token
- = TokenNum Int
-    | TokenBool Bool
-    | TokenVar String
+ = TokenNum Int  -- Números enteros
+    | TokenBool Bool  -- Valores booleanos (#t, #f)
+    | TokenVar String  -- Variables o identificadores
+    -- Operadores aritméticos
     | TokenSuma
     | TokenResta
     | TokenMult
     | TokenDiv
+    -- Funciones matemáticas y lógicas
     | TokenSqrt
     | TokenExpt
     | TokenNot
+      -- Símbolos de agrupación
     | TokenPA
     | TokenPC
     | TokenCA
     | TokenCC
     | TokenComa
+    -- Palabras clave y operadores relacionales
     | TokenIn
     | TokenEq
     | TokenMayor
@@ -9380,6 +9386,7 @@ data Token
     | TokenMayorIgual
     | TokenMenorIgual
     | TokenDistinto
+     -- Estructuras de control y funciones predefinidas
     | TokenIf
     | TokenFst
     | TokenSnd
@@ -9392,7 +9399,11 @@ data Token
     | TokenCond     
     | TokenAdd1
     | TokenSub1
+    -- Permite mostrar y comparar tokens fácilmente
     deriving (Show, Eq)
-
+    
+-- Función principal del analizador léxico.
+-- Recibe una cadena de entrada (código fuente)
+-- y devuelve una lista de tokens reconocidos.
 lexer :: String -> [Token]
 lexer = alexScanTokens
