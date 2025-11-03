@@ -1,14 +1,23 @@
 {
+-- | Módulo principal del parser.
+-- Este archivo será procesado por Happy para generar un analizador sintáctico.
+-- Se importa el módulo Lexer para acceder al tipo de tokens reconocidos.
 module Grammar where
 import Lexer (Token(..))
 }
 
+-- | Nombre de la función principal del parser.
+-- Esto hace que Happy genere una función llamada 'parser :: [Token] -> SASA'.
 %name parser
+-- | Especifica el tipo de los tokens que el parser usará (provenientes del lexer).
 %tokentype { Token }
+-- | Define la función a ejecutar cuando ocurra un error sintáctico.
 %error { parseError }
 
+-- | Asociación entre los nombres usados en la gramática y los constructores de tokens.
+-- Cada línea indica cómo un símbolo terminal (token) del lexer se mapea en el parser.
 %token
-      int             { TokenNum $$ }
+      int             { TokenNum $$ }     
       bool            { TokenBool $$ }
       var             { TokenVar $$ }
       '+'             { TokenSuma }
@@ -45,55 +54,62 @@ import Lexer (Token(..))
 
 %%
 
+-- * Reglas principales de la gramática (símbolo inicial: SASA).
+-- Cada producción construye un valor del tipo de dato 'SASA', que representa
+-- el árbol sintáctico abstracto (AST) de una expresión del lenguaje.
+
 SASA 
-      : int                                                 { NumS $1 }
-      | bool                                                { BooleanS $1 }
-      | var                                                 { IdS $1 }
-      | '(' "not" SASA ')'                                  { NotS $3 }
-      | '(' '+' ExpList ')'                                 { AddListS $3 }
-      | '(' '-' ExpList ')'                                 { SubListS $3 }
-      | '(' '*' ExpList ')'                                 { MulListS $3 }
-      | '(' '/' ExpList ')'                                 { DivListS $3 }
-      | '(' '=' ExpList ')'                                 { EqListS $3 }
-      | '(' '<' ExpList ')'                                 { LtListS $3 }
-      | '(' '>' ExpList ')'                                 { GtListS $3 }
-      | '(' '<=' ExpList ')'                                { LeListS $3 }
-      | '(' '>=' ExpList ')'                                { GeListS $3 }
-      | '(' '!=' ExpList ')'                                { NeListS $3 }
-      | '(' "lambda" '(' VarList ')' SASA ')'               { FunListS $4 $6 }
-      | '(' "sqrt" SASA ')'                                 { SqrtS $3 }
-      | '(' "expt" ExpList ')' { ExptListS $3 }
-      | '(' "pair" SASA SASA ')'     { PairS $3 $4}
-      | '(' "fst" SASA ')'                                  { FstS $3 } 
-      | '(' "snd" SASA ')'                                  { SndS $3 }
-      | '(' SASA ',' SASA ')'                               { PairS $2 $4 }
-      | '(' "if" SASA SASA SASA ')'                         { IfS $3 $4 $5 }
-      | '(' "let" '(' Bindings ')' SASA ')'                 { LetS $4 $6 }
-      | '(' "let*" '(' Bindings ')' SASA ')'                { LetStarS $4 $6 }
-      | '[' ListItems ']'                                   { ListS $2 }
-      | '[' ']'                                             { ListS [] }
-      | '(' "head" SASA ')'                                 { HeadS $3 }
-      | '(' "tail" SASA ')'                                 { TailS $3 }
-      | '(' "cond" CondClauses ')'                          { CondS $3 }
-      | '(' SASA SASAList ')'                               { foldl AppS $2 $3 }
-      | '(' "add1" SASA ')'                                 { AddListS [$3, NumS 1] }
-      | '(' "sub1" SASA ')'                                 { SubListS [$3, NumS 1] }
+      : int                                                 { NumS $1 }             -- Números enteros
+      | bool                                                { BooleanS $1 }         -- Valores booleanos
+      | var                                                 { IdS $1 }              -- Identificadores
+      | '(' "not" SASA ')'                                  { NotS $3 }             -- Negación lógica
+      | '(' '+' ExpList ')'                                 { AddListS $3 }         -- Suma de lista
+      | '(' '-' ExpList ')'                                 { SubListS $3 }         -- Resta de lista
+      | '(' '*' ExpList ')'                                 { MulListS $3 }         -- Multiplicación de listas
+      | '(' '/' ExpList ')'                                 { DivListS $3 }         -- División de lista
+      | '(' '=' ExpList ')'                                 { EqListS $3 }          -- Igualdad
+      | '(' '<' ExpList ')'                                 { LtListS $3 }          -- Menor que
+      | '(' '>' ExpList ')'                                 { GtListS $3 }          -- Mayor que
+      | '(' '<=' ExpList ')'                                { LeListS $3 }          -- Menor o igual que
+      | '(' '>=' ExpList ')'                                { GeListS $3 }          -- Mayor o igual que
+      | '(' '!=' ExpList ')'                                { NeListS $3 }          -- Disinto
+      | '(' "lambda" '(' VarList ')' SASA ')'               { FunListS $4 $6 }      -- Función lambda
+      | '(' "sqrt" SASA ')'                                 { SqrtS $3 }            -- Raíz cuadrada
+      | '(' "expt" ExpList ')' { ExptListS $3 }                                     -- Exponenciación
+      | '(' "pair" SASA SASA ')'     { PairS $3 $4}                                 -- Pares (pair x y)
+      | '(' "fst" SASA ')'                                  { FstS $3 }             -- Primer elemento del par
+      | '(' "snd" SASA ')'                                  { SndS $3 }             -- Segundo elemento del par
+      | '(' SASA ',' SASA ')'                               { PairS $2 $4 }         -- Par con coma (x, y)
+      | '(' "if" SASA SASA SASA ')'                         { IfS $3 $4 $5 }        -- Condicional if
+      | '(' "let" '(' Bindings ')' SASA ')'                 { LetS $4 $6 }          -- Expresion let
+      | '(' "let*" '(' Bindings ')' SASA ')'                { LetStarS $4 $6 }      -- Expresión let* (Secuencial)
+      | '[' ListItems ']'                                   { ListS $2 }            -- Lista con elmentos       
+      | '[' ']'                                             { ListS [] }            -- Lista vacía
+      | '(' "head" SASA ')'                                 { HeadS $3 }            -- Primer elemento de la lista
+      | '(' "tail" SASA ')'                                 { TailS $3 }            -- Resto de la lista
+      | '(' "cond" CondClauses ')'                          { CondS $3 }            -- Expresión condicional múltiple
+      | '(' SASA SASAList ')'                               { foldl AppS $2 $3 }    -- Aplicación de función
+      | '(' "add1" SASA ')'                                 { AddListS [$3, NumS 1] }     -- Incremento en 1
+      | '(' "sub1" SASA ')'                                 { SubListS [$3, NumS 1] }     -- Decremento en 1
 
 
---Esta es un auxiliar      
+-- | Lista de expresiones (usada en operaciones aritméticas o comparaciones)    
 ExpList
       : SASA                        { [$1] }
       | SASA ExpList                { $1 : $2 }
 
+-- | Lista de variables, usada por lambda.
 VarList
       : var                         { [$1] }
       | var VarList                 { $1 : $2 }
 
+-- | Elementos dentro de listas [a, b, c]
 ListItems
       : SASA                        { [$1] }
       | SASA ',' ListItems          { $1 : $3 }
 
-
+-- | Clausula individual de condicional 'cond'
+-- Puede ser [condición resultado] o [else resultado]
 CondClause
     : '[' SASA SASA ']'             { ($2, $3) }
     | '[' var SASA ']' 
@@ -102,21 +118,22 @@ CondClause
             _      -> error "Se esperaba 'else'"
         }
 
+-- | Lista de cláusulas condicionales
 CondClauses
     : CondClause                    { [$1] }
     | CondClause CondClauses        { $1 : $2 }
 
-      
+-- | Lista de expresiones aplicadas a una función      
 SASAList
   : SASA                            { [$1] }
   | SASA SASAList                   { $1 : $2 }
 
-
-
+-- | Lista de asociaciones (bindings) en un let
 Bindings
       : Binding                     { [$1] }
       | Binding Bindings            { $1 : $2 }
 
+-- | Asociación (var, valor)
 Binding
       : '(' var SASA ')'            { ($2, $3) }
 
@@ -124,40 +141,45 @@ Binding
 
 
 {
+-- | Tipo de dato principal del AST.
+-- Representa todas las construcciones posibles del lenguaje SASA.
 data SASA 
-      = NumS Int
-      | BooleanS Bool
-      | IdS String
-      | NotS SASA
-      | AddListS [SASA]
-      | SubListS [SASA]
-      | MulListS [SASA]
-      | DivListS [SASA]
-      | EqListS [SASA]
-      | LtListS [SASA]
-      | GtListS [SASA]
-      | LeListS [SASA]
-      | GeListS [SASA]
-      | NeListS [SASA]
-      | FunListS [String] SASA
-      | SqrtS SASA
-      | ExptS SASA SASA
-      | ExptListS [SASA]
-      | FstS SASA
-      | SndS SASA
-      | PairS SASA SASA
-      | IfS SASA SASA SASA
-      | FunS String SASA
-      | AppS SASA SASA
-      | LetS [(String, SASA)] SASA
-      | LetStarS [(String, SASA)] SASA
-      | ListS [SASA]
-      | HeadS SASA
-      | TailS SASA
-      | CondS [(SASA, SASA)]
+ = NumS Int                              -- Número entero
+      | BooleanS Bool                         -- Booleano (#t o #f)
+      | IdS String                            -- Identificador
+      | NotS SASA                             -- Negación lógica
+      | AddListS [SASA]                       -- Suma de lista de expresiones
+      | SubListS [SASA]                       -- Resta
+      | MulListS [SASA]                       -- Multiplicación
+      | DivListS [SASA]                       -- División
+      | EqListS [SASA]                        -- Igualdad
+      | LtListS [SASA]                        -- Menor que
+      | GtListS [SASA]                        -- Mayor que
+      | LeListS [SASA]                        -- Menor o igual
+      | GeListS [SASA]                        -- Mayor o igual
+      | NeListS [SASA]                        -- Distinto
+      | FunListS [String] SASA                -- Función lambda con lista de parámetros
+      | SqrtS SASA                            -- Raíz cuadrada
+      | ExptS SASA SASA                       -- Exponenciación binaria
+      | ExptListS [SASA]                      -- Exponenciación n-aria
+      | FstS SASA                             -- Primer elemento de un par
+      | SndS SASA                             -- Segundo elemento de un par
+      | PairS SASA SASA                       -- Par de valores
+      | IfS SASA SASA SASA                    -- Condicional if
+      | FunS String SASA                      -- Definición de función
+      | AppS SASA SASA                        -- Aplicación de función
+      | LetS [(String, SASA)] SASA            -- Expresión let
+      | LetStarS [(String, SASA)] SASA        -- Expresión let* (evaluación secuencial)
+      | ListS [SASA]                          -- Listas
+      | HeadS SASA                            -- Primer elemento de lista
+      | TailS SASA                            -- Resto de lista
+      | CondS [(SASA, SASA)]                  -- Expresión condicional múltiple
       deriving (Show, Eq)
+
      
-    
+-- | Manejador de errores sintácticos.
+-- Se ejecuta si la entrada no coincide con ninguna producción válida.
+ 
 parseError :: [Token] -> a
 parseError _ = error "Error de parseo"
 

@@ -8,6 +8,9 @@
 {-# LANGUAGE NoStrictData #-}
 {-# LANGUAGE UnboxedTuples #-}
 {-# LANGUAGE PartialTypeSignatures #-}
+-- | Módulo principal del parser.
+-- Este archivo será procesado por Happy para generar un analizador sintáctico.
+-- Se importa el módulo Lexer para acceder al tipo de tokens reconocidos.
 module Grammar where
 import Lexer (Token(..))
 import qualified Control.Monad as Happy_Prelude
@@ -646,40 +649,45 @@ parser tks = happyRunIdentity happySomeParser where
 happySeq = happyDontSeq
 
 
+-- | Tipo de dato principal del AST.
+-- Representa todas las construcciones posibles del lenguaje SASA.
 data SASA 
-      = NumS Int
-      | BooleanS Bool
-      | IdS String
-      | NotS SASA
-      | AddListS [SASA]
-      | SubListS [SASA]
-      | MulListS [SASA]
-      | DivListS [SASA]
-      | EqListS [SASA]
-      | LtListS [SASA]
-      | GtListS [SASA]
-      | LeListS [SASA]
-      | GeListS [SASA]
-      | NeListS [SASA]
-      | FunListS [String] SASA
-      | SqrtS SASA
-      | ExptS SASA SASA
-      | ExptListS [SASA]
-      | FstS SASA
-      | SndS SASA
-      | PairS SASA SASA
-      | IfS SASA SASA SASA
-      | FunS String SASA
-      | AppS SASA SASA
-      | LetS [(String, SASA)] SASA
-      | LetStarS [(String, SASA)] SASA
-      | ListS [SASA]
-      | HeadS SASA
-      | TailS SASA
-      | CondS [(SASA, SASA)]
+ = NumS Int                              -- Número entero
+      | BooleanS Bool                         -- Booleano (#t o #f)
+      | IdS String                            -- Identificador
+      | NotS SASA                             -- Negación lógica
+      | AddListS [SASA]                       -- Suma de lista de expresiones
+      | SubListS [SASA]                       -- Resta
+      | MulListS [SASA]                       -- Multiplicación
+      | DivListS [SASA]                       -- División
+      | EqListS [SASA]                        -- Igualdad
+      | LtListS [SASA]                        -- Menor que
+      | GtListS [SASA]                        -- Mayor que
+      | LeListS [SASA]                        -- Menor o igual
+      | GeListS [SASA]                        -- Mayor o igual
+      | NeListS [SASA]                        -- Distinto
+      | FunListS [String] SASA                -- Función lambda con lista de parámetros
+      | SqrtS SASA                            -- Raíz cuadrada
+      | ExptS SASA SASA                       -- Exponenciación binaria
+      | ExptListS [SASA]                      -- Exponenciación n-aria
+      | FstS SASA                             -- Primer elemento de un par
+      | SndS SASA                             -- Segundo elemento de un par
+      | PairS SASA SASA                       -- Par de valores
+      | IfS SASA SASA SASA                    -- Condicional if
+      | FunS String SASA                      -- Definición de función
+      | AppS SASA SASA                        -- Aplicación de función
+      | LetS [(String, SASA)] SASA            -- Expresión let
+      | LetStarS [(String, SASA)] SASA        -- Expresión let* (evaluación secuencial)
+      | ListS [SASA]                          -- Listas
+      | HeadS SASA                            -- Primer elemento de lista
+      | TailS SASA                            -- Resto de lista
+      | CondS [(SASA, SASA)]                  -- Expresión condicional múltiple
       deriving (Show, Eq)
+
      
-    
+-- | Manejador de errores sintácticos.
+-- Se ejecuta si la entrada no coincide con ninguna producción válida.
+ 
 parseError :: [Token] -> a
 parseError _ = error "Error de parseo"
 -- $Id: GenericTemplate.hs,v 1.26 2005/01/14 14:47:22 simonmar Exp $
