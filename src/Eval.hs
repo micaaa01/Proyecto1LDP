@@ -95,6 +95,24 @@ smallStep (App (Id "tail") arg) env
       let (arg', env') = smallStep arg env
       in (App (Id "tail") arg', env')
 
+
+smallStep (App (Id f) v2) env
+  | isValue v2 =
+      case lookupEnv f env of
+        Just (VClosure x body envDef) ->
+            let env' = (x, toValueWithEnv v2 env) : envDef
+            in (body, env')
+        Just v ->
+            let fASA = fromValue v
+            in (App fASA v2, env)
+        Nothing -> error ("Variable no encontrada (en App (Id ...)): " ++ f)
+
+
+smallStep (App (Fun x body) v2) env
+  | isValue v2 =
+      let env' = (x, toValueWithEnv v2 env) : env
+      in (body, env')
+
 smallStep (App (Fun x body) v2) env
     | isValue v2 =
         let closureEnv = (x, toValue v2) : env
@@ -133,12 +151,16 @@ isValue (Pair v1 v2) = isValue v1 && isValue v2
 isValue (Id "nil") = True
 isValue _ = False
 
-toValue :: ASA -> Value
-toValue (Num n) = VNum n
-toValue (Boolean b) = VBool b
-toValue (Pair v1 v2) = VPair (toValue v1) (toValue v2)
-toValue (Fun x body) = VClosure x body []
-toValue _ = error "No se puede convertir ASA a Value"
+toValueWithEnv :: ASA -> Env -> Value
+toValueWithEnv (Num n) _       = VNum n
+toValueWithEnv (Boolean b) _   = VBool b
+toValueWithEnv (Pair a b) env  = VPair (toValueWithEnv a env) (toValueWithEnv b env)
+toValueWithEnv (Fun x body) env = VClosure x body env
+toValueWithEnv _ _             = error "toValueWithEnv: no convertible"
+
+
+toValue a = toValueWithEnv a []  
+
 
 fromValue :: Value -> ASA
 fromValue (VNum n) = Num n
