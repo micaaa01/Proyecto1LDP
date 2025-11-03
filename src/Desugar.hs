@@ -2,8 +2,17 @@ module Desugar where
 import Grammar (SASA(..))
 
 data Op
-  = AddOp | SubOp | MulOp | DivOp
-  | EqOp | NeOp | LtOp | LeOp | GtOp | GeOp
+  = AddOp 
+  | SubOp 
+  | MulOp 
+  | DivOp
+  | AndOp
+  | EqOp 
+  | NeOp 
+  | LtOp 
+  | LeOp 
+  | GtOp 
+  | GeOp
   | ExptOp
   deriving (Show, Eq)
 
@@ -82,4 +91,4 @@ chainCompare op (x:y:rest) =
   let cmp = BinOp op x y
   in case rest of
        []     -> cmp
-       (_:_)  -> BinOp EqOp cmp (chainCompare EqOp (y:rest))
+       (_:_)  -> BinOp AndOp cmp (chainCompare op (y:rest))
