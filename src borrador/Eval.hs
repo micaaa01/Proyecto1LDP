@@ -12,6 +12,24 @@ data Value
 
 type Env = [(String, Value)]
 
+zASA :: ASA
+zASA =
+  Fun "__z_f" (
+    App
+      ( Fun "__z_x" ( App (Id "__z_f")
+                          ( Fun "__z_v" ( App (App (Id "__z_x") (Id "__z_x")) (Id "__z_v") ) )
+                       )
+      )
+      ( Fun "__z_x" ( App (Id "__z_f")
+                          ( Fun "__z_v" ( App (App (Id "__z_x") (Id "__z_x")) (Id "__z_v") ) )
+                       )
+      )
+  )
+
+-- entorno inicial con Z predefinido (como closure)
+initialEnv :: Env
+initialEnv = [("Z", toValueWithEnv zASA [])]
+
 smallStep :: ASA -> Env -> (ASA, Env)
 
 -- variables / nil
@@ -229,7 +247,7 @@ lookupEnv x ((y, v):ys)
 
 -- Eval (loop hasta valor)
 eval :: ASA -> ASA
-eval e = fst (loop e [])
+eval e = fst (loop e initialEnv)
     where 
         loop expresion env
             | isValue expresion = (expresion, env)
