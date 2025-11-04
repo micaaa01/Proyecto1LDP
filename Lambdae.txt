@@ -3,7 +3,15 @@
 \usepackage[spanish]{babel}   
 \usepackage[utf8]{inputenc} 
 \usepackage[T1]{fontenc}    
-\usepackage{lmodern}          
+\usepackage{lmodern}
+\usepackage[most]{tcolorbox}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usepackage{forest}
+
+\tcbset{colback=pink!10!white, colframe=purple!80!black, boxrule=0.8pt, arc=3mm}
+
 
 \usepackage{amsmath, amssymb} 
 \usepackage{graphicx}         
@@ -52,6 +60,11 @@
     {\large CDMX \par}
 \end{titlepage}
 
+% --- Aquí quiero una página con el índice ---
+\newpage
+\tableofcontents
+\newpage  % Para que el contenido empiece en la siguiente página
+
 \newpage
 \section{Introducción}
 
@@ -61,20 +74,504 @@ La historia de los lenguajes de programación refleja la búsqueda constante por
 
 Posteriormente, la evolución de los lenguajes dio lugar a diversos paradigmas que transformaron la manera de desarrollar software. La programación estructurada, con lenguajes como Pascal y C, promovió la organización del código en bloques lógicos, reduciendo la complejidad y mejorando la legibilidad. Más adelante, la programación orientada a objetos, representada por C++, Java y Smalltalk, introdujo conceptos como la encapsulación, la herencia y el polimorfismo, permitiendo modelar problemas del mundo real de forma más intuitiva y fomentando la creación de sistemas modulares y reutilizables. En paralelo, la programación funcional, impulsada por lenguajes como Lisp, Haskell y Scala, cobró relevancia por su capacidad para manejar la concurrencia y el procesamiento de datos, gracias a principios como la inmutabilidad y las funciones puras, que facilitan el razonamiento y las pruebas del código.
 
-En la actualidad, la disciplina avanza hacia entornos cada vez más paralelos y concurrentes. Lenguajes contemporáneos como Go y Rust han sido diseñados con la seguridad y la eficiencia como ejes centrales: Go simplifica la concurrencia mediante goroutines y canales, mientras que Rust garantiza la seguridad de la memoria sin necesidad de un recolector de basura, consolidándose como una opción robusta para sistemas de alto rendimiento. Esta evolución constante demuestra que los lenguajes de programación no solo han acompañado el progreso tecnológico, sino que han sido motores fundamentales en la transformación de la informática moderna, respondiendo a la necesidad de abordar problemas cada vez más complejos y especializados.
+En la actualidad, la disciplina avanza hacia entornos cada vez más paralelos y concurrentes. Lenguajes contemporáneos como Go y Rust han sido diseñados con la seguridad y la eficiencia como ejes centrales: 
+\begin{itemize}
+    \item Go simplifica la concurrencia mediante goroutines y canales.
+    \item Rust garantiza la seguridad de la memoria sin necesidad de un recolector de basura, consolidándose como una opción robusta para sistemas de alto rendimiento.
+\end{itemize}
+
+Esta evolución constante demuestra que los lenguajes de programación no solo han acompañado el progreso tecnológico, sino que han sido motores fundamentales en la transformación de la informática moderna, respondiendo a la necesidad de abordar problemas cada vez más complejos y especializados.
 
 En este contexto, el presente proyecto se enmarca en el estudio formal de los lenguajes de programación mediante la extensión de un lenguaje de estilo Lisp denominado MiniLisp, implementado en Haskell con apoyo de la herramienta Happy. Este trabajo busca recorrer las etapas esenciales de la formalización de un lenguaje, desde la definición de su sintaxis léxica y libre de contexto hasta la especificación de su semántica operacional, con el propósito de integrar la teoría y la práctica en el diseño de intérpretes. De esta manera, el proyecto MiniLisp constituye una oportunidad para aplicar los fundamentos teóricos de los lenguajes de programación en un entorno funcional real, fortaleciendo la comprensión de los principios que rigen su construcción, análisis e implementación.
 
 
 \section{Objetivos}
 
-El presente proyecto tiene como propósito definir formalmente la sintaxis léxica y libre de contexto del lenguaje MiniLisp, formulando su representación en sintaxis abstracta e incorporando mecanismos de azúcar sintáctica y su correspondiente eliminación hacia un núcleo mínimo. Asimismo, se busca diseñar y especificar la semántica operacional estructural del lenguaje mediante reglas de inferencia y derivaciones que describan con precisión su comportamiento durante la evaluación, al tiempo que se modelan ambientes de evaluación y bindings que garanticen la correcta gestión de alcances, valores y consistencia semántica.
+El presente proyecto tiene como propósito definir formalmente la sintaxis léxica y libre de contexto del lenguaje MiniLisp, por lo que se propone el lenguaje Lambdae que es una extensión del mismo.
+Asimismo se formula su representación en sintaxis abstracta e incorporando mecanismos de azúcar sintáctica y su correspondiente eliminación hacia un núcleo mínimo. Por otra parte, se busca diseñar y especificar la semántica operacional estructural del lenguaje mediante reglas de inferencia y derivaciones que describan con precisión su comportamiento durante la evaluación, al tiempo que se modelan ambientes de evaluación y bindings que garanticen la correcta gestión de alcances, valores y consistencia semántica.
+
 
 Con el fin de ampliar la expresividad del lenguaje, se propone incorporar nuevos operadores aritméticos, predicados, estructuras de datos, listas, condicionales y funciones variádicas, sustentando formalmente cada decisión de diseño. De igual manera, se plantea la implementación de un intérprete funcional completo de MiniLisp en Haskell, estructurado a partir de un pipeline modular que abarque las fases de análisis léxico, sintáctico, desazucarización y evaluación, asegurando una correspondencia directa entre la teoría formal y la ejecución práctica. 
 
 Finalmente, se busca demostrar la validez del modelo propuesto mediante casos de prueba y ejemplos representativos que evidencien la relación entre la formalización teórica y el comportamiento del sistema implementado, así como integrar y documentar los resultados en un informe académico que articule los fundamentos teóricos, las decisiones de diseño y los resultados experimentales, promoviendo una comprensión crítica del vínculo entre teoría y práctica en el estudio de los lenguajes de programación.
 
+
+\newpage
+\section{Sintaxis de un lenguaje de programación}
+En el diseño de los lenguajes de programación, establecer reglas claras que indiquen cómo deben escribirse y estructurarse los programas es un aspecto esencial. Estas reglas no sólo permiten que las máquinas comprendan las instrucciones, sino que también aseguran que los desarrolladores puedan comunicarse de manera precisa y coherente con ellas. Sin una estructura formal que determine qué expresiones son válidas y cómo deben organizarse, sería imposible garantizar que un programa sea interpretado de la misma manera por distintos compiladores o intérpretes. Además, esta estructura facilita la detección de errores, la lectura del código y la creación de herramientas de análisis y depuración. En este contexto surge la necesidad de definir con rigor la forma en que los programas deben escribirse, dando origen al concepto fundamental de la sintaxis en los lenguajes de programación.
+
+\begin{tcolorbox}[title= Definición: Sintaxis]
+Definimos, de manera informal, la sintaxis de un lenguaje de programación como el conjunto de
+reglas y estructuras que especifican cómo deben escribirse los símbolos y palabras reservadas de un
+programa para que sea aceptado por el traductor del lenguaje.
+\end{tcolorbox}
+
+\subsection{Sintaxis concreta}
+
+La sintaxis concreta de un lenguaje de programación define la apariencia y estructura exacta con la que deben escribirse los programas, abarcando todos los elementos visibles como palabras clave, operadores, signos de puntuación y la forma en que estos se organizan.Por lo que podeso definir a la sintaxis concreta de la sigueinte fora:
+
+\begin{tcolorbox}[title= Definición: Sintaxis concreta]
+    La sintaxis concreta se puede definir como un par \textbf{(L, G)} donde:
+
+\begin{itemize}
+    \item \textbf{L} es la definición léxica representada por el conjunto de expresiones regulares \textbf{R}.
+    \item \textbf{G} es la gramática libre de contexto \textbf{(N, Σ, P, S)}.
+\end{itemize}
+\end{tcolorbox}
+
+Dicha sintaxis se especifica mediante una gramática formal que determina, qué combinaciones de símbolos son válidas dentro del lenguaje.
+
+Esta descripción se divide normalmente en dos niveles:
+
+\begin{itemize}
+    \item Sintaxis léxica.
+    \item Sintaxis estructural o gramática libre de contexto.
+\end{itemize}
+
+A continuación abordaremos un poco más a fondo cada uno de estos conceptos.
+
+\subsubsection{Sintaxis Léxica}
+Los elementos léxicos de un lenguaje de programación conforman el conjunto de símbolos, palabras reservadas y reglas de formación que determinan la estructura básica mediante la cual se construyen las expresiones y sentencias del lenguaje.
+Este conjunto de caracteres reconocidos por el compilador o intérprete recibe el nombre de tokens, los cuales representan las unidades léxicas fundamentales del lenguaje. Dichos tokens pueden corresponder a símbolos de puntuación, operadores, representaciones numéricas, cadenas de texto o identificadores de variables.
+
+Desde un punto de vista formal, la descripción léxica de un lenguaje se fundamenta en ciertos elementos esenciales:
+
+\begin{itemize}
+    \item \textbf{Alfabeto ($\Sigma$):} se refiere al conjunto limitado de símbolos que pueden utilizarse en el lenguaje, como letras, números y signos especiales.
+    \item \textbf{Tokens:} son secuencias de caracteres derivadas del alfabeto que representan las unidades sintácticas más simples. Cada clase de token se especifica mediante una expresión regular que determina su estructura o patrón.
+\end{itemize}
+
+\begin{tcolorbox}[title=Definición: Expresiones regulares]
+
+Una expresión regular $E$, definida sobre un alfabeto $\Sigma$, se construye de manera recursiva siguiendo las reglas siguientes:
+
+\begin{itemize}
+    \item $\varepsilon$, que representa la cadena vacía, es considerada una expresión regular.
+    
+    \item Para cualquier símbolo $a \in \Sigma$, dicho símbolo constituye por sí mismo una expresión regular que representa una cadena formada únicamente por $a$.
+    
+    \item Si $E_1$ y $E_2$ son expresiones regulares, entonces su concatenación $E_1E_2$ también forma una expresión regular.
+    
+    \item De igual manera, si $E_1$ y $E_2$ son expresiones regulares, su unión $E_1 + E_2$ se considera una expresión regular.
+    
+    \item Si $E$ es una expresión regular, su cerradura de Kleene $E^{*}$ también lo es, y describe cualquier número de repeticiones de $E$, incluyendo la posibilidad de que no aparezca.
+\end{itemize}
+\end{tcolorbox}
+
+En consecuencia, para conformar el conjunto de tokens de un lenguaje, el analizador léxico recibe una secuencia de cadenas de entrada y las transforma en un conjunto de tokens válidos conforme a las reglas léxicas previamente definidas para dicho lenguaje.
+
+El conjunto de tokens aceptados por nuestro lenguaje puede entenderse como una lista de unidades léxicas generada a partir de la lectura secuencial del programa de entrada, carácter por carácter.
+Durante este proceso, el analizador léxico identifica secuencias de caracteres que coinciden con alguno de los patrones o tokens previamente definidos en el lexer, y cada vez que se reconoce una coincidencia, se genera un nuevo token que se añade a la lista.
+De esta manera, al finalizar la lectura completa del programa, se obtiene un conjunto estructurado de tokens que representa de forma simbólica el contenido del código fuente.
+
+A continuación, presentamos la especificación léxica del lenguaje LAMBDAE, definiendo formalmente su alfabeto y los principales tipos de tokens utilizados.
+
+\begin{tcolorbox}[title = Sintaxis léxica de LAMBDAE]
+
+Para comenzar a definir la sintaxis léxica comenzaremos definiendo el alfabeto de nuestro lenguaje, el cual está conformado por lo siguiente:\\
+
+$\Sigma$ = \{ \textit{True , Fasle}, +, - , * , / , \textit{sqrt,expt,not}, ( , ) , [ , ] , = , > , < , >= ,<= ,!= , if , fst , \textit{snd , let , let* , lamdba , head , tail , pair , cond , add1 , sub1} \}\\
+
+
+En nustra gramática también tenemos definidos a los enteros y a las variables. A las varibales las identificaremos como \textit{id} y a los números como \textit{int}, a ambos los podemos definir de la siguiente manera:
+
+
+id  ::= [A-Za-z\_][A-Za-z0-9\_]^*
+
+int ::= 0\,$\vert$\,[1-9][0-9]^*
+
+\textbf{Paréntesis}
+
+            \textbf{( + )}
+
+Se utilizan para agrupar subexpresiones lógicas. Al igual que en lenguajes de
+notación matemática o lógica simbólica, permiten definir la precedencia de los
+operadores.
+    
+\end{tcolorbox}
+En este punto, los tokens del lenguaje representan las unidades léxicas construidas a partir del alfabeto definido. Para esta versión del lenguaje, se incluyen los siguientes tipos de tokens, junto con las expresiones regulares que especifican la estructura de cada uno.
+
+\begin{tcolorbox}[title=Tokens en LAMBDAE]
+ 
+\begin{center}
+\begin{verbatim}
+int             { TokenNum $$ }
+bool            { TokenBool $$ }
+var             { TokenVar $$ }
+'+'             { TokenSuma }
+'-'             { TokenResta }
+'*'             { TokenMult }
+'/'             { TokenDiv }
+"sqrt"          { TokenSqrt }
+"expt"          { TokenExpt }
+"not"           { TokenNot }
+'('             { TokenPA }
+')'             { TokenPC }
+'['             { TokenCA }
+']'             { TokenCC }
+','             { TokenComa }
+"in"            { TokenIn }
+'='             { TokenEq }
+'<'             { TokenMenor }
+'>'             { TokenMayor }
+'<='            { TokenMenorIgual }
+'>='            { TokenMayorIgual }
+'!='            { TokenDistinto }
+"if"            { TokenIf }
+"fst"           { TokenFst }
+"snd"           { TokenSnd }
+"let"           { TokenLet }
+"let*"          { TokenLetStar }
+"lambda"        { TokenLambda }
+\end{verbatim}
+\end{center}
+
+\end{tcolorbox}
+ 
+
+ Es por esto que necesitamos de herramientas formales y notaciones que nos permitan especificar la sintaxis eliminando ambigüedades. Algunas de éstas son:
+
+ \begin{itemize}
+     \item Gramáticas fromales (GLC)
+     \item Árboles de sintaxis
+     \item Analizadores léxicos y sintácticos
+ \end{itemize}
+
+\subsection{Gramática Formal: gramática libre de contexto (GLC)}
+
+ Para iniciar, es importante definir todos los conceptos. En el ámbito de la teoría de los lenguajes de programación y de los lenguajes formales, la sintaxis concreta hace referencia a la estructura específica de un lenguaje de programación, la cual determina la forma exacta en que deben escribirse los programas. Desde un punto de vista matemático, dicha estructura se describe mediante una gramática libre de contexto, la cual se define de la siguiente manera:
+
+\begin{tcolorbox}[title=Definición: Gramática libre de contexto]
+Formalmente, una \textbf{Gramática Libre de Contexto (GLC)} se define como una tupla 
+\[
+G = (N, \Sigma, P, S),
+\]
+donde:
+\begin{itemize}
+    \item $N$ es un conjunto finito de símbolos no terminales. Estos representan categorías sintácticas intermedias y permiten construir la jerarquía estructural del lenguaje.
+    \item $\Sigma$ es un conjunto finito de símbolos terminales, que corresponden a los tokens generados por el análisis léxico.
+    \item $P$ es un conjunto finito de producciones de la forma $A \rightarrow \alpha$, donde $A \in N$ y $\alpha \in (N \cup \Sigma)^{*}$.
+    \item $S \in N$ es el símbolo inicial, desde el cual se derivan todas las cadenas válidas del lenguaje.
+\end{itemize}
+
+\end{tcolorbox}
+
+Cada uno de estos componentes tiene un papel específico en la descripción de la sintaxis:
+
+\begin{enumerate}
+    \item \textbf{Terminales:} representan los elementos básicos del lenguaje que no pueden ser descompuestos más allá dentro de la gramática.En nuestro caos los terminales son los valores booleanos (\textit{bool}), enteros (\textit{int}), pares ordenados (\textit{pair}) y clousures (\textit{Clousure}).
+    \item \textbf{No terminales:} estos corresponden a variables sintácticas que describen cómo se organizan y combinan los diferentes componentes del lenguaje. En nuestra gramática, los no terminales principales serán expresiones que se pueden generar a partir de los elementos definidos ene el alfabeto de nuestra gramática, pueden ser binarias y variadicos como lo son: (\textit{Add,Sub,Mul,Div,..}), funciones(\textit{App, Fun, lambda,...}), condicionales(\textit{if}), operaciones sobre pares ordenados(\textit{Fst,Snd}), listas (\textit{head, tail}), aplicaciones \textit{let}, comparaciones, entre otras.
+    \item \textbf{Símbolo inicial:} representa el elemento desde el cual se generan todas las expresiones válidas del lenguaje. 
+    \item \textbf{Producciones:} son las reglas mediante las cuales se obtienen expresiones más complejas a partir de otras más simples. Estas permiten describir de forma recursiva cómo se combinan operadores, constantes y subexpresiones, dando origen a la sintaxis del lenguaje.
+\end{enumerate} 
+
+\begin{tcolorbox}[title= GLC de LAMBDAE]
+
+\begin{center}
+
+\begin{verbatim}
+< expr > ::= consB
+       |  consE
+       |  CONSv
+       | (¬ < expr >)
+       | (< binop > < expr > < expr >)
+       | (<)
+       
+< binop > ::= +
+        | -
+        | *
+        | /
+        | =
+        | <
+        | >
+        | <=
+        | >=
+        
+< consB > ::= True
+       | False
+
+< consE > ::=
+
+< consV > ::=
+\end{verbatim}
+\end{center}  
+\end{tcolorbox}
+
+Es importane resaltar que en neustro lengauje LAMBDAE utilizamos notación prefija, las operaciones se evaluan de forma binaria apesar de que se puedan tomar de forma n-aria.
+
+Para definir la gramática formal utilizamos una gramática libre de contexto que siga la Forma Normal Extendida de Backus-Naur(en inglés Extended Backus–Naur Form o EBNF) que es una notación formal que se utiliza para describir la gramática de un lenguaje de programación (o cualquier lenguaje formal). Para esto comencemos dando un breve contexto.\\
+
+\textbf{Notación BNF}
+
+Antes de que tuvieramos la notación EBNF, se tenía la BNF(Backus-Naur Form) propuesta por John W. Backus en 1959, la cual surge ante la necesidad de tener una notación formal para describir la sintaxis de lenguajes de programación.Una de sus características principales es su capacidad de definir alternativas mediante el uso del operador |.
+
+La forma BNF introdujo una forma clara y formal de especificar la sintaxis de un lenguaje (producciones, no terminales, terminales, alternancias). Esto permitió que las especificaciones fueran menos ambiguas y más aptas para que herramientas automáticas (analizadores sintácticos / parsers) las usaran. 
+
+En nuestro caso no haremos tanta énfasis en este tipo denotación pues no la utililizamos para definir nuestra gramática.
+
+
+\textbf{Componentes básicos de BNF}
+
+En su forma básica, una regla en BNF se representa mediante una producción con el símbolo ::= y puede incluir alternativas mediante el operador |. Las variables (o símbolos no terminales) suelen escribirse entre signos de mayor y menor (< >), mientras que los símbolos terminales (como palabras reservadas u operadores) se escriben tal cual aparecen en el
+lenguaje.
+
+\subsubsection{Notación EBNF}
+En 1970 Niklaus Wirth propuso notaciones y promovió una forma de extender BNF con construcciones para iteración, opcionalidad y agrupamiento, que se conocen comúnmente como EBNF (Extended Backus–Naur Form). El trabajo de Wirth de 1977 es un hito en la unificación/práctica de una notación extendida y legible. 
+
+Fue desarrollada con el propósito
+de ofrecer una forma más concisa, legible y expresiva de describir la sintaxis de lenguajes
+formales, incorporando mecanismos para representar repeticiones, secuencias opcionales y
+agrupaciones. Estas capacidades permiten expresar reglas sintácticas complejas de forma más clara, mejorando tanto la comprensión como la implementación de analizadores sintácticos. Formalmente, la notación EBNF introduce los siguientes elementos adicionales:
+
+\begin{itemize}
+    \item \textbf{Repetición:} se expresa mediante llaves {}, indicando que una secuencia puede repetirse cero o más veces.
+    \item \textbf{Opcionalidad:} se representa con corchetes [], permitiendo indicar partes opcionales
+de una producción.
+    \item \textbf{Agrupación:} se realiza mediante paréntesis (), útiles para controlar la precedencia o delimitar alternativas.
+    \item \textbf {Terminales:} se suelen escribir entre comillas para distinguirlos claramente de los no terminales.
+    \item \textbf{Alternativas:} se siguen expresando con el operador |, heredado de BNF.
+    
+\end{itemize}
+
+Sin embargo, al analizar la gramática del lenguaje MiniB presentada anteriormente, observamos que ninguna de estas construcciones adicionales es necesaria. La gramática se compone únicamente de combinaciones secuenciales y alternativas simples, sin necesidad de representar repeticiones, elementos opcionales ni agrupaciones complejas. Por tanto, al transformarla
+a EBNF, su estructura permanece idéntica.
+
+Esta coincidencia no implica una limitación, sino que evidencia que la definición actual de
+MiniB es suficientemente simple como para que la notación BNF ya proporcione una representación clara y completa. En consecuencia, la forma EBNF de nuestra gramática resulta ser estructuralmente equivalente a la forma BNF previamente presentada.
+
+
+\begin{tcolorbox}[title= Gramática en EBNF de LAMBDAE]
+
+\begin{center}
+\begin{verbatim}
+<S > := < Expr >
+<Expr > ::= <int >
+      | <bool> 
+      | <var>
+      | (not <Expr>)
+      | (+ <Expr> <Expr>)*
+      | (- <Expr> <Expr>)*
+      | (/ <Expr> <Expr>)*
+      | (* <Expr> <Expr>)*
+      | (= <Expr> <Expr>)*
+      | (< <Expr> <Expr>)*
+      | (> <Expr> <Expr>)*
+      | (<= <Expr> <Expr>)*
+      | (>= <Expr> <Expr>)*
+      | (!= <Expr> <Expr>)*
+      | (lambda <Expr> <Expr>)
+      | (sqrt <Expr>)
+      | (expt <Expr>)
+      | (pair <Expr> <Expr>)
+      | (fst  <Expr>)
+      | (snd <Expr>)
+      | (if <Expr> <Expr>  <Expr>)
+      | (let <var> <Expr>)
+      | (let* <var> <Expr>)*
+      | (letRec )
+      | [<Expr> <Expr>(,)*]                           
+      | [ ]                                            
+      | (head <Expr>)
+      | (tail <Expr>)
+      | (cond <Expr>)*
+      | (<Expr> [<Expr> <Expr>(,)*])                  
+      | (add1 <Expr>)
+      | (sub1 <Expr>)
+
+<int > := <N >
+     | -<M >
+<D > := 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+<N > := 0 | <D >{ <N >}
+<M > := <D >{ <N >}
+
+<bool> := <T,F>
+<T> := True
+<F> := False
+
+<var> :=<X>
+<X> := 
+\end{verbatim}
+\end{center}
+
+ Todos los operadores asocian hacia la izquierda, lo que permite omitir paréntesis en muchos casos sin ambigüedad. Estas convenciones simplifican
+tanto la escritura como el procesamiento de expresiones regulares en analizadores léxicos.
+
+\end{tcolorbox}
+
+\section{Sintaxis Abstracta}
+En la sintaxis concreta se especifican de forma minuciosa todos los elementos necesarios para construir las expresiones válidas del lenguaje. No obstante, esta descripción no es suficiente para capturar toda la organización y el comportamiento lógico de un programa. La sintaxis concreta incluye una gran cantidad de detalles, como símbolos de separación, espacios y paréntesis,que son indispensables para interpretar el código, pero que no aportan directamente a la comprensión de su estructura conceptual. De hecho, dichos elementos pueden volver más complejo el análisis y la manipulación del código, especialmente cuando se llevan a cabo procesos de optimización durante la traducción.
+
+La sintaxis abstracta a diferencia de la
+anterior, esta ofrece una representación simplificada y estructural del código fuente, enfocada en capturar
+la lógica y la jerarquía del programa sin incluir los detalles superficiales propios de la sintaxis concreta. La forma más común de representarla es mediante un Árbol de Sintaxis Abstracta (ASA), el cual facilita tanto el análisis como la manipulación del código en las fases de compilación o interpretación.
+
+Todos estos elementos que nos son relevantes o que no aportan directamente algo a la comprensión conceptual los podemos simplificar utilizando \textit{azúcar sintáctica} la cual se encargará de eliminar estos componentes que no son necesarios y estandarizar todas las expreisones quqe sean admitidas por nuestro lenaguaje a una misma.
+
+\subsection{Árboles de sintaxis}
+
+Los árboles de sintaxis constituyen una herramienta fundamental en la representación estructurada de un programa, ya que permiten visualizar cómo se organizan y combinan los distintos elementos de acuerdo con las reglas del lenguaje. Mediante esta estructura jerárquica, es posible determinar la precedencia de los operadores y comprender de manera precisa cómo deben evaluarse las expresiones.
+
+Una ventaja clave de estos árboles es que ayudan a eliminar posibles ambigüedades al interpretar el código. Si una gramática permite construir más de un árbol sintáctico para la misma cadena, se generan múltiples significados para un mismo programa, lo cual resulta problemático en un lenguaje de programación. Por ello, los árboles sintácticos sirven como evidencia de la claridad o ambigüedad de la gramática que define al lenguaje.
+
+En los compiladores e intérpretes, estos árboles son el resultado directo de la fase de análisis sintáctico (parsing), en la cual el código fuente se transforma en una representación estructurada y más manejable. Esta representación se convierte en la base sobre la cual se realizan posteriores procesos como el análisis semántico y la traducción a código ejecutable.
+
+Además, cuando se formaliza la sintaxis abstracta de un lenguaje como LAMBDAE, se logra una versión aún más depurada de esta estructura. La sintaxis abstracta prescinde de detalles decorativos de la notación concreta —como paréntesis o delimitadores— y se enfoca en capturar únicamente la lógica y las relaciones semánticas entre los componentes del programa. Gracias a ello, se facilita el desarrollo de herramientas como analizadores, traductores y optimizadores, que pueden operar sobre una representación más simple, eficiente y extensible.
+
+En conjunto, los árboles de sintaxis y la sintaxis abstracta aportan una comprensión conceptual más clara del lenguaje y proporcionan los cimientos necesarios para la construcción de un sistema de compilación sólido, coherente y capaz de evolucionar con el tiempo.
+
+\subsubsection{Árboles de sintaxis concreta}
+Un árbol de sintaxis concreta (ASC) representa visualmente cómo el símbolo inicial de una gramática puede generar una cadena del lenguaje. Por ejemplo, si un no terminal $A$ posee una producción $A \rightarrow XYZ$, entonces en un ASC aparecerá un nodo interno marcado con $A$, del cual se desprenden tres nodos hijos etiquetados como $X$, $Y$ y $Z$ en ese orden.
+
+Desde una perspectiva formal, y considerando una gramática libre de contexto, un ASC asociado a dicha gramática es un árbol que cumple con las características siguientes:
+De manera formal, cuando se trabaja con una gramática libre de contexto, un árbol de sintaxis concreta (ASC) asociado a ella debe cumplir con las siguientes condiciones:
+
+\begin{itemize}
+    \item La raíz del árbol lleva como etiqueta el símbolo inicial de la gramática.
+    
+    \item Todas las hojas están etiquetadas con símbolos terminales o, en su defecto, con $\varepsilon$ (la cadena vacía).
+    
+    \item Cada nodo interno corresponde a un símbolo no terminal.
+    
+    \item Si un nodo interno está marcado con el no terminal $A$ y sus hijos, de izquierda a derecha, están etiquetados como $X_{1}, X_{2}, \dots, X_{n}$, entonces la gramática debe contener una producción de la forma
+    \[
+        A \to X_{1} X_{2} \dots X_{n}.
+    \]
+\end{itemize}
+
+En este modelo, un programa puede representarse mediante un ASC que conserva todos los elementos presentes en el código fuente (como operadores, paréntesis y demás detalles sintácticos), reflejando paso a paso la derivación completa definida por la gramática.
+
+Consideremos el siguiente árbol de sintaxis concreta (ASC) del lenguaje LAMBDAE de la siguietne espresión:
+
+\begin{center}
+    (+ 4 6 )
+\end{center}
+
+Esta expresión se deriva usando la gramática presentada. El ASC ilustra la
+derivación de la expresión, mostrando de forma explícita cada símbolo no terminal y terminal
+(paréntesis, operador y valores):
+
+\begin{center}
+
+\begin{tikzpicture}[level distance=60pt,
+  every node/.style={circle,draw,minimum size=6mm},
+  sibling distance=40pt]
+\node {Expr}
+  child { node {(} }
+  child { node {+} }
+  child { node {Expr}
+    child { node {4} }
+  }
+  child { node {Expr}
+    child { node {6} }
+  }
+  child { node {)} };
+\end{tikzpicture}
+
+\end{center}
+Los árboles de sintaxis concreta de -, * , / , = , <, >, <= , >= , !=  son análogos a este.
+La cantidad de hijos de nuestro árbol dependerá de la cantidad de argumentos de entrada que tegamos.
+
+\begin{center}
+\begin{itemize}
+    \item lambda
+\end{itemize}
+
+
+\begin{itemize}
+    \item (sqrt 121)
+\end{itemize}
+
+% Poner en el preámbulo: \usepackage{tikz}
+\begin{tikzpicture}[level distance=60pt,
+  every node/.style={circle,draw,minimum size=6mm},
+  sibling distance=36pt]
+\node {Expr}
+  child { node {(} }
+  child { node {sqrt} }
+  child { node {Expr}
+    child { node {121} }
+  }
+  child { node {)} };
+\end{tikzpicture}
+\end{center}
+
+El caso del expr es análogo al de sqrt.
+
+\begin{itemize}
+    \item 
+\end{itemize}
+
+En los árboles obtenidos podemos observar que:
+
+\begin{itemize}
+    \item La raíz está etiquetada como expr, derivando la estructura completa.
+    \item Se incluyen todos los elementos sintácticos, como los paréntesis, operadores y .
+   \item Cada nodo refleja una regla aplicada de la gramática, de forma que la estructura del
+árbol corresponde a la derivación concreta de la expresión.
+\end{itemize}
+
+A partir de estas bases teóricas, procederemos a definir los Árboles de Sintaxis Concreta correspondientes a las distintas construcciones que forman parte de nuestro lenguaje de programación. Para ello, presentaremos ejemplos representativos de expresiones válidas dentro del lenguaje y su respectiva interpretación mediante un ASC. Este enfoque nos permitirá ilustrar cómo las reglas gramaticales se reflejan de forma explícita en la estructura jerárquica del árbol, mostrando con claridad la combinación y precedencia de los elementos sintácticos que intervienen en cada expresión. De esta manera, se establecerá una correspondencia precisa entre la especificación formal del lenguaje y su representación estructurada, lo cual será fundamental para etapas posteriores del análisis y procesamiento del código.
+
+Con esta base, es posible avanzar hacia un nivel más abstracto de especificación: la sintaxis
+abstracta. En esta etapa, se eliminan los elementos puramente sintácticos que no afectan el
+significado semántico del programa, con el fin de modelar únicamente su estructura lógica
+esencial.
+
+
+\subsubsection{Árboles de sintaxis abstracta (ASA)}
+
+Un árbol de sintaxis abstracta (AST) es una estructura de datos de tipo árbol que representa la estructura sintáctica abstracta de un fragmento de código fuente en un lenguaje de programación. 
+
+Veamos los términos clave:
+
+“Abstracta” significa que no incluye todos los detalles del texto fuente tal como estaban escritos, sino sólo los elementos relevantes para la estructura del programa (por ejemplo, se omiten paréntesis redundantes, llaves, puntos y comas cuando no cambian la estructura semántica). 
+
+Representa de forma jerárquica los constructores del lenguaje (como expresiones, sentencias, declaraciones) como nodos conectados. Por ejemplo, una operación binaria “a + b” se representa por un nodo “+” con dos hijos: “a” y “b”. 
+
+
+Es el resultado habitual de la fase de análisis sintáctico (parser) en la construcción de compiladores o intérpretes, que transforma el código fuente en una estructura más manejable para el análisis posterior.
+
+\begin{tcolorbox}[title= Definición: Árboles de sintaxis abstracta]
+Un árbol de sintaxis abstracta es un árbol ordenado $A = (N, A, R)$ donde:
+
+\begin{itemize}
+    \item $N$ es un conjunto finito de nodos que representan las construcciones del lenguaje mediante etiquetas, y las hojas representan sus respectivos valores.
+    
+    \item $A \subseteq N \times N$ es un conjunto de aristas dirigidas que conectan a los nodos.
+    
+    \item $R \in N$ es la raíz del árbol.
+\end{itemize}
+    
+\end{tcolorbox}
+
+Así pues, el AST captura lo esencial de la estructura del programa, dejando de lado detalles de la representación textual que no afectan su significado.
+
+
+En el caso del lenguaje LAMBDAE, los árboles de sintaxix abstracta serán los que se generarán una vez que quitemos el azúcar sintáctica de todas las expresiones de  nuestro lenguaje. Podemos decir que los ASA que tendremos en nuestro lenguaje serán de la sigueinte forma: 
+
+
+
+\section{Azúcar sintáctica}
+\subsection{Eliminación de azúcar sintáctica}
+\section{Semántica operacional}
+
+La semántica operacional describe cómo se ejecutan los programas de un lenguaje paso a paso. A diferencia de la semántica denotacional (que define el significado de un programa como funciones matemáticas) o la axiomatica (que define propiedades lógicas de los programas), la semántica operacional se centra en la evolución del estado del programa durante su ejecución.
+
+Se puede ver como “un conjunto de reglas que explican cómo cada instrucción afecta al estado del programa”.
+
+
+
+
 \section{Referencias}
--colocar notas de manu 
+-colocar notas de manu \\
+-El Libro del Dragón. Compiladores: Principios, Técnicas y Herramientas\\
+-colocar referencia de notas de lourdes\\
+-Colocar también tesis de Erick<3s\\
+G. Winskel, The Formal Semantics of Programming Languages: An Introduction. MIT Press, 1993.\\
+Michael L. Scott — “Programming Language Pragmatics”\\
+S. Krishnamurthi, Programming Languages: Application and Interpretation. 2007\\
+Practical Foundations for Programming Languages de Robert Harper\\
+
+
 \end{document}
 
