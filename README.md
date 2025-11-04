@@ -1,6 +1,6 @@
 # Proyecto1LDP
 
-##Integrantes:
+## Integrantes:
 Elizalde Maza Jesús Eduardo
 Navarro Fierro Michelle Alanis
 Peredo López Citlali Abigail
