@@ -300,7 +300,8 @@ Cada uno de estos componentes tiene un papel específico en la descripción de l
         | >=
         | pair
 
-<unop>  ::= null?
+<unop>  ::= not
+        | null?
         | sqrt
         | expt
         | fst
@@ -309,23 +310,74 @@ Cada uno de estos componentes tiene un papel específico en la descripción de l
         | tail
         | cond
         | add1
-        | sub1
-        
+        | sub1  
 Construcción que representa las constantes booleanas:
 <consB > ::= True
        | False
 Construcción que representa las constantes numéricas:
 < consE > ::= 1 | 2 | 3| ...
 Construcción que representa las constantes variádicas:
-< consV > ::=
+< consV > ::= a|b|c|...| z
+            |identificadores alfanuméricos
 
 \end{verbatim}
-
-Utilizamos la construcción \textit{unop} para expresiones que tienen un solo argumento.
 \end{center}  
+Utilizamos la construcción \textit{unop} 
+para expresiones que tienen un solo argumento.  
+\textbf{Construcciones especiales:}
+\begin{align*}
+\langle lambda \rangle ::= & \; \text{lambda} \\
+\langle condicional \rangle ::= & \; \text{if} \\
+\langle let \rangle ::= & \; \text{let} \\
+\langle letRec \rangle ::= & \; \text{letRec} \\
+\langle lista \rangle ::= & \; [ \; ] \\
+\langle aplicacion \rangle ::= & \; \text{app}
+\end{align*}
+
 \end{tcolorbox}
 
 Es importane resaltar que en neustro lengauje LAMBDAE utilizamos notación prefija, las operaciones se evaluan de forma binaria apesar de que se puedan tomar de forma n-aria.
+
+\subsection*{Clasificación de Construcciones}
+
+\begin{itemize}
+    \item \textbf{Operadores unarios:} Operaciones que reciben exactamente 
+    un argumento: \texttt{not}, \texttt{sqrt}, \texttt{fst}, \texttt{snd}, 
+    \texttt{head}, \texttt{tail}, \texttt{add1}, \texttt{sub1}, \texttt{null?}
+    
+    \item \textbf{Operadores binarios:} Operaciones que reciben dos o más 
+    argumentos (con asociatividad izquierda para múltiples argumentos): 
+    \texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}, \texttt{=}, \texttt{<}, 
+    \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{!=}, \texttt{pair}
+    
+    \item \textbf{Abstracciones (lambda):} Construcción que crea funciones 
+    anónimas. Recibe un parámetro (variable) y un cuerpo (expresión): 
+    \texttt{(lambda <var> <expr>)}
+    
+    \item \textbf{Condicionales:} Construcción de control de flujo que evalúa 
+    una condición y selecciona entre dos ramas: \texttt{(if <cond> <then> <else>)}
+    
+    \item \textbf{Vinculaciones locales (let):} Construcciones que introducen 
+    variables locales en un ámbito:
+    \begin{itemize}
+        \item \texttt{let}: Vinculación simple no recursiva
+        \item \texttt{letRec}: Vinculación recursiva para definir funciones recursivas
+    \end{itemize}
+    
+    \item \textbf{Listas:} Construcción de estructuras de datos secuenciales 
+    mediante corchetes: \texttt{[e1 e2 ... en]}
+    
+    \item \textbf{Aplicación de funciones:} Construcción que aplica una función 
+    (que puede ser una lambda, variable, o expresión que evalúa a función) a 
+    uno o más argumentos: \texttt{(f arg1 arg2 ... argn)}
+\end{itemize}
+
+\subsection*{Notación}
+
+\begin{itemize}
+    \item $\langle expr \rangle^*$ indica cero o más repeticiones de $\langle expr \rangle$
+    \item $\langle expr \rangle^+$ indica una o más repeticiones de $\langle expr \rangle$
+\end{itemize}
 
 Para definir la gramática formal utilizamos una gramática libre de contexto que siga la Forma Normal Extendida de Backus-Naur(en inglés Extended Backus–Naur Form o EBNF) que es una notación formal que se utiliza para describir la gramática de un lenguaje de programación (o cualquier lenguaje formal). Para esto comencemos dando un breve contexto.\\
 
@@ -416,16 +468,65 @@ MiniB es suficientemente simple como para que la notación BNF ya proporcione un
 <F> := False
 
 <var> :=<X>
-<X> := a | b | c |...
+<X> := <X> ::= a | b | c | d | e | f | g | h | i | j | k | l | m | 
+        n | o | p | q | r | s | t | u | v | w | x | y | z
 \end{verbatim}
 \end{center}
-
-Estilo de la grmática EBNF sacado de
-
- Todos los operadores asocian hacia la izquierda, lo que permite omitir paréntesis en muchos casos sin ambigüedad. Estas convenciones simplifican
-tanto la escritura como el procesamiento de expresiones regulares en analizadores léxicos.
-
 \end{tcolorbox}
+
+Estilo de la gramática EBNF sacado de
+
+Todos los operadores asocian hacia la izquierda, lo que permite omitir paréntesis en muchos casos sin ambigüedad. Estas convenciones simplifican
+tanto la escritura como el procesamiento de expresiones regulares en analizadores léxicos.
+\subsection*{Semántica del Patrón de Repetición}
+
+\textbf{Notación EBNF utilizada:}
+\begin{itemize}
+    \item \texttt{\{...\}} indica repetición cero o más veces
+    \item \texttt{(...)+} indica repetición una o más veces
+\end{itemize}
+
+\textbf{Evaluación de operadores binarios con repetición:}
+
+Para los operadores aritméticos y de comparación que aceptan múltiples 
+argumentos mediante \texttt{\{<Expr>\}}, se utiliza \textbf{evaluación 
+izquierda-asociativa}:
+
+\begin{itemize}
+    \item \texttt{(+ e1 e2 e3 ... en)} se evalúa como 
+          \texttt{(+ (+ (+ e1 e2) e3) ... en)}
+    \item \texttt{(- e1 e2 e3)} se evalúa como \texttt{(- (- e1 e2) e3)}
+    \item \texttt{(* e1 e2 e3)} se evalúa como \texttt{(* (* e1 e2) e3)}
+    \item \texttt{(/ e1 e2 e3)} se evalúa como \texttt{(/ (/ e1 e2) e3)}
+\end{itemize}
+
+Para los operadores de comparación:
+\begin{itemize}
+    \item \texttt{(= e1 e2 e3 ... en)} verifica que 
+          \texttt{e1 = e2 AND e2 = e3 AND ... en-1 = en}
+    \item Similar para \texttt{<}, \texttt{>}, \texttt{<=}, 
+          \texttt{>=}, \texttt{!=}
+\end{itemize}
+
+\textbf{Listas:}
+\begin{itemize}
+    \item \texttt{[e1 e2 ... en]} construye una lista mediante 
+          reducción por cons: \texttt{(cons e1 (cons e2 ... (cons en nil)))}
+\end{itemize}
+
+\textbf{Aplicación de funciones:}
+\begin{itemize}
+    \item \texttt{(f arg1 arg2 ... argn)} aplica la función \texttt{f} 
+          a los argumentos de izquierda a derecha
+\end{itemize}
+
+\textbf{Let* secuencial:}
+\begin{itemize}
+    \item \texttt{(let* ((x1 e1) (x2 e2) ... (xn en)) body)} 
+          vincula las variables secuencialmente, donde cada expresión 
+          \texttt{ei} puede usar las variables \texttt{x1, ..., xi-1} 
+          previamente definidas
+\end{itemize}
 
 \section{Sintaxis Abstracta}
 En la sintaxis concreta se especifican de forma minuciosa todos los elementos necesarios para construir las expresiones válidas del lenguaje. No obstante, esta descripción no es suficiente para capturar toda la organización y el comportamiento lógico de un programa. La sintaxis concreta incluye una gran cantidad de detalles, como símbolos de separación, espacios y paréntesis,que son indispensables para interpretar el código, pero que no aportan directamente a la comprensión de su estructura conceptual. De hecho, dichos elementos pueden volver más complejo el análisis y la manipulación del código, especialmente cuando se llevan a cabo procesos de optimización durante la traducción.
@@ -870,18 +971,15 @@ para el lenguaje, considerando entornos explícitos $\rho$.
 
 \bigskip
 
+\begin{center}
 \textbf{Reglas Básicas}
-
 
 \begin{mathpar}
 \frac{}{ \langle Id("nil"), \rho \rangle \rightarrow \langle Id("nil"), \rho \rangle }
-
 \and
 \frac{}{ \langle Num(n), \rho \rangle \rightarrow \langle Num(n), \rho \rangle }
-
 \and
 \frac{}{ \langle Boolean(b), \rho \rangle \rightarrow \langle Boolean(b), \rho \rangle }
-
 \and
 \frac{lookupEnv(i, \rho) = v}
      { \langle Id(i), \rho \rangle \rightarrow \langle v, \rho \rangle }
@@ -894,112 +992,90 @@ para el lenguaje, considerando entornos explícitos $\rho$.
 \begin{mathpar}
 \frac{isValue(v_1) \land isValue(v_2)}
      { \langle BinOp(op, v_1, v_2), \rho \rangle \rightarrow \langle evalBinOp(op, v_1, v_2), \rho \rangle }
-
 \and
 \frac{isValue(v_1) \quad \langle e_2, \rho \rangle \rightarrow \langle e_2', \rho' \rangle}
      { \langle BinOp(op, v_1, e_2), \rho \rangle \rightarrow \langle BinOp(op, v_1, e_2'), \rho' \rangle }
-
 \and
 \frac{ \langle e_1, \rho \rangle \rightarrow \langle e_1', \rho' \rangle }
      { \langle BinOp(op, e_1, e_2), \rho \rangle \rightarrow \langle BinOp(op, e_1', e_2), \rho' \rangle }
-
 \and
 \frac{}{ \langle Sqrt(Num(n)), \rho \rangle \rightarrow \langle Num(\lfloor \sqrt{n} \rfloor), \rho \rangle }
-
 \and
 \frac{ \langle e, \rho \rangle \rightarrow \langle e', \rho' \rangle }
      { \langle Sqrt(e), \rho \rangle \rightarrow \langle Sqrt(e'), \rho' \rangle }
-
 \and
 \frac{}{ \langle Not(Boolean(b)), \rho \rangle \rightarrow \langle Boolean(\neg b), \rho \rangle }
-
 \and
 \frac{ \langle e, \rho \rangle \rightarrow \langle e', \rho' \rangle }
      { \langle Not(e), \rho \rangle \rightarrow \langle Not(e'), \rho' \rangle }
 \end{mathpar}
 
-\newpage
 
 \textbf{Listas y Pares}
 
 \begin{mathpar}
 \frac{e = Id("nil")}
      { \langle UnOp(NullOp, e), \rho \rangle \rightarrow \langle Boolean(True), \rho \rangle }
-
 \and
 \frac{e = Pair(v_1,v_2)}
      { \langle UnOp(NullOp, e), \rho \rangle \rightarrow \langle Boolean(False), \rho \rangle }
-
 \and
 \frac{ \langle e, \rho \rangle \rightarrow \langle e', \rho' \rangle }
      { \langle UnOp(NullOp, e), \rho \rangle \rightarrow \langle UnOp(NullOp, e'), \rho' \rangle }
-
 \and
 \frac{isValue(v_1) \land isValue(v_2)}
      { \langle Pair(v_1,v_2), \rho \rangle \rightarrow \langle Pair(v_1,v_2), \rho \rangle }
-
 \and
 \frac{isValue(v_1) \quad \langle e_2, \rho \rangle \rightarrow \langle e_2', \rho' \rangle}
      { \langle Pair(v_1, e_2), \rho \rangle \rightarrow \langle Pair(v_1, e_2'), \rho' \rangle }
-
 \and
 \frac{ \langle e_1, \rho \rangle \rightarrow \langle e_1', \rho' \rangle }
      { \langle Pair(e_1,e_2), \rho \rangle \rightarrow \langle Pair(e_1', e_2), \rho' \rangle }
-
 \and
 \frac{isValue(v_1) \land isValue(v_2)}
      { \langle Fst(Pair(v_1,v_2)), \rho \rangle \rightarrow \langle v_1, \rho \rangle }
-
 \and
 \frac{ \langle e, \rho \rangle \rightarrow \langle e', \rho' \rangle }
      { \langle Fst(e), \rho \rangle \rightarrow \langle Fst(e'), \rho' \rangle }
-
 \and
 \frac{isValue(v_1) \land isValue(v_2)}
      { \langle Snd(Pair(v_1,v_2)), \rho \rangle \rightarrow \langle v_2, \rho \rangle }
-
 \and
 \frac{ \langle e, \rho \rangle \rightarrow \langle e', \rho' \rangle }
      { \langle Snd(e), \rho \rangle \rightarrow \langle Snd(e'), \rho' \rangle }
 \end{mathpar}
 
-\newpage
+
 
 \textbf{Condicionales y Funciones}
 
 \begin{mathpar}
 \frac{}{ \langle If(Boolean(True), e_t, e_f), \rho \rangle \rightarrow \langle e_t, \rho \rangle }
-
 \and
 \frac{}{ \langle If(Boolean(False), e_t, e_f), \rho \rangle \rightarrow \langle e_f, \rho \rangle }
-
 \and
 \frac{ \langle cond, \rho \rangle \rightarrow \langle cond', \rho' \rangle }
      { \langle If(cond, e_t, e_f), \rho \rangle \rightarrow \langle If(cond', e_t, e_f), \rho' \rangle }
-
 \and
 \frac{}{ \langle Fun(p, body), \rho \rangle \rightarrow \langle Closure(p, body, \rho), \rho \rangle }
-
 \and
 \frac{ e_1 = Closure(p, body, \rho') \quad isValue(e_2) }
      { \langle App(e_1, e_2), \rho \rangle \rightarrow \langle Expr(body, (p,e_2):\rho'), \rho \rangle }
-
 \and
 \frac{isValue(e_1) \quad \langle e_2, \rho \rangle \rightarrow \langle e_2', \rho' \rangle}
      { \langle App(e_1, e_2), \rho \rangle \rightarrow \langle App(e_1, e_2'), \rho' \rangle }
-
 \and
 \frac{ \langle e_1, \rho \rangle \rightarrow \langle e_1', \rho' \rangle }
      { \langle App(e_1, e_2), \rho \rangle \rightarrow \langle App(e_1', e_2), \rho' \rangle }
-
 \and
 \frac{isValue(e)}
      { \langle Expr(e, \rho_{in}), \rho_{out} \rangle \rightarrow \langle e, \rho_{out} \rangle }
-
 \and
 \frac{ \langle e, \rho_{in} \rangle \rightarrow \langle e', \rho_{in}' \rangle }
      { \langle Expr(e, \rho_{in}), \rho_{out} \rangle \rightarrow \langle Expr(e', \rho_{in}'), \rho_{out} \rangle }
 \end{mathpar}
+\end{center}
+
 
 
 \newpage
