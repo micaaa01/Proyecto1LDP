@@ -32,6 +32,9 @@ Formalizar e implementar un subconjunto del lenguaje LISP llamado **MINILISP**, 
 ## Instalación y ejecución
 
 ```bash
+*Todo desde la carpeta Proyecto1LDP*
+alex src\Lex.x ( para tener el .hs del lexer )
+happy --ghc src\Grammars.y ( para tener el .hs del grammar )
 cabal build ( construir archivos necesarios )
 cabal run ( correr el lenguaje )
 cabal test ( realizar los test pre-definidos )
