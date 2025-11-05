@@ -4,26 +4,7 @@ import Desugar
 
 type Env = [(String, ASA)]
 
--- Importante: En esta versión del intérprete usamos evaluación ansiosa junto con el 
--- combinador Z y la semántica de paso pequeño. En este contexto, durante la evaluación 
--- de una función recursiva, el cuerpo puede contener variables (como ‘f’ en Z) que 
--- deben mantenerse accesibles dentro de su propio entorno, sin propagarse al contexto 
--- externo. 
---
--- Para preservar correctamente esas ligaduras, realizamos dos ajustes fundamentales:
---
--- • Al aplicar una cerradura, el cuerpo se devuelve envuelto en una expresión con 
---   entorno: ExprV b env''. De esta forma, la evaluación del cuerpo ocurre dentro 
---   del ambiente extendido que contiene la variable recursiva, evitando la pérdida 
---   de ligaduras y asegurando que las referencias a ‘f’ o ‘r’ sean válidas.
---
--- • Dado que ahora el cuerpo se representa como una ExprV, el sistema debe saber 
---   cómo avanzar dentro de ella. Para ello se añade una regla que permite reducir 
---   un paso en el entorno interno de la expresión, manteniendo intacto el ambiente 
---   del contexto. Esto garantiza que la evaluación siga siendo ansiosa, pero que 
---   cada función recursiva conserve su propio entorno léxico independiente.
-
-
+-- Estas son las reglas de paso pequeños
 smallStep :: ASA -> Env -> (ASA, Env)
 smallStep (Id "nil") env = (Id "nil", env)
 smallStep (Id i) env  = (lookupEnv i env, env)       
@@ -63,7 +44,7 @@ smallStep (UnOp NullOp e) env
       let (e', env') = smallStep e env
       in (UnOp NullOp e', env')
 
-
+--pares
 smallStep (Pair v1 v2) env 
     | isValue v1 && isValue v2 = (Pair v1 v2 , env)
 smallStep (Pair v1 e2) env 
@@ -92,7 +73,7 @@ smallStep (If cond eThen eElse) env =
     let (cond', env') = smallStep cond env
     in (If cond' eThen eElse, env')
 
-
+-- cons
 smallStep (App (App (Id "cons") v1) v2) env
   | isValue v1 && isValue v2 = (Pair v1 v2, env)
 smallStep (App (App (Id "cons") v1) e2) env
@@ -150,13 +131,6 @@ smallStep (Expr e innerEnv) outerEnv
       let (e', newInnerEnv) = smallStep e innerEnv
       in (Expr e' newInnerEnv, outerEnv)
 
-
-
-
-
-
-
-
 -- Interpretación total
 interp :: ASA -> Env -> ASA
 interp e env
@@ -165,6 +139,7 @@ interp e env
       let (e', env') = smallStep e env
       in interp e' env'
 
+-- Determina si es un valor canónico
 isValue (Num _) = True
 isValue (Boolean _) = True
 isValue (Closure _ _ _) = True   -- los cierres son valores
@@ -172,31 +147,33 @@ isValue (Pair v1 v2) = isValue v1 && isValue v2
 isValue (Id "nil") = True
 isValue _ = False
 
-
+-- Busca el valor asociado a una variable en el entorno
 lookupEnv :: String -> Env -> ASA
 lookupEnv i [] = error ("Variable " ++ i ++ " not found")
 lookupEnv i ((j, v) : env)
   | i == j    = v
   | otherwise = lookupEnv i env
 
+-- Extrae el valor numérico de un tipo ASA 'Num'
 numN :: ASA -> Int
 numN (Num n) = n
 
+-- Extrae el valor booleano de un tipo ASA 'Boolean'
 boolN :: ASA -> Bool
 boolN (Boolean b) = b
 boolN _ = False
-
+-- Extrae el primer valor del tipo 'Closure' (usado para funciones o cierres)
 closureP :: ASA -> String
 closureP (Closure p _ _) = p
-
+-- Extrae el cuerpo (expresión) de un tipo 'Closure'
 closureC :: ASA -> ASA
 closureC (Closure _ c _) = c
-
+-- Extrae el entorno de un tipo 'Closure'
 closureE :: ASA -> Env
 closureE (Closure _ _ e) = e
-
+-- Evalúa una operación binaria con dos operandos
 evalBinOp :: Op -> ASA -> ASA -> ASA
--- aritmética
+-- Aritmética
 evalBinOp AddOp (Num x) (Num y) = Num (x + y)
 evalBinOp SubOp (Num x) (Num y) = Num (x - y)
 evalBinOp MulOp (Num x) (Num y) = Num (x * y)
@@ -204,7 +181,7 @@ evalBinOp DivOp (Num x) (Num y)
     | y==0    = error "Division entre cero"
     | otherwise = Num (x `div` y)
 evalBinOp ExptOp (Num x) (Num y) = Num (x ^ y)
--- comparaciones
+-- Comparaciones
 evalBinOp EqOp (Num n1) (Num n2) = Boolean (n1 == n2)
 evalBinOp EqOp (Boolean b1) (Boolean b2) = Boolean (b1 == b2)
 evalBinOp EqOp (Pair a1 b1) (Pair a2 b2) =
@@ -214,13 +191,13 @@ evalBinOp LtOp  (Num x) (Num y) = Boolean (x < y)
 evalBinOp LeOp  (Num x) (Num y) = Boolean (x <= y)
 evalBinOp GtOp  (Num x) (Num y) = Boolean (x > y)
 evalBinOp GeOp  (Num x) (Num y) = Boolean (x >= y)
--- lógicos
+-- Lógicos
 evalBinOp AndOp (Boolean x) (Boolean y) = Boolean (x && y)
 evalBinOp AndOp (Boolean x) e
     | not x = Boolean False
     | otherwise = e
 evalBinOp _ _ _ = error "Operación binaria inválida"
-
+-- Verifica si un valor ASA es "True"
 isTrue :: ASA -> Bool
 isTrue (Boolean True) = True
 isTrue _ = False
