@@ -9,6 +9,11 @@
 \usepackage{tikz}
 \usepackage{tikz-qtree}
 \usepackage{forest}
+\usepackage{mathpartir}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+
 
 \tcbset{colback=pink!10!white, colframe=purple!80!black, boxrule=0.8pt, arc=3mm}
 
@@ -170,7 +175,7 @@ A continuación, presentamos la especificación léxica del lenguaje LAMBDAE, de
 
 Para comenzar a definir la sintaxis léxica comenzaremos definiendo el alfabeto de nuestro lenguaje, el cual está conformado por lo siguiente:\\
 
-$\Sigma$ = \{ \textit{True , Fasle}, +, - , * , / , \textit{sqrt,expt,not}, ( , ) , [ , ] , = , > , < , >= ,<= ,!= , if , fst , \textit{snd , let , let* , lamdba , head , tail , pair , cond , add1 , sub1} \}\\
+$\Sigma$ = \{ \textit{True , Fasle}, +, - , * , / , \textit{sqrt,expt,not}, ( , ) , [ , ] , = , > , < , >= ,<= ,!= , if , fst , \textit{snd , let , let* , letrec , lamdba , head , tail , pair , cond , add1 , sub1} \}\\
 
 
 En nustra gramática también tenemos definidos a los enteros y a las variables. A las varibales las identificaremos como \textit{id} y a los números como \textit{int}, a ambos los podemos definir de la siguiente manera:
@@ -222,7 +227,14 @@ var             { TokenVar $$ }
 "snd"           { TokenSnd }
 "let"           { TokenLet }
 "let*"          { TokenLetStar }
+"letrec"        { TokenLetRec }
 "lambda"        { TokenLambda }
+"head"          { TokenHead }
+"tail"          { TokenTail }
+"pair"          { TokenPair }
+"cond"          { TokenCond }
+"add1"          { TokenAdd1 }
+"sub1"          { TokenSub1 }
 \end{verbatim}
 \end{center}
 
@@ -272,12 +284,12 @@ Cada uno de estos componentes tiene un papel específico en la descripción de l
 \begin{verbatim}
 < expr > ::= consB
        |  consE
-       |  CONSv
+       |  consV
        | (¬ < expr >)
        | (< binop > < expr > < expr >)
-       | (<)
+       | (<unop> <expr>)
        
-< binop > ::= +
+<binop> ::= +
         | -
         | *
         | /
@@ -286,14 +298,30 @@ Cada uno de estos componentes tiene un papel específico en la descripción de l
         | >
         | <=
         | >=
+        | pair
+
+<unop>  ::= null?
+        | sqrt
+        | expt
+        | fst
+        | snd
+        | head
+        | tail
+        | cond
+        | add1
+        | sub1
         
-< consB > ::= True
+Construcción que representa las constantes booleanas:
+<consB > ::= True
        | False
-
-< consE > ::=
-
+Construcción que representa las constantes numéricas:
+< consE > ::= 1 | 2 | 3| ...
+Construcción que representa las constantes variádicas:
 < consV > ::=
+
 \end{verbatim}
+
+Utilizamos la construcción \textit{unop} para expresiones que tienen un solo argumento.
 \end{center}  
 \end{tcolorbox}
 
@@ -349,16 +377,16 @@ MiniB es suficientemente simple como para que la notación BNF ya proporcione un
       | <bool> 
       | <var>
       | (not <Expr>)
-      | (+ <Expr> <Expr>)*
-      | (- <Expr> <Expr>)*
-      | (/ <Expr> <Expr>)*
-      | (* <Expr> <Expr>)*
-      | (= <Expr> <Expr>)*
-      | (< <Expr> <Expr>)*
-      | (> <Expr> <Expr>)*
-      | (<= <Expr> <Expr>)*
-      | (>= <Expr> <Expr>)*
-      | (!= <Expr> <Expr>)*
+      | (+ <Expr> <Expr> {<Expr>})
+      | (- <Expr> <Expr> {<Expr>})
+      | (/ <Expr> <Expr> {<Expr>})
+      | (* <Expr> <Expr> {<Expr>})
+      | (= <Expr> <Expr> {<Expr>})
+      | (< <Expr> <Expr> {<Expr>})
+      | (> <Expr> <Expr> {<Expr>})
+      | (<= <Expr> <Expr> {<Expr>})
+      | (>= <Expr> <Expr> {<Expr>})
+      | (!= <Expr> <Expr> {<Expr>})
       | (lambda <Expr> <Expr>)
       | (sqrt <Expr>)
       | (expt <Expr>)
@@ -367,10 +395,9 @@ MiniB es suficientemente simple como para que la notación BNF ya proporcione un
       | (snd <Expr>)
       | (if <Expr> <Expr>  <Expr>)
       | (let <var> <Expr>)
-      | (let* <var> <Expr>)*
-      | (letRec )
-      | [<Expr> <Expr>(,)*]                           
-      | [ ]                                            
+      | (let* <var> <Expr> {<Expr>})
+      | [{ Expr }]
+      | (letRec )                                      
       | (head <Expr>)
       | (tail <Expr>)
       | (cond <Expr>)*
@@ -384,14 +411,16 @@ MiniB es suficientemente simple como para que la notación BNF ya proporcione un
 <N > := 0 | <D >{ <N >}
 <M > := <D >{ <N >}
 
-<bool> := <T,F>
+<bool> := <#t, #f>
 <T> := True
 <F> := False
 
 <var> :=<X>
-<X> := 
+<X> := a | b | c |...
 \end{verbatim}
 \end{center}
+
+Estilo de la grmática EBNF sacado de
 
  Todos los operadores asocian hacia la izquierda, lo que permite omitir paréntesis en muchos casos sin ambigüedad. Estas convenciones simplifican
 tanto la escritura como el procesamiento de expresiones regulares en analizadores léxicos.
@@ -440,11 +469,7 @@ De manera formal, cuando se trabaja con una gramática libre de contexto, un ár
 
 En este modelo, un programa puede representarse mediante un ASC que conserva todos los elementos presentes en el código fuente (como operadores, paréntesis y demás detalles sintácticos), reflejando paso a paso la derivación completa definida por la gramática.
 
-Consideremos el siguiente árbol de sintaxis concreta (ASC) del lenguaje LAMBDAE de la siguietne espresión:
-
-\begin{center}
-    (+ 4 6 )
-\end{center}
+Consideremos el siguiente árbol de sintaxis concreta (ASC) del lenguaje LAMBDAE que represneta las expresiones binarias:
 
 Esta expresión se deriva usando la gramática presentada. El ASC ilustra la
 derivación de la expresión, mostrando de forma explícita cada símbolo no terminal y terminal
@@ -452,17 +477,17 @@ derivación de la expresión, mostrando de forma explícita cada símbolo no ter
 
 \begin{center}
 
-\begin{tikzpicture}[level distance=60pt,
+\begin{tikzpicture}[level distance=70pt,
   every node/.style={circle,draw,minimum size=6mm},
-  sibling distance=40pt]
+  sibling distance=50pt]
 \node {Expr}
   child { node {(} }
-  child { node {+} }
+  child { node {binop} }
   child { node {Expr}
-    child { node {4} }
+    child { node {consE} }
   }
   child { node {Expr}
-    child { node {6} }
+    child { node {consE} }
   }
   child { node {)} };
 \end{tikzpicture}
@@ -471,35 +496,82 @@ derivación de la expresión, mostrando de forma explícita cada símbolo no ter
 Los árboles de sintaxis concreta de -, * , / , = , <, >, <= , >= , !=  son análogos a este.
 La cantidad de hijos de nuestro árbol dependerá de la cantidad de argumentos de entrada que tegamos.
 
+
+Ahora pasemos con los ASC que son unarios(\textit{unop}), los cuales serían de la siguiente forma.
+
 \begin{center}
-\begin{itemize}
-    \item lambda
-\end{itemize}
-
-
-\begin{itemize}
-    \item (sqrt 121)
-\end{itemize}
-
 % Poner en el preámbulo: \usepackage{tikz}
 \begin{tikzpicture}[level distance=60pt,
   every node/.style={circle,draw,minimum size=6mm},
-  sibling distance=36pt]
+  sibling distance=50pt]
 \node {Expr}
   child { node {(} }
-  child { node {sqrt} }
+  child { node {unop} }
   child { node {Expr}
-    child { node {121} }
+    child { node {consE} }
   }
   child { node {)} };
 \end{tikzpicture}
 \end{center}
 
-El caso del expr es análogo al de sqrt.
+Con este tipo de árbol estamos representando a las expresiones que sepueden generar con \textit{null , sqrt ,expt ,fst ,scnd ,cond ,head ,tail ,add1 , sub1} ,por lo que son análogos.
+
+Ahora veamos casos más concretos:\\
 
 \begin{itemize}
-    \item 
+    \item \textbf{ASC de par con coma:}
 \end{itemize}
+
+\begin{center}
+\begin{tikzpicture}[
+  level distance=60pt,
+  level 1/.style={sibling distance=50pt},
+  level 2/.style={sibling distance=50pt},
+  every node/.style={draw, rectangle, rounded corners, minimum width=1.5cm, align=center}
+]
+\node {PairS}
+  child {node {'('}}
+  child {node {SASA}
+    child {node[font=\itshape] {expr1}}
+  }
+  child {node {','}}
+  child {node {SASA}
+    child {node[font=\itshape] {expr2}}
+  }
+  child {node {')'}}
+;
+\end{tikzpicture}
+\end{center}
+
+
+\begin{itemize}
+    \item \textbf{ASC de if:}
+\end{itemize}
+\begin{center}
+\begin{tikzpicture}[
+  level distance=1.5cm,
+  level 1/.style={sibling distance=2.5cm},
+  level 2/.style={sibling distance=2cm},
+  every node/.style={draw, rectangle, rounded corners, minimum width=1.5cm, align=center}
+]
+\node {IfS}
+  child {node {'('}}
+  child {node {if}}
+  child {node {SASA}
+    child {node[font=\itshape] {condición}}
+  }
+  child {node {SASA}
+    child {node[font=\itshape] {entonces}}
+  }
+  child {node {SASA}
+    child {node[font=\itshape] {sino}}
+  }
+  child {node {')'}}
+;
+\end{tikzpicture}
+\end{center}
+
+\vspace{1cm}
 
 En los árboles obtenidos podemos observar que:
 
@@ -551,26 +623,454 @@ En el caso del lenguaje LAMBDAE, los árboles de sintaxix abstracta serán los q
 
 
 
+
+
+
+
+La conexión entre la sintaxis concreta y la sintaxis abstracta puede describirse de forma rigurosa mediante la composición de los procesos de análisis léxico y análisis sintáctico, ya mencionados previamente en clase. En este proceso, el analizador léxico (\textit{lexer}) recibe como entrada el código fuente y lo convierte en una lista de tokens, mientras que el analizador sintáctico (\textit{parser}) toma dicha lista de tokens y genera una representación estructurada, como lo es un Árbol de Sintaxis Abstracta (ASA).
+
+\textbf{Descripción formal:}
+
+Sea $S$ una cadena de texto proveniente del programa fuente. El \textit{lexer} se encarga de producir una lista de tokens $[Token]$ aplicando una función de transformación definida como:
+\[
+S \rightarrow [Token].
+\]
+Cada token corresponde a una unidad léxica relevante del lenguaje: identificadores, operadores, palabras clave, entre otros.
+
+A continuación, el \textit{parser} utiliza esa lista $[Token]$ para construir una estructura sintáctica jerárquica —típicamente un ASA— mediante una función definida como:
+\[
+[Token] \rightarrow ASA.
+\]
+
+En consecuencia, la relación entre la sintaxis concreta y la sintaxis abstracta, que denotamos mediante $\varphi$, se define como la composición de ambas funciones:
+\[
+\varphi = parser \circ lexer : S \rightarrow ASA.
+\]
+
+
 \section{Azúcar sintáctica}
-\subsection{Eliminación de azúcar sintáctica}
+
+subsection{Contexto Histórico}
+
+El azúcar sintáctica es un concepto fundamental en el diseño de lenguajes de programación que data de 1964, cuando el científico de la computación Peter J. Landin acuñó este término para describir la sintaxis superficial de un lenguaje similar a ALGOL \cite{wikipedia2025syntactic}. Originalmente, Landin utilizó este concepto para referirse a características sintácticas que podían ser definidas semánticamente en términos de expresiones lambda más simples. Con el tiempo, lenguajes como CLU, ML y Scheme extendieron el término para referirse a cualquier sintaxis dentro de un lenguaje que pudiera ser definida en términos de un núcleo de construcciones esenciales.
+
+\begin{tcolorbox}[title= Definición: Azúcar Sintáctica]
+
+En ciencias de la computación, el azúcar sintáctica se refiere a la sintaxis dentro de un lenguaje de programación que está diseñada para hacer las cosas más fáciles de leer o expresar \cite{wikipedia2025syntactic}. Esta hace que el lenguaje sea ``más dulce'' para el uso humano: las cosas pueden expresarse con mayor claridad, de manera más concisa, o en un estilo alternativo que algunos programadores pueden preferir.\\
+De manera más formal, el azúcar sintáctica se define como aquellas características opcionales en los lenguajes de programación que proporcionan múltiples formas de realizar tareas similares \cite{sciencedirect2025syntactic}. \\
+Son construcciones sintácticas cuyos efectos están definidos en términos de otras construcciones sintácticas ya existentes en el lenguaje. Los procesadores de lenguaje, incluyendo compiladores y analizadores estáticos, frecuentemente expanden estas construcciones ``azucaradas'' en sus equivalentes más verbosos antes de procesarlas, un proceso denominado ``desazucarado'' o \textit{desugaring}.\\
+\end{tcolorbox}
+
+\subsection*{Importancia}
+
+El azúcar sintáctica desempeña un papel crucial en el desarrollo moderno de software por diversas razones fundamentales:
+
+\textbf{Mejora de la legibilidad y expresividad.} El azúcar sintáctica permite que el código se escriba de manera más natural e intuitiva, facilitando que los programadores comprendan rápidamente el propósito y el flujo del código \cite{wikipedia2025syntactic}. Esto es particularmente valioso en proyectos grandes donde múltiples desarrolladores deben colaborar y entender código escrito por otros.
+
+\textbf{Reducción del código repetitivo.} Al proporcionar formas más concisas de expresar operaciones comunes, el azúcar sintáctica elimina la necesidad de código repetitivo (\textit{boilerplate}) y expresiones idiomáticas difíciles de descifrar. Esto no solo ahorra tiempo de desarrollo, sino que también reduce las oportunidades de introducir errores.
+
+\textbf{Abstracción de alto nivel.} El azúcar sintáctica permite a los programadores trabajar en un nivel de abstracción más elevado, enfocándose en la lógica del problema en lugar de los detalles de implementación de bajo nivel. Esto facilita la escritura de código que se asemeja más al lenguaje del dominio del problema que al lenguaje de la máquina \cite{sciencedirect2025syntactic}.
+
+\textbf{Simplificación de la implementación del compilador.} Al implementar características del lenguaje en el \textit{frontend} mediante desazucarado, se reduce la complejidad del \textit{backend} del compilador, ya que no es necesario agregar nuevos tipos de nodos al árbol de sintaxis abstracta (AST) para cada nueva característica sintáctica.
+
+Sin embargo, es importante reconocer que el azúcar sintáctica también presenta desafíos. La inclusión de múltiples características opcionales aumenta la complejidad de la especificación del lenguaje y puede causar problemas a medida que los programas crecen en tamaño y complejidad \cite{sciencedirect2025syntactic}. Algunos programadores, particularmente en la comunidad Lisp, consideran que estas características de usabilidad sintáctica son innecesarias o incluso frívolas, como lo expresó Alan Perlis en su famosa frase: ``El azúcar sintáctica causa cáncer de los punto y coma''.
+
+A pesar de estas críticas, el azúcar sintáctica continúa siendo una herramienta valiosa en el diseño de lenguajes de programación modernos, equilibrando la necesidad de expresividad y facilidad de uso con los requisitos de simplicidad y uniformidad del lenguaje.
+
+En el caso de LAMBDAE pasaremos de tener los SASA que son los definidos en la gramática, a tener los ASA. 
+
+\subsection{Eliminación de azúcar sintáctica: el Proceso de Desugaring en LAMBDAE}
+
+\subsubsection*{Justificación Teórica del Desugaring}
+
+El proceso de desugaring es una técnica fundamental en el diseño e implementación de lenguajes de programación modernos. Como establece la literatura, los procesadores de lenguaje, incluyendo compiladores y analizadores estáticos, frecuentemente expanden las construcciones azucaradas en sus equivalentes más verbosos antes de procesarlas \cite{wikipedia2025syntactic}. Este enfoque arquitectónico permite separar claramente la sintaxis superficial del lenguaje de su semántica esencial.
+
+El desugaring es esencialmente una transformación de sintaxis a sintaxis: una función que mapea expresiones escritas en una sintaxis rica y conveniente hacia un conjunto reducido de construcciones primitivas \cite{brown2012desugaring}. Esta estrategia ofrece beneficios arquitectónicos significativos: al reducir el número de construcciones que deben ser procesadas por las etapas posteriores del compilador (evaluación, análisis de tipos, optimización), se simplifica dramáticamente la implementación de estos componentes \cite{tuebingen2024desugaring}.
+
+En el contexto de nuestro lenguaje LAMBDAE, el proceso de desugaring se manifiesta como una transformación explícita entre dos representaciones de árbol sintáctico abstracto (AST): \textbf{SASA} (Syntactic Abstract Syntax tree with Sugar Added) y \textbf{ASA} (Abstract Syntax tree After desugaring). Esta distinción arquitectónica refleja el principio de que las características sintácticas convenientes deben ser eliminadas antes del procesamiento semántico \cite{rathi2020desugaring}.
+
+\subsubsection*{SASA y ASA}
+
+La arquitectura de LAMBDAE implementa una separación clara entre la sintaxis superficial (SASA) y el lenguaje núcleo (ASA). Esta separación es consistente con las prácticas establecidas en el diseño de lenguajes funcionales, donde el azúcar sintáctica se define en términos de un núcleo de construcciones esenciales \cite{serokell2020haskell}.
+
+\subsubsection{SASA: Sintaxis Rica con Azúcar Sintáctica}
+
+El árbol SASA es producido directamente por el parser y contiene todas las construcciones sintácticas convenientes que el lenguaje ofrece al programador. Estas construcciones incluyen:
+
+\begin{enumerate}
+    \item \textbf{Operaciones n-arias}: Expresiones como \texttt{(+ e1 e2 ... en)} permiten operaciones sobre múltiples argumentos, eliminando la necesidad de anidar operaciones binarias.
+    
+    \item \textbf{Funciones lambda con múltiples parámetros}: La sintaxis \texttt{(lambda (x y z) body)} es más natural que las funciones unarias anidadas.
+    
+    \item \textbf{Construcciones let especializadas}: LAMBDAE distingue entre \texttt{let}, \texttt{let*} y \texttt{letrec}, cada una con semántica diferente para el alcance de variables.
+    
+    \item \textbf{Azúcar sintáctica de conveniencia}: Expresiones como \texttt{(add1 e)} y \texttt{(sub1 e)} que son abreviaciones de operaciones más complejas.
+    
+    \item \textbf{Expresiones condicionales múltiples}: La construcción \texttt{cond} que maneja múltiples casos de manera más elegante que \texttt{if} anidados.
+\end{enumerate}
+
+Como observa Rathi en su análisis de compiladores, estas abstracciones sintácticas ``hacen la programación más dulce'' al permitir código más legible y conciso, pero complican las etapas posteriores del compilador si no se eliminan \cite{rathi2020desugaring}.
+
+\subsubsection{ASA: Lenguaje Núcleo Desugared}
+
+El árbol ASA representa el lenguaje núcleo de LAMBDAE, conteniendo únicamente las construcciones primitivas necesarias para la evaluación. Este núcleo se caracteriza por:
+
+\begin{enumerate}
+    \item \textbf{Operaciones binarias exclusivamente}: Todas las operaciones n-arias se reducen a composiciones de operaciones binarias mediante \texttt{foldl1} o \texttt{foldr1}.
+    
+    \item \textbf{Funciones lambda unarias}: Toda función lambda acepta exactamente un parámetro. Las funciones multi-parámetro se representan mediante \textit{currying}.
+    
+    \item \textbf{Aplicación de función binaria}: La aplicación de función es estrictamente binaria, siguiendo el modelo del cálculo lambda.
+    
+    \item \textbf{Eliminación de construcciones derivadas}: Expresiones como \texttt{let}, \texttt{let*} y \texttt{cond} se traducen a combinaciones de \texttt{lambda}, aplicación de función, e \texttt{if}.
+\end{enumerate}
+
+Esta reducción a un núcleo mínimo es consistente con el principio de que ``el azúcar sintáctica se puede definir en términos de un conjunto núcleo de construcciones esenciales'' \cite{tuebingen2024desugaring}.
+
+\subsection{Transformaciones de Desugaring en LAMBDAE}
+
+El módulo \texttt{Desugar} de LAMBDAE implementa la función central \texttt{desugar :: SASA -> ASA} que realiza la transformación sintáctica. A continuación, analizamos las transformaciones más significativas:
+
+\subsubsection{Desugaring de Operaciones N-arias}
+
+Las operaciones aritméticas y relacionales que aceptan múltiples argumentos se transforman en cadenas de operaciones binarias:
+
+\begin{lstlisting}[style=haskellstyle, caption={Desugaring de operaciones n-arias}]
+desugar (AddListS es) = foldl1 (BinOp AddOp) (map desugar es)
+desugar (SubListS es) = foldl1 (BinOp SubOp) (map desugar es)
+desugar (MulListS es) = foldl1 (BinOp MulOp) (map desugar es)
+\end{lstlisting}
+
+Por ejemplo, la expresión SASA \texttt{(+ 1 2 3 4)} se desugarea a:
+
+\begin{equation*}
+\texttt{BinOp AddOp (BinOp AddOp (BinOp AddOp (Num 1) (Num 2)) (Num 3)) (Num 4)}
+\end{equation*}
+
+Esta transformación refleja el principio de que operaciones complejas pueden expresarse mediante composición de operaciones más simples \cite{tuebingen2024desugaring}.
+
+\subsubsection{Desugaring de Funciones Lambda Multi-parámetro}
+
+Las funciones lambda con múltiples parámetros se transforman en funciones unarias anidadas mediante currying:
+
+\begin{lstlisting}[style=haskellstyle, caption={Desugaring de funciones lambda}]
+desugar (FunListS [] body)     = desugar body
+desugar (FunListS (x:xs) body) = Fun x (desugar (FunListS xs body))
+\end{lstlisting}
+
+Una expresión SASA como \texttt{(lambda (x y z) (+ x y z))} se convierte en:
+
+\begin{equation*}
+\texttt{Fun "x" (Fun "y" (Fun "z" (BinOp AddOp (BinOp AddOp (Id "x") (Id "y")) (Id "z"))))}
+\end{equation*}
+
+Esta transformación implementa el concepto clásico de currying, donde funciones multi-argumento se representan como secuencias de funciones unarias \cite{serokell2020haskell}.
+
+\subsubsection{Desugaring de Construcciones Let}
+
+El desugaring de las construcciones \texttt{let} demuestra uno de los principios más elegantes del diseño de lenguajes funcionales: \texttt{let} es simplemente azúcar sintáctica para la aplicación inmediata de una función lambda.
+
+\begin{lstlisting}[style=haskellstyle, caption={Desugaring de let}]
+desugar (LetS [(x,e)] body) = App (Fun x (desugar body)) (desugar e)
+\end{lstlisting}
+
+Esta transformación implementa la equivalencia:
+
+\begin{equation*}
+\texttt{(let ((x e)) body)} \equiv \texttt{((lambda (x) body) e)}
+\end{equation*}
+
+Como señala el material de Brown University, esta es una de las transformaciones de desugaring más fundamentales en lenguajes funcionales, demostrando que el enlace de variables puede expresarse completamente en términos de abstracción y aplicación \cite{brown2012desugaring}.
+
+\subsubsection{Desugaring de Let*}
+
+La construcción \texttt{let*}, que permite referencias secuenciales entre bindings, se desugarea recursivamente en \texttt{let} anidados:
+
+\begin{lstlisting}[style=haskellstyle, caption={Desugaring de let*}]
+desugar (LetStarS [] body) = desugar body
+desugar (LetStarS ((x,e):rest) body) =
+  desugar (LetS [(x,e)] (LetStarS rest body))
+\end{lstlisting}
+
+Esta transformación ilustra cómo el azúcar sintáctica puede construirse en capas: \texttt{let*} se reduce a \texttt{let}, que a su vez se reduce a \texttt{lambda} y aplicación \cite{tuebingen2024desugaring}.
+
+\subsubsection{Desugaring de Expresiones Condicionales Múltiples}
+
+La construcción \texttt{cond} se desugarea recursivamente en expresiones \texttt{if} anidadas:
+
+\begin{lstlisting}[style=haskellstyle, caption={Desugaring de cond}]
+desugarCond :: [(SASA, SASA)] -> ASA
+desugarCond [] = error "cond sin clausulas"
+desugarCond [(g,e)] = desugar e
+desugarCond ((g,e):rest) = 
+  If (desugar g) (desugar e) (desugarCond rest)
+\end{lstlisting}
+
+Una expresión como:
+
+\begin{lstlisting}[style=haskellstyle]
+(cond 
+  [(< x 0) "negativo"]
+  [(= x 0) "cero"]
+  [else "positivo"])
+\end{lstlisting}
+
+Se transforma en:
+
+\begin{equation*}
+\texttt{If (BinOp LtOp x 0) "negativo" (If (BinOp EqOp x 0) "cero" "positivo")}
+\end{equation*}
+
+\subsubsection{Desugaring de Azúcar de Conveniencia}
+
+LAMBDAE incluye construcciones de conveniencia como \texttt{add1} y \texttt{sub1} que se desugarean directamente en el parser:
+
+\begin{lstlisting}[style=haskellstyle, caption={Azúcar sintáctica de conveniencia}]
+| '(' "add1" SASA ')' { AddListS [$3, NumS 1] }
+| '(' "sub1" SASA ')' { SubListS [$3, NumS 1] }
+\end{lstlisting}
+
+Estas expresiones ilustran el principio de que incluso operaciones simples pueden beneficiarse del azúcar sintáctica para mejorar la legibilidad del código \cite{rathi2020desugaring}.
+
+\subsection{Beneficios Arquitectónicos del Desugaring en LAMBDAE}
+
+La implementación de desugaring en LAMBDAE proporciona múltiples ventajas arquitectónicas:
+
+\subsubsection{Simplificación del Evaluador}
+
+Al reducir SASA a ASA antes de la evaluación, el intérprete de LAMBDAE solo necesita manejar un conjunto reducido de construcciones. Esto reduce significativamente la complejidad del evaluador y facilita la verificación de su correctitud \cite{krishnamurthi2015desugaring}.
+
+\subsubsection{Reutilización de Código y Demostraciones}
+
+Como observa el material de la Universidad de Tübingen, si se han escrito algoritmos o demostrado propiedades sobre el lenguaje núcleo (ASA), estos automáticamente se aplican a todas las construcciones del lenguaje superficial (SASA) después del desugaring \cite{tuebingen2024desugaring}. Esto representa una economía significativa en el esfuerzo de desarrollo y verificación.
+
+\subsubsection{Extensibilidad del Lenguaje}
+
+La arquitectura de dos niveles facilita la adición de nuevas características al lenguaje. Nuevas construcciones sintácticas pueden agregarse al nivel SASA siempre que puedan expresarse en términos del núcleo ASA, sin necesidad de modificar el evaluador \cite{krishnamurthi2015desugaring}.
+
+\subsubsection{Claridad Semántica}
+
+El desugaring hace explícita la semántica de cada construcción sintáctica al mostrar exactamente cómo se traduce en términos del núcleo. Esto proporciona una especificación formal del significado de cada característica del lenguaje \cite{brown2012desugaring}.
+
+
+
 \section{Semántica operacional}
 
 La semántica operacional describe cómo se ejecutan los programas de un lenguaje paso a paso. A diferencia de la semántica denotacional (que define el significado de un programa como funciones matemáticas) o la axiomatica (que define propiedades lógicas de los programas), la semántica operacional se centra en la evolución del estado del programa durante su ejecución.
 
 Se puede ver como “un conjunto de reglas que explican cómo cada instrucción afecta al estado del programa”.
 
+\subsubsection*{SmallStep Semantics con Entornos}
+A continuación se muestran las reglas de paso pequeño (\textit{small-step semantics}) 
+para el lenguaje, considerando entornos explícitos $\rho$.
+
+\[
+\textbf{Relación de evaluación: } \langle e, \rho \rangle \;\longrightarrow\; \langle e', \rho' \rangle
+\]
+
+\bigskip
+
+\textbf{Reglas Básicas}
 
 
+\begin{mathpar}
+\frac{}{ \langle Id("nil"), \rho \rangle \rightarrow \langle Id("nil"), \rho \rangle }
 
+\and
+\frac{}{ \langle Num(n), \rho \rangle \rightarrow \langle Num(n), \rho \rangle }
+
+\and
+\frac{}{ \langle Boolean(b), \rho \rangle \rightarrow \langle Boolean(b), \rho \rangle }
+
+\and
+\frac{lookupEnv(i, \rho) = v}
+     { \langle Id(i), \rho \rangle \rightarrow \langle v, \rho \rangle }
+\end{mathpar}
+
+\bigskip
+
+\textbf{Operaciones Binarias y Unarias}
+
+\begin{mathpar}
+\frac{isValue(v_1) \land isValue(v_2)}
+     { \langle BinOp(op, v_1, v_2), \rho \rangle \rightarrow \langle evalBinOp(op, v_1, v_2), \rho \rangle }
+
+\and
+\frac{isValue(v_1) \quad \langle e_2, \rho \rangle \rightarrow \langle e_2', \rho' \rangle}
+     { \langle BinOp(op, v_1, e_2), \rho \rangle \rightarrow \langle BinOp(op, v_1, e_2'), \rho' \rangle }
+
+\and
+\frac{ \langle e_1, \rho \rangle \rightarrow \langle e_1', \rho' \rangle }
+     { \langle BinOp(op, e_1, e_2), \rho \rangle \rightarrow \langle BinOp(op, e_1', e_2), \rho' \rangle }
+
+\and
+\frac{}{ \langle Sqrt(Num(n)), \rho \rangle \rightarrow \langle Num(\lfloor \sqrt{n} \rfloor), \rho \rangle }
+
+\and
+\frac{ \langle e, \rho \rangle \rightarrow \langle e', \rho' \rangle }
+     { \langle Sqrt(e), \rho \rangle \rightarrow \langle Sqrt(e'), \rho' \rangle }
+
+\and
+\frac{}{ \langle Not(Boolean(b)), \rho \rangle \rightarrow \langle Boolean(\neg b), \rho \rangle }
+
+\and
+\frac{ \langle e, \rho \rangle \rightarrow \langle e', \rho' \rangle }
+     { \langle Not(e), \rho \rangle \rightarrow \langle Not(e'), \rho' \rangle }
+\end{mathpar}
+
+\newpage
+
+\textbf{Listas y Pares}
+
+\begin{mathpar}
+\frac{e = Id("nil")}
+     { \langle UnOp(NullOp, e), \rho \rangle \rightarrow \langle Boolean(True), \rho \rangle }
+
+\and
+\frac{e = Pair(v_1,v_2)}
+     { \langle UnOp(NullOp, e), \rho \rangle \rightarrow \langle Boolean(False), \rho \rangle }
+
+\and
+\frac{ \langle e, \rho \rangle \rightarrow \langle e', \rho' \rangle }
+     { \langle UnOp(NullOp, e), \rho \rangle \rightarrow \langle UnOp(NullOp, e'), \rho' \rangle }
+
+\and
+\frac{isValue(v_1) \land isValue(v_2)}
+     { \langle Pair(v_1,v_2), \rho \rangle \rightarrow \langle Pair(v_1,v_2), \rho \rangle }
+
+\and
+\frac{isValue(v_1) \quad \langle e_2, \rho \rangle \rightarrow \langle e_2', \rho' \rangle}
+     { \langle Pair(v_1, e_2), \rho \rangle \rightarrow \langle Pair(v_1, e_2'), \rho' \rangle }
+
+\and
+\frac{ \langle e_1, \rho \rangle \rightarrow \langle e_1', \rho' \rangle }
+     { \langle Pair(e_1,e_2), \rho \rangle \rightarrow \langle Pair(e_1', e_2), \rho' \rangle }
+
+\and
+\frac{isValue(v_1) \land isValue(v_2)}
+     { \langle Fst(Pair(v_1,v_2)), \rho \rangle \rightarrow \langle v_1, \rho \rangle }
+
+\and
+\frac{ \langle e, \rho \rangle \rightarrow \langle e', \rho' \rangle }
+     { \langle Fst(e), \rho \rangle \rightarrow \langle Fst(e'), \rho' \rangle }
+
+\and
+\frac{isValue(v_1) \land isValue(v_2)}
+     { \langle Snd(Pair(v_1,v_2)), \rho \rangle \rightarrow \langle v_2, \rho \rangle }
+
+\and
+\frac{ \langle e, \rho \rangle \rightarrow \langle e', \rho' \rangle }
+     { \langle Snd(e), \rho \rangle \rightarrow \langle Snd(e'), \rho' \rangle }
+\end{mathpar}
+
+\newpage
+
+\textbf{Condicionales y Funciones}
+
+\begin{mathpar}
+\frac{}{ \langle If(Boolean(True), e_t, e_f), \rho \rangle \rightarrow \langle e_t, \rho \rangle }
+
+\and
+\frac{}{ \langle If(Boolean(False), e_t, e_f), \rho \rangle \rightarrow \langle e_f, \rho \rangle }
+
+\and
+\frac{ \langle cond, \rho \rangle \rightarrow \langle cond', \rho' \rangle }
+     { \langle If(cond, e_t, e_f), \rho \rangle \rightarrow \langle If(cond', e_t, e_f), \rho' \rangle }
+
+\and
+\frac{}{ \langle Fun(p, body), \rho \rangle \rightarrow \langle Closure(p, body, \rho), \rho \rangle }
+
+\and
+\frac{ e_1 = Closure(p, body, \rho') \quad isValue(e_2) }
+     { \langle App(e_1, e_2), \rho \rangle \rightarrow \langle Expr(body, (p,e_2):\rho'), \rho \rangle }
+
+\and
+\frac{isValue(e_1) \quad \langle e_2, \rho \rangle \rightarrow \langle e_2', \rho' \rangle}
+     { \langle App(e_1, e_2), \rho \rangle \rightarrow \langle App(e_1, e_2'), \rho' \rangle }
+
+\and
+\frac{ \langle e_1, \rho \rangle \rightarrow \langle e_1', \rho' \rangle }
+     { \langle App(e_1, e_2), \rho \rangle \rightarrow \langle App(e_1', e_2), \rho' \rangle }
+
+\and
+\frac{isValue(e)}
+     { \langle Expr(e, \rho_{in}), \rho_{out} \rangle \rightarrow \langle e, \rho_{out} \rangle }
+
+\and
+\frac{ \langle e, \rho_{in} \rangle \rightarrow \langle e', \rho_{in}' \rangle }
+     { \langle Expr(e, \rho_{in}), \rho_{out} \rangle \rightarrow \langle Expr(e', \rho_{in}'), \rho_{out} \rangle }
+\end{mathpar}
+
+
+\newpage
+
+\section{Conclusiones}
+
+La implementación del proceso de desugaring en LAMBDAE, mediante la transforma-
+ción de SASA a ASA, representa una aplicación rigurosa de principios establecidos en el
+diseño de lenguajes de programación. Al separar explícitamente la sintaxis superficial del
+núcleo semántico, LAMBDAE logra un balance entre expresividad para el programador y
+simplicidad para el implementador. Esta arquitectura no solo simplifica la implementación
+del intérprete, sino que también proporciona una base sólida para razonar formalmente
+sobre las propiedades del lenguaje, facilitando su extensión y mantenimiento futuro.
+El proceso de quitar elementos sintácticos no esenciales como paréntesis redundantes
+y representar todas las expresiones en formas canónicas (operaciones binarias, funciones
+unarias, aplicación binaria) demuestra el poder del desugaring como herramienta de diseño
+de lenguajes. Como establece la literatura, esta técnica es fundamental no solo para la
+implementación práctica de lenguajes, sino también para su estudio teórico y su enseñanza
+[?].
+
+\newpage
 \section{Referencias}
--colocar notas de manu \\
--El Libro del Dragón. Compiladores: Principios, Técnicas y Herramientas\\
--colocar referencia de notas de lourdes\\
--Colocar también tesis de Erick<3s\\
-G. Winskel, The Formal Semantics of Programming Languages: An Introduction. MIT Press, 1993.\\
-Michael L. Scott — “Programming Language Pragmatics”\\
-S. Krishnamurthi, Programming Languages: Application and Interpretation. 2007\\
-Practical Foundations for Programming Languages de Robert Harper\\
+
+\begin{thebibliography}{99}
+
+\bibitem{LambdaSpace04}
+LambdaSpace. (s. f.). \textit{Notas de la asignatura Lenguajes de Programación (n.º 04)} [PDF]. Recuperado de https://lambdasspace.github.io/LDP/notas/ldp_n04.pdf
+
+\bibitem{LambdaSpace05}
+LambdaSpace. (s. f.). \textit{Notas de la asignatura Lenguajes de Programación (n.º 05)} [PDF]. Recuperado de https://lambdasspace.github.io/LDP/notas/ldp_n05.pdf
+
+\bibitem{UNAMMaterial}
+Universidad Nacional Autónoma de México, Facultad de Ciencias. (s. f.). \textit{Material de Lenguajes de Programación}. Recuperado de https://sites.google.com/ciencias.unam.mx/lengprog/material?authuser=0
+
+\bibitem{UNAMTesis}
+Universidad Nacional Autónoma de México. (2025 jul-sep). \textit{El Libro del Dragón. Compiladores: Principios, Técnicas y Herramientas}. Tesis / Documento DGB-UNAM. Recuperado de https://tesiunamdocumentos.dgb.unam.mx/ptd2025/jul_sep/0877653/Index.html
+
+\bibitem{Winskel93}
+Winskel, G. (1993). \textit{The Formal Semantics of Programming Languages: An Introduction}. Cambridge, MA: MIT Press.
+
+\bibitem{Scott07}
+Scott, M. L. (2007). \textit{Programming Language Pragmatics}. Amsterdam/Boston et al.: Morgan Kaufmann.
+
+\bibitem{Krishnamurthi07}
+Krishnamurthi, S. (2007). \textit{Programming Languages: Application and Interpretation}. Brown University. Recuperado de https://cs.brown.edu/~sk/Publications/Books/ProgLangs/2007-04-26/plai-2007-04-26.pdf
+
+\bibitem{Harper}
+Harper, R. (s. f.). \textit{Practical Foundations for Programming Languages}. (Nota: Verificar año de publicación y editorial).
+
+\bibitem{ISO14977}
+International Organization for Standardization \& International Electrotechnical Commission. (1996).
+\textit{ISO/IEC 14977:1996 – Information technology — Syntactic metalanguage — Extended BNF} (Edición 1). Ginebra: ISO.
+
+\bibitem{Krishnamurthi2015}
+Krishnamurthi, S. (2015). \textit{Desugaring in Practice: Opportunities and Challenges}. PEPM 2015. Recuperado de https://dl.acm.org/doi/10.1145/2678015.2678016
+
+\bibitem{Krishnamurthi2007}
+Krishnamurthi, S. (2007). \textit{Programming Languages: Application and Interpretation} (2.\textsuperscript{a} ed.). Brown University. Recuperado de https://cs.brown.edu/courses/cs173/2012/book/
+
+\bibitem{Rathi2020}
+Rathi, M. (2020, 1 de julio). \textit{Desugaring – taking our high-level language and simplifying it!}. Recuperado de https://mukulrathi.com/create-your-own-programming-language/lower-language-constructs-to-llvm/
+
+\bibitem{Serokell2020}
+Serokell. (2020, 11 de agosto). \textit{Understanding Haskell Features Through Their Desugaring}. Recuperado de https://serokell.io/blog/haskell-to-core
+
+\bibitem{WikipediaDesugaring}
+Syntactic sugar. (s. f.). En Wikipedia. Recuperado de https://en.wikipedia.org/wiki/Syntactic_sugar
+
+
+\end{thebibliography}
+
 
 
 \end{document}
