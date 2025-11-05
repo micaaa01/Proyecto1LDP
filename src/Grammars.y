@@ -20,6 +20,7 @@ import Lex (Token(..),lexer)
       "sqrt"          { TokenSqrt }
       "expt"          { TokenExpt }
       "not"           { TokenNot }
+      "null?"         { TokenNull }
       '('             { TokenPA }
       ')'             { TokenPC }
       '['             { TokenCA }
@@ -66,6 +67,7 @@ SASA
       | '(' '<=' ExpList ')'                                { LeListS $3 }          -- Menor o igual que
       | '(' '>=' ExpList ')'                                { GeListS $3 }          -- Mayor o igual que
       | '(' '!=' ExpList ')'                                { NeListS $3 }          -- Disinto
+      | '(' "null?" SASA ')'                                { NullS $3 }            -- Null
       | '(' "lambda" '(' VarList ')' SASA ')'               { FunListS $4 $6 }      -- Función lambda
       | '(' "sqrt" SASA ')'                                 { SqrtS $3 }            -- Raíz cuadrada
       | '(' "expt" ExpList ')' { ExptListS $3 }                                     -- Exponenciación
@@ -141,6 +143,7 @@ data SASA
       | BooleanS Bool                         -- Booleano (#t o #f)
       | IdS String                            -- Identificador
       | NotS SASA                             -- Negación lógica
+      | NullS SASA
       | AddListS [SASA]                       -- Suma de lista de expresiones
       | SubListS [SASA]                       -- Resta
       | MulListS [SASA]                       -- Multiplicación

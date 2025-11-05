@@ -7,7 +7,7 @@ data Op
   = AddOp | SubOp | MulOp | DivOp
   | AndOp
   | EqOp | NeOp | LtOp | LeOp | GtOp | GeOp
-  | ExptOp
+  | ExptOp   | NullOp
   deriving (Show, Eq)
 -- AST "desugared"
 data ASA
@@ -17,14 +17,15 @@ data ASA
   | BinOp Op ASA ASA
   | Sqrt ASA
   | Not ASA
+  | UnOp Op ASA
   | Pair ASA ASA
   | Fst ASA
   | Snd ASA
   | If ASA ASA ASA
   | Fun String ASA       -- lambda unaria (núcleo)
   | App ASA ASA          -- aplicación binaria (núcleo)
-    | Closure String ASA [(String, ASA)]
-    | Expr ASA [(String, ASA)] 
+  | Closure String ASA [(String, ASA)]
+  | Expr ASA [(String, ASA)] 
   deriving (Show, Eq)
 
 -- Traducción de la sintaxis superficial (SASA del parser) al ASA
@@ -33,7 +34,7 @@ desugar (IdS i)              = Id i
 desugar (NumS n)             = Num n
 desugar (BooleanS b)         = Boolean b
 desugar (NotS e)             = Not (desugar e)
-
+desugar (NullS e)            = UnOp NullOp (desugar e)
 -- operaciones n-arias (listas)
 desugar (AddListS es)  = foldl1 (BinOp AddOp) (map desugar es)
 desugar (SubListS es)  = foldl1 (BinOp SubOp) (map desugar es)

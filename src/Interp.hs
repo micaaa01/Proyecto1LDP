@@ -52,6 +52,18 @@ smallStep (Not e) env =
     let (e', env') = smallStep e env
     in (Not e', env')
 
+-- null?
+smallStep (UnOp NullOp e) env
+  | isValue e =
+      case e of
+        Id "nil" -> (Boolean True, env)
+        Pair _ _ -> (Boolean False, env)
+        _        -> error "null?: argumento no es una lista"
+  | otherwise =
+      let (e', env') = smallStep e env
+      in (UnOp NullOp e', env')
+
+
 smallStep (Pair v1 v2) env 
     | isValue v1 && isValue v2 = (Pair v1 v2 , env)
 smallStep (Pair v1 e2) env 

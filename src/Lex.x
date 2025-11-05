@@ -26,6 +26,7 @@ tokens :-
 "sqrt"                         { \_ -> TokenSqrt }
 "expt"                         { \_ -> TokenExpt }
 "not"                          { \_ -> TokenNot }
+"null?"                        { \_ -> TokenNull }
  -- Estructuras de control
 "if"                           { \_ -> TokenIf }
 "cond"                         { \_ -> TokenCond }
@@ -85,7 +86,8 @@ data Token
     | TokenSqrt
     | TokenExpt
     | TokenNot
-      -- Símbolos de agrupación
+    | TokenNull
+    -- Símbolos de agrupación
     | TokenPA
     | TokenPC
     | TokenCA
