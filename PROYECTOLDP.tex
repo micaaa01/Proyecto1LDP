@@ -1,0 +1,2536 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[spanish]{babel}   
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}    
+\usepackage{lmodern}
+\usepackage[most]{tcolorbox}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usepackage{forest}
+\usepackage{mathpartir}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{cite}
+\usepackage{bussproofs}
+\usepackage{mathpartir}
+
+
+
+\tcbset{colback=pink!10!white, colframe=purple!80!black, boxrule=0.8pt, arc=3mm}
+
+
+\usepackage{amsmath, amssymb} 
+\usepackage{graphicx}         
+\usepackage{hyperref}         
+\usepackage{geometry}         
+\geometry{margin=2.5cm}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    {\Large \textbf{Universidad Nacional Autónoma de México} \par}
+    \vspace{0.5cm}
+    {\large Facultad de Ciencias \par}
+    \vspace{0.5cm}
+    {\large Lenguajes de Programación \par}
+
+    \vfill
+
+    {\Huge \textbf{Proyecto 1:MiniLisp} \par}
+    \vspace{1.5cm}
+
+  
+    \begin{flushleft}
+    \textbf{Integrantes:}
+    \end{flushleft}
+    
+    \begin{center}
+    Elizalde Maza Jesús Eduardo \\
+    Navarro Fierro Michelle Alanis \\
+    Peredo López Citlalli Abigail \\
+    \end{center}
+
+    \vfill
+
+    {\large Profesor: Manuel Soto Romero \par}
+    \vspace{0.5cm}
+    \begin{center}
+        Diego Méndez Medina\\
+        José Alejandro Pérez Márquez\\
+        Erick Daniel Arroyo Martínez\\
+        Mauro Emiliano Chávez Zamora\\
+    \end{center}
+    {\large Fecha: \today \par}
+    \vspace{0.5cm}
+    {\large CDMX \par}
+\end{titlepage}
+
+% --- Aquí quiero una página con el índice ---
+\newpage
+\tableofcontents
+\newpage  % Para que el contenido empiece en la siguiente página
+
+\newpage
+\section{Introducción}
+
+En la actualidad, los lenguajes de programación constituyen una de las herramientas más fundamentales en el campo de las Ciencias de la Computación, ya que no solo permiten escribir código, sino que representan el medio por el cual los seres humanos comunican instrucciones complejas a las computadoras. A través de ellos es posible expresar algoritmos e ideas de forma precisa y estructurada, impulsando el desarrollo de sistemas operativos, aplicaciones móviles, inteligencia artificial y una amplia gama de tecnologías que forman parte esencial de la vida cotidiana. En términos generales, un lenguaje de programación puede definirse como un conjunto de reglas y símbolos que posibilitan la escritura de instrucciones comprensibles para la máquin.
+
+La historia de los lenguajes de programación refleja la búsqueda constante por lograr una mayor abstracción, eficiencia y correctitud en la comunicación entre humanos y computadoras. En sus inicios, la programación se realizaba mediante lenguajes de bajo nivel, como el código de máquina y el ensamblador, los cuales resultaban difíciles de leer y propensos a errores. La aparición de lenguajes de alto nivel como FORTRAN y COBOL marcó un punto de inflexión, al permitir a los programadores centrarse en la lógica del problema en lugar de los detalles de la arquitectura del hardware.\cite{IBMFortran,IBMCobol}
+
+Posteriormente, la evolución de los lenguajes dio lugar a diversos paradigmas que transformaron la manera de desarrollar software. La programación estructurada, con lenguajes como Pascal y C, promovió la organización del código en bloques lógicos, reduciendo la complejidad y mejorando la legibilidad. Más adelante, la programación orientada a objetos, representada por C++, Java y Smalltalk, introdujo conceptos como la encapsulación, la herencia y el polimorfismo, permitiendo modelar problemas del mundo real de forma más intuitiva y fomentando la creación de sistemas modulares y reutilizables. En paralelo, la programación funcional, impulsada por lenguajes como Lisp, Haskell y Scala, cobró relevancia por su capacidad para manejar la concurrencia y el procesamiento de datos, gracias a principios como la inmutabilidad y las funciones puras, que facilitan el razonamiento y las pruebas del código.\cite{OpenStax}
+
+Esta evolución constante demuestra que los lenguajes de programación no solo han acompañado el progreso tecnológico, sino que han sido motores fundamentales en la transformación de la informática moderna, respondiendo a la necesidad de abordar problemas cada vez más complejos y especializados.
+
+En este contexto, el presente proyecto se enmarca en el estudio formal de los lenguajes de programación mediante la extensión de un lenguaje de estilo Lisp denominado MiniLisp, implementado en Haskell con apoyo de la herramienta Happy. Este trabajo busca recorrer las etapas esenciales de la formalización de un lenguaje, desde la definición de su sintaxis léxica y libre de contexto hasta la especificación de su semántica operacional, con el propósito de integrar la teoría y la práctica en el diseño de intérpretes. De esta manera, el proyecto MiniLisp constituye una oportunidad para aplicar los fundamentos teóricos de los lenguajes de programación en un ambiente funcional real, fortaleciendo la comprensión de los principios que rigen su construcción, análisis e implementación.
+
+
+\newpage
+\section{Objetivos}
+
+El presente proyecto tiene como propósito definir formalmente la sintaxis léxica y libre de contexto del lenguaje MiniLisp, por lo que se propone el lenguaje LAMBDAE que es una extensión del mismo.
+Asimismo se formula su representación en sintaxis abstracta e incorporando mecanismos de azúcar sintáctica y su correspondiente eliminación hacia un núcleo mínimo. Por otra parte, se busca diseñar y especificar la semántica operacional estructural del lenguaje mediante reglas de inferencia y derivaciones que describan con precisión su comportamiento durante la evaluación, al tiempo que se modelan ambientes de evaluación y bindings que garanticen la correcta gestión de alcances, valores y consistencia semántica.
+
+
+Con el fin de ampliar la expresividad del lenguaje, se propone incorporar nuevos operadores aritméticos, predicados, estructuras de datos, listas, condicionales y funciones variádicas, sustentando formalmente cada decisión de diseño. De igual manera, se plantea la implementación de un intérprete funcional completo de MiniLisp en Haskell, estructurado a partir de un pipeline modular que abarque las fases de análisis léxico, sintáctico, desazucarización y evaluación, asegurando una correspondencia directa entre la teoría formal y la ejecución práctica. 
+
+Finalmente, se busca demostrar la validez del modelo propuesto mediante casos de prueba y ejemplos representativos que evidencien la relación entre la formalización teórica y el comportamiento del sistema implementado, así como integrar y documentar los resultados en un informe académico que articule los fundamentos teóricos, las decisiones de diseño y los resultados experimentales, promoviendo una comprensión crítica del vínculo entre teoría y práctica en el estudio de los lenguajes de programación.
+
+
+\newpage
+\section{Sintaxis de un lenguaje de programación}
+En el diseño de los lenguajes de programación, establecer reglas claras que indiquen cómo deben escribirse y estructurarse los programas es un aspecto esencial. Estas reglas no sólo permiten que las máquinas comprendan las instrucciones, sino que también aseguran que los desarrolladores puedan comunicarse de manera precisa y coherente con ellas. Sin una estructura formal que determine qué expresiones son válidas y cómo deben organizarse, sería imposible garantizar que un programa sea interpretado de la misma manera por distintos compiladores o intérpretes. Además, esta estructura facilita la detección de errores, la lectura del código y la creación de herramientas de análisis y depuración. En este contexto surge la necesidad de definir con rigor la forma en que los programas deben escribirse, dando origen al concepto fundamental de la sintaxis en los lenguajes de programación.
+
+\begin{tcolorbox}[title= Definición: Sintaxis de un lenguaje de programación]
+Definimos la sintaxis de un lenguaje de programación como el conjunto de
+reglas y estructuras que especifican cómo deben escribirse los símbolos y palabras reservadas de un
+programa para que sea aceptado por el traductor del lenguaje.\cite{LambdaSpace2,UNAMMaterial}
+\end{tcolorbox}
+
+\subsection{Sintaxis concreta}
+
+La sintaxis concreta de un lenguaje de programación define la apariencia y estructura exacta con la que deben escribirse los programas, abarcando todos los elementos visibles como palabras reservadas, operadores, signos de puntuación y la forma en que estos se organizan.Por lo que por eso definir a la sintaxis concreta de la siguiente forma:
+
+\begin{tcolorbox}[title=Definición: Sintaxis concreta]
+    La sintaxis concreta se puede definir como un par \textbf{(L, G)} donde:
+
+\begin{itemize}
+    \item \textbf{L} es la definición léxica representada por el conjunto de expresiones regulares \textbf{R}.
+    \item \textbf{G} es la gramática libre de contexto que se ve representada por una cuatrupla de la siguiente forma: \textbf{(N, \(\Sigma\), P, S)}.\cite{UNAMTesis,LDPnota3}
+\end{itemize}
+\end{tcolorbox}
+
+Dicha sintaxis se especifica mediante una gramática formal que determina, qué combinaciones de símbolos son válidas dentro del lenguaje.
+
+Esta descripción se divide normalmente en dos niveles:
+
+\begin{itemize}
+    \item Sintaxis léxica.
+    \item Sintaxis estructural o gramática libre de contexto.
+\end{itemize}
+
+A continuación abordaremos un poco más a fondo cada uno de estos conceptos.
+
+\subsubsection{Sintaxis Léxica}
+Los elementos léxicos de un lenguaje de programación conforman el conjunto de símbolos, palabras reservadas y reglas de formación que determinan la estructura básica mediante la cual se construyen las expresiones y sentencias del lenguaje.
+Este conjunto de caracteres reconocidos por el compilador o intérprete recibe el nombre de tokens, los cuales representan las unidades léxicas fundamentales del lenguaje. Dichos tokens pueden corresponder a símbolos de puntuación, operadores, representaciones numéricas, cadenas de texto o identificadores de variables.
+
+Desde un punto de vista formal, la descripción léxica de un lenguaje se fundamenta en ciertos elementos esenciales:
+
+\begin{itemize}
+    \item \textbf{Alfabeto ($\Sigma$):} se refiere al conjunto limitado de símbolos que pueden utilizarse en el lenguaje, como letras, números y signos especiales.
+    \item \textbf{Tokens:} son secuencias de caracteres derivadas del alfabeto que representan las unidades sintácticas más simples. Cada clase de token se especifica mediante una expresión regular que determina su estructura o patrón.
+\end{itemize}
+
+\begin{tcolorbox}[title=Definición: Expresiones regulares]
+
+Una expresión regular $E$, definida sobre un alfabeto $\Sigma$, se construye de manera recursiva siguiendo las reglas siguientes:
+
+\begin{itemize}
+    \item $\varepsilon$, que representa la cadena vacía, es considerada una expresión regular.
+    
+    \item Para cualquier símbolo $a \in \Sigma$, dicho símbolo constituye por sí mismo una expresión regular que representa una cadena formada únicamente por $a$.
+    
+    \item Si $E_1$ y $E_2$ son expresiones regulares, entonces su concatenación $E_1E_2$ también forma una expresión regular.
+    
+    \item De igual manera, si $E_1$ y $E_2$ son expresiones regulares, su unión $E_1 + E_2$ se considera una expresión regular.
+    
+    \item Si $E$ es una expresión regular, su cerradura de Kleene $E^{*}$ también lo es, y describe cualquier número de repeticiones de $E$, incluyendo la posibilidad de que no aparezca.\cite{UNAMTesis,LDPnota3,Mitchell}
+\end{itemize}
+\end{tcolorbox}
+
+En consecuencia, para conformar el conjunto de tokens de un lenguaje, el analizador léxico recibe una secuencia de cadenas de entrada y las transforma en un conjunto de tokens válidos conforme a las reglas léxicas previamente definidas para dicho lenguaje.
+
+El conjunto de tokens aceptados por nuestro lenguaje puede entenderse como una lista de unidades léxicas generada a partir de la lectura secuencial del programa de entrada, carácter por carácter.
+Durante este proceso, el analizador léxico identifica secuencias de caracteres que coinciden con alguno de los patrones o tokens previamente definidos en el lexer, y cada vez que se reconoce una coincidencia, se genera un nuevo token que se añade a la lista.
+De esta manera, al finalizar la lectura completa del programa, se obtiene un conjunto estructurado de tokens que representa de forma simbólica el contenido del código fuente.
+
+A continuación, presentamos la especificación léxica del lenguaje LAMBDAE, definiendo formalmente su alfabeto y los principales tipos de tokens utilizados.
+
+\begin{tcolorbox}[title=Correción: 
+Sintaxis léxica de LAMBDAE, breakable]
+
+Para comenzar a definir la sintaxis léxica comenzaremos definiendo el alfabeto de nuestro lenguaje, el cual está conformado por lo siguiente:\\
+
+$\Sigma$ = \{ \textit{True, False}, +, - , * , / , \textit{sqrt ,expt ,not, null?}, ( , ) , (,)\footnotemark,  [ , ] , = , > , < , ! , \textit{if , fst , snd , let , let* , letrec , lamdba , head , tail , pair , cond , add1 , sub1} \}\\
+
+
+En nustra gramática también tenemos definidos a los enteros y a las variables. A las varibales las identificaremos como \textit{id} y a los números como \textit{int}, a ambos los podemos definir de la siguiente manera:
+
+
+id  ::= [A-Za-z][A-Za-z0-9]^*
+
+int ::= 0\,$\vert$\,[1-9][0-9]^*
+
+bool ::= \#t | \#f\\
+
+\textbf{Palabras reservadas}
+\begin{verbatim}
+if       ::= if
+fst      ::= fst
+snd      ::= snd
+let      ::= let
+let*     ::= let\*
+letrec   ::= letrec
+lambda   ::= lambda
+head     ::= head
+tail     ::= tail
+pair     ::= pair
+cond     ::= cond
+add1     ::= add1
+sub1     ::= sub1
+sqrt     ::= sqrt
+expt     ::= expt
+not      ::= not
+null?    ::= null\?
+\end{verbatim}
+
+En nuestro lenguaje utilizaremos  \textit{null?} para verificar si una lista es vacía o no.
+
+
+\textbf{Operadores Artiméticos}
+\begin{verbatim}
++        ::= \+
+-        ::= \-
+*        ::= \*
+/        ::= \/
+\end{verbatim}
+
+\textbf{Operadores de Comparación}
+\begin{verbatim}
+<=       ::= <=
+>=       ::= >=
+!=       ::= !=
+=        ::= =
+<        ::= <
+>        ::= >
+\end{verbatim}
+
+\textbf{Paréntesis}
+
+            \textbf{( + )}
+
+Se utilizan para agrupar subexpresiones lógicas. Al igual que en lenguajes de
+notación matemática o lógica simbólica, permiten definir la precedencia de los
+operadores.
+
+\textbf{Delimitadores}
+\begin{verbatim}
+(        ::= \(
+)        ::= \)
+[        ::= \[
+]        ::= \]
+,        ::= ,
+ws       ::= [ \t\n\r]+
+\end{verbatim}
+
+
+Estos últimos deben ser ignorados por el lexer.
+
+\footnotetext{Colocamos entre paréntesis el símbolo de la "," para indicar que también pertenece al alfabeto de nuestro lenguaje LAMBDAE.}
+
+\end{tcolorbox}
+
+En este punto, los tokens del lenguaje representan las unidades léxicas construidas a partir del alfabeto definido. Para esta versión del lenguaje, se incluyen los siguientes tipos de tokens, junto con las expresiones regulares que especifican la estructura de cada uno a partir de la gramática presentada anteriormente.
+
+\begin{tcolorbox}[title=Tokens en LAMBDAE, breakable]
+ 
+\begin{center}
+\begin{verbatim}
+      int             { TokenNum $$ }     
+      bool            { TokenBool $$ }
+      var             { TokenVar $$ }
+      '+'             { TokenSuma }
+      '-'             { TokenResta }
+      '*'             { TokenMult }
+      '/'             { TokenDiv }
+      "sqrt"          { TokenSqrt }
+      "expt"          { TokenExpt }
+      "not"           { TokenNot }
+      "null?"         { TokenNull }
+      '('             { TokenPA }
+      ')'             { TokenPC }
+      '['             { TokenCA }
+      ']'             { TokenCC }
+      ','             { TokenComa }
+      '='             { TokenEq }
+      '<'             { TokenMenor }      
+      '>'             { TokenMayor }  
+      '<='            { TokenMenorIgual }
+      '>='            { TokenMayorIgual }
+      '!='            { TokenDistinto }
+      "if"            { TokenIf }
+      "fst"           { TokenFst }
+      "snd"           { TokenSnd }
+      "let"           { TokenLet }
+      "let*"          { TokenLetStar }
+      "letrec"        { TokenLetRec }
+      "lambda"        { TokenLambda }
+      "head"          { TokenHead }
+      "tail"          { TokenTail }
+      "pair"          { TokenPair }
+      "cond"          { TokenCond }
+      "add1"          { TokenAdd1 }
+      "sub1"          { TokenSub1 }
+
+\end{verbatim}
+\end{center}
+
+\end{tcolorbox}
+
+
+\subsection{Gramática Formal: gramática libre de contexto (GLC)}
+
+  En el ámbito de la teoría de los lenguajes de programación y de los lenguajes formales, la sintaxis concreta hace referencia a la estructura específica de un lenguaje de programación, la cual determina la forma exacta en que deben escribirse los programas. Desde un punto de vista matemático, dicha estructura se describe mediante una gramática libre de contexto, la cual se define de la siguiente manera:
+
+\begin{tcolorbox}[title=Definición: Gramática libre de contexto, breakable]
+Formalmente, una \textbf{Gramática Libre de Contexto (GLC)} se define como una tupla 
+\[
+G = (N, \Sigma, P, S),
+\]
+donde:
+\begin{itemize}
+    \item $N$ es un conjunto finito de símbolos no terminales. Estos representan categorías sintácticas intermedias y permiten construir la jerarquía estructural del lenguaje.
+    \item $\Sigma$ es un conjunto finito de símbolos terminales, que corresponden a los tokens generados por el análisis léxico.
+    \item $P$ es un conjunto finito de producciones de la forma $A \rightarrow \alpha$, donde $A \in N$ y $\alpha \in (N \cup \Sigma)^{*}$.
+    \item $S \in N$ es el símbolo inicial, desde el cual se derivan todas las cadenas válidas del lenguaje.\cite{UNAMTesis,OpenStax,LDPnota3}
+\end{itemize}
+
+\end{tcolorbox}
+
+Cada uno de estos componentes tiene un papel específico en la descripción de la sintaxis:
+
+\begin{enumerate}
+    \item \textbf{Terminales:} representan los elementos básicos del lenguaje que no pueden ser descompuestos más allá dentro de la gramática.En nuestro caso los terminales son los valores booleanos (\textit{bool}),como valores booleanos resultantes de evaluar operaciones lógicas \textit{(not)}, enteros (\textit{int}), pares ordenados (\textit{pair}) y clousures (\textit{Clousure}).
+    \item \textbf{No terminales:} estos corresponden a variables sintácticas que describen cómo se organizan y combinan los diferentes componentes del lenguaje. En nuestra gramática, los no terminales principales serán expresiones que se pueden generar a partir de los elementos definidos ene el alfabeto de nuestra gramática, pueden ser binarias y variadicos como lo son: (\textit{Add,Sub,Mul,Div,..}), funciones(\textit{App, Fun, lambda,...}), condicionales(\textit{if}), operaciones sobre pares ordenados(\textit{Fst,Snd}), listas (\textit{head, tail}), aplicaciones \textit{let}, comparaciones, entre otras.
+    \item \textbf{Símbolo inicial:} representa el elemento desde el cual se generan todas las expresiones válidas del lenguaje. 
+    \item \textbf{Producciones:} son las reglas mediante las cuales se obtienen expresiones más complejas a partir de otras más simples. Estas permiten describir de forma recursiva cómo se combinan operadores, constantes y subexpresiones, dando origen a la sintaxis del lenguaje.
+\end{enumerate} 
+
+\newpage
+\begin{tcolorbox}[title= Correción: GLC de LAMBDAE     MÓDULO A2, breakable]
+
+\begin{center}
+
+\begin{verbatim}
+< expr > ::= <consB>
+         |  <consE>
+         |  <consV>
+         | ( not < expr >)
+         | (< binop > < expr > <expr>+)
+         | (<unop> <expr>)
+       
+<binop> ::= +
+        | -
+        | *
+        | /
+        | =
+        | <
+        | >
+        | <=
+        | >=
+        | pair
+
+<unop>  ::= not
+        | null?
+        | sqrt
+        | expt
+        | fst
+        | snd
+        | head
+        | tail
+        | cond
+        | add1
+        | sub1  
+
+<consB> ::= True
+          | False
+
+<consE> ::= 0
+          | <digito-no-cero> <digitos>
+          | <digito-no-cero>
+
+<digito-no-cero> ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+<digitos> ::= <digito> <digitos>
+            | <digito>
+
+<digito> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+<consV> ::= <letra> <resto-id>
+          | <letra>
+
+<resto-id> ::= <caracter-id> <resto-id>
+             | <caracter-id>
+
+<caracter-id> ::= <letra>
+                | <digito>
+                | _
+
+<letra> ::= a | b | c | d | e | f | g | h | i | j | k | l | m 
+          | n | o | p | q | r | s | t | u | v | w | x | y | z
+          | A | B | C | D | E | F | G | H | I | J | K | L | M
+          | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+
+\end{verbatim}
+\end{center}  
+Utilizamos la construcción \textit{unop} 
+para expresiones que tienen un solo argumento y \textit{binop} para las que pueden tener dos o más argumentos.
+
+\textbf{Construcciones especiales:}
+\begin{align*}
+\langle lambda \rangle ::= & \; \text{lambda} \\
+\langle condicional \rangle ::= & \; \text{if} \\
+\langle let \rangle ::= & \; \text{let} \\
+\langle let* \rangle ::= & \; \text{let*} \\
+\langle letRec \rangle ::= & \; \text{letRec} \\
+\langle lista \rangle ::= & \; [ \; ] \\
+\langle aplicacion \rangle ::= & \; \text{app}
+\end{align*}
+
+\end{tcolorbox}
+
+Es importane resaltar que en nuestro lenguaje LAMBDAE utilizamos notación prefija, las operaciones se evaluan de forma binaria apesar de que se puedan tomar de forma n-aria.
+
+\subsection*{Clasificación de Construcciones}
+
+\begin{itemize}
+    \item \textbf{Operadores unarios:} Operaciones que reciben exactamente 
+    un argumento: \texttt{not}, \texttt{sqrt}, \texttt{fst}, \texttt{snd}, 
+    \texttt{head}, \texttt{tail}, \texttt{add1}, \texttt{sub1}, \texttt{null?}
+    
+    \item \textbf{Operadores binarios:} Operaciones que reciben dos o más 
+    argumentos (con asociatividad izquierda para múltiples argumentos): 
+    \texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}, \texttt{=}, \texttt{<}, 
+    \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{!=}, \texttt{pair}
+    
+    \item \textbf{Abstracciones (lambda):} Construcción que crea funciones 
+    anónimas. Recibe un parámetro (variable) y un cuerpo (expresión): 
+    \texttt{(lambda <var> <expr>)}
+    
+    \item \textbf{Condicionales:} Construcción de control de flujo que evalúa 
+    una condición y selecciona entre dos ramas: \texttt{(if <cond> <then> <else>)}
+    
+    \item \textbf{Vinculaciones locales (let):} Construcciones que introducen 
+    variables locales en un ámbito:
+    \begin{itemize}
+        \item \texttt{let}: Vinculación simple no recursiva
+        \item \texttt{letRec}: Vinculación recursiva para definir funciones recursivas
+    \end{itemize}
+    
+    \item \textbf{Listas:} Construcción de estructuras de datos secuenciales 
+    mediante corchetes: \texttt{[e1 e2 ... en]}
+    
+    \item \textbf{Aplicación de funciones:} Construcción que aplica una función 
+    (que puede ser una lambda, variable, o expresión que evalúa a función) a 
+    uno o más argumentos: \texttt{(f arg1 arg2 ... argn)}
+\end{itemize}
+
+\subsection*{Notación}
+
+\begin{itemize}
+    \item $\langle expr \rangle^*$ indica cero o más repeticiones de $\langle expr \rangle$
+    \item $\langle expr \rangle^+$ indica una o más repeticiones de $\langle expr \rangle$, el cual lo utilizamos al definir \textit{binop}.
+\end{itemize}
+
+Para definir la gramática formal utilizamos una gramática libre de contexto que siga la Forma Normal Extendida de Backus-Naur(en inglés Extended Backus–Naur Form o EBNF) que es una notación formal que se utiliza para describir la gramática de un lenguaje de programación (o cualquier lenguaje formal). Para esto comencemos dando un breve contexto.\\
+
+\textbf{Notación BNF}
+
+Antes de que tuvieramos la notación EBNF, se tenía la BNF(Backus-Naur Form) propuesta por John W. Backus en 1959, la cual surge ante la necesidad de tener una notación formal para describir la sintaxis de lenguajes de programación.Una de sus características principales es su capacidad de definir alternativas mediante el uso del operador |.
+
+La forma BNF introdujo una forma clara y formal de especificar la sintaxis de un lenguaje (producciones, no terminales, terminales, alternancias). Esto permitió que las especificaciones fueran menos ambiguas y más aptas para que herramientas automáticas (analizadores sintácticos / parsers) las usaran. \cite{LambdaSpace04}
+
+En nuestro caso no haremos tanta énfasis en este tipo denotación pues no la utililizamos para definir nuestra gramática. \cite{LambdaSpace04, Dragon, Scott07}
+
+
+\textbf{Componentes básicos de BNF}
+
+En su forma básica, una regla en BNF se representa mediante una producción con el símbolo ::= y puede incluir alternativas mediante el operador |. Las variables (o símbolos no terminales) suelen escribirse entre signos de mayor y menor (< >), mientras que los símbolos terminales (como palabras reservadas u operadores) se escriben tal cual aparecen en el
+lenguaje.\cite{LambdaSpace05, UNAMMaterial,UNAMTesis}
+
+\subsubsection{Notación EBNF}
+En 1970 Niklaus Wirth propuso notaciones y promovió una forma de extender BNF con construcciones para iteración, opcionalidad y agrupamiento, que se conocen comúnmente como EBNF (Extended Backus–Naur Form). El trabajo de Wirth de 1977 es un hito en la unificación/práctica de una notación extendida y legible.\cite{Winskel93}
+
+Fue desarrollada con el propósito
+de ofrecer una forma más concisa, legible y expresiva de describir la sintaxis de lenguajes
+formales, incorporando mecanismos para representar repeticiones, secuencias opcionales y
+agrupaciones. Estas capacidades permiten expresar reglas sintácticas complejas de forma más clara, mejorando tanto la comprensión como la implementación de analizadores sintácticos. Formalmente, la notación EBNF introduce los siguientes elementos adicionales:\cite{LambdaSpace04,UNAMMaterial}
+
+
+\begin{itemize}
+    \item \textbf{Repetición:} se denota con llaves {}, señalando que un componente puede aparecer ninguna o múltiples veces.
+    \item \textbf{Opcionalidad:}se marca con corchetes [], mostrando elementos que pueden estar presentes o ausentes en una regla.
+    \item \textbf{Agrupación:}se implementa usando paréntesis (), facilitando el control de prioridades y la delimitación de opciones.
+    \item \textbf{Terminales:} generalmente se escriben entrecomillados para diferenciarlos de los símbolos no terminales.
+    \item \textbf{Alternativas:}continúan expresándose mediante el símbolo |, tomado de la notación BNF tradicional.\cite{UNAMTesis,UNAMMaterial,Dragon}
+\end{itemize}
+
+Considerando los elementos anteriores y tomando como guía a MiniLisp , tenemos que la gramática en notación en EBNF de LAMBDAE es la siguiente:
+
+\begin{tcolorbox}[title= Correción: Gramática en EBNF de LAMBDAE      MÓDULO A2, breakable]
+
+\begin{center}
+\begin{verbatim}
+<S > := < Expr >
+<Expr > ::= <int >
+      | <bool> 
+      | <var>
+      | '(' "not" <Expr> ')'
+      | '(' '+' <Expr-list> ')'
+      | '(' '-' <Expr-list> ')'
+      | '(' '/' <Expr-list> ')'
+      | '(' '*' <Expr-list> ')'
+      | '(' '=' <Expr-list>  ')'
+      | '(' '<' <Expr-list> ')'
+      | '(' '>' <Expr-list> ')'
+      | '(' "<=" <Expr-list> ')' 
+      | '(' ">=" <Expr-list> ')'
+      | '(' "!=" <Expr-list> ')'
+      | '(' "null?" <expr> ')'
+      | '(' "lambda" '(' <var-list> ')' <Expr> ')'
+      | '(' "sqrt" <expr> ')'
+      | '(' "expt" <exp-list> ')'
+      | '(' "pair" <expr> <expr> ')'
+      | '(' "fst" <expr> ')'
+      | '(' "snd" <expr> ')'
+      | '(' <expr> ',' <expr> ')' 
+      | '(' "if" <expr> <expr> <expr> ')'
+      |  '(' "let" '(' <bindings> ')' <expr> "''
+      |  '(' "let*" '(' <bindings> ')' <expr> ')'
+      | [{ Expr }]
+      | '(' "letrec" '(' <var> <expr> ')' <expr> ')'   
+      | '[' <list-items> ']'
+      | '[' ']'
+      | '(' "head" <expr> ')'
+      | '(' "tail" <expr> ')'
+      | '(' "cond" <cond-clauses> ')'
+      | '(' <expr> <expr-list> ')'                  
+      | '(' "add1" <expr> ')'
+      | '(' "sub1" <expr> ')'
+
+<exp-list> ::= <expr> { <expr> }
+<expr-list> ::= <expr> { <expr> }
+
+<var-list> ::= <var> { <var> }
+
+<list-items> ::= <expr> [ ',' <list-items> ]
+
+<cond-clauses> ::= <cond-clause> { <cond-clause> }
+<cond-clause> ::= '[' <expr> <expr> ']'
+                | '[' "else" <expr> ']'
+
+<bindings> ::= <binding> { <binding> }
+
+<binding> ::= '(' <var> <expr> ')"'
+
+<int > := <N >
+     | -<M >
+<D > := 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+<N > := 0 | <D >{ <N >}
+<M > := <D >{ <N >}
+
+<bool> := <#t, #f>
+
+<var> :=<X>
+<X> := <X> ::= a | b | c | d | e | f | g | h | i | j | k | l | m | 
+        n | o | p | q | r | s | t | u | v | w | x | y | z
+\end{verbatim}
+\end{center}
+
+Estilo de notación tomada de \cite{ISO14977,LambdaSpace2,LambdaSpace04}
+\end{tcolorbox}
+
+Todos los operadores asocian hacia la izquierda, lo que permite omitir paréntesis en muchos casos sin ambigüedad. Estas convenciones simplifican
+tanto la escritura como el procesamiento de expresiones regulares en analizadores léxicos.\cite{Krishnamurthi2015,Rathi2020}
+Por lo anterior podemos definir lo siguiente para las operaciones ariméticas variádicas:
+\begin{itemize}
+    \item \texttt{(+ e1 e2 e3 ... en)} se evalúa como 
+          \texttt{(+ (+ (+ e1 e2) e3) ... en)}
+    \item \texttt{(- e1 e2 e3)} se evalúa como \texttt{(- (- e1 e2) e3)}
+    \item \texttt{(* e1 e2 e3)} se evalúa como \texttt{(* (* e1 e2) e3)}
+    \item \texttt{(/ e1 e2 e3)} se evalúa como \texttt{(/ (/ e1 e2) e3)}
+\end{itemize}
+
+Para los operadores de comparación:
+\begin{itemize}
+    \item \texttt{(= e1 e2 e3 ... en)} verifica que 
+          \texttt{e1 = e2 AND e2 = e3 AND ... en-1 = en}
+    \item Similar para \texttt{<}, \texttt{>}, \texttt{<=}, 
+          \texttt{>=}, \texttt{!=}
+\end{itemize}
+
+\textbf{Listas:}
+\begin{itemize}
+    \item \texttt{[e1 e2 ... en]} construye una lista mediante 
+          reducción por cons: \texttt{(cons e1 (cons e2 ... (cons en nil)))}
+\end{itemize}
+
+\textbf{Aplicación de funciones:}
+\begin{itemize}
+    \item \texttt{(f arg1 arg2 ... argn)} aplica la función \texttt{f} 
+          a los argumentos de izquierda a derecha
+\end{itemize}
+
+\textbf{Let* secuencial:}
+\begin{itemize}
+    \item \texttt{(let* ((x1 e1) (x2 e2) ... (xn en)) body)} 
+          vincula las variables secuencialmente, donde cada expresión 
+          \texttt{ei} puede usar las variables \texttt{x1, ..., xi-1} 
+          previamente definidas
+\end{itemize}
+
+\section{Sintaxis Abstracta}
+En la sintaxis concreta se especifican de forma minuciosa todos los elementos necesarios para construir las expresiones válidas del lenguaje. No obstante, esta descripción no es suficiente para capturar toda la organización y el comportamiento lógico de un programa. La sintaxis concreta incluye una gran cantidad de detalles, como símbolos de separación, espacios y paréntesis que son indispensables para interpretar el código, pero que no aportan directamente a la comprensión de su estructura conceptual. De hecho, dichos elementos pueden volver más complejo el análisis y la manipulación del código, especialmente cuando se llevan a cabo procesos de optimización durante la traducción.
+
+La sintaxis abstracta a diferencia de la
+anterior, esta ofrece una representación simplificada y estructural del código fuente, enfocada en capturar
+la lógica y la jerarquía del programa sin incluir los detalles superficiales propios de la sintaxis concreta. La forma más común de representarla es mediante un Árbol de Sintaxis Abstracta (ASA), el cual facilita tanto el análisis como la manipulación del código en las fases de compilación o interpretación.
+
+Todos estos elementos que nos son relevantes o que no aportan directamente algo a la comprensión conceptual los podemos simplificar utilizando \textit{azúcar sintáctica} la cual se encargará de eliminar estos componentes que no son necesarios y estandarizar todas las expreisones quqe sean admitidas por nuestro lenaguaje a una misma.\cite{LambdaSpace05,UNAMMaterial,UNAMTesis}
+
+\subsection{Árboles de sintaxis}
+
+Los árboles de sintaxis constituyen una herramienta fundamental en la representación estructurada de un programa, ya que permiten visualizar cómo se organizan y combinan los distintos elementos de acuerdo con las reglas del lenguaje. Mediante esta estructura jerárquica, es posible determinar la precedencia de los operadores y comprender de manera precisa cómo deben evaluarse las expresiones.
+
+Una ventaja clave de estos árboles es que ayudan a eliminar posibles ambigüedades al interpretar el código. Si una gramática permite construir más de un árbol sintáctico para la misma cadena, se generan múltiples significados para un mismo programa, lo cual resulta problemático en un lenguaje de programación. Por ello, los árboles sintácticos sirven como evidencia de la claridad o ambigüedad de la gramática que define al lenguaje.
+
+En los compiladores e intérpretes, estos árboles son el resultado directo de la fase de análisis sintáctico (parsing), en la cual el código fuente se transforma en una representación estructurada y más manejable. Esta representación se convierte en la base sobre la cual se realizan posteriores procesos como el análisis semántico y la traducción a código ejecutable.
+
+Además, cuando se formaliza la sintaxis abstracta de un lenguaje como LAMBDAE, se logra una versión aún más depurada de esta estructura. La sintaxis abstracta prescinde de detalles decorativos de la notación concreta y se enfoca en capturar únicamente la lógica y las relaciones semánticas entre los componentes del programa. Gracias a ello, se facilita el desarrollo de herramientas como analizadores, traductores y optimizadores, que pueden operar sobre una representación más simple, eficiente y extensible.
+
+En conjunto, los árboles de sintaxis y la sintaxis abstracta aportan una comprensión conceptual más clara del lenguaje y proporcionan los cimientos necesarios para la construcción de un sistema de compilación sólido, coherente y capaz de evolucionar con el tiempo.
+
+\subsubsection{Árboles de sintaxis concreta}
+
+
+En este modelo, un programa puede representarse mediante un ASC que conserva todos los elementos presentes en el código fuente (como operadores, paréntesis y demás detalles sintácticos), reflejando paso a paso la derivación completa definida por la gramática.
+
+Consideremos el siguiente árbol de sintaxis concreta (ASC) del lenguaje LAMBDAE que represneta las expresiones binarias:
+
+Esta expresión se deriva usando la gramática presentada. El ASC ilustra la
+derivación de la expresión, mostrando de forma explícita cada símbolo no terminal y terminal
+(paréntesis, operador y valores):
+
+\begin{center}
+
+\begin{tikzpicture}[level distance=70pt,
+  every node/.style={circle,draw,minimum size=6mm},
+  sibling distance=50pt]
+\node {Expr}
+  child { node {(} }
+  child { node {binop} }
+  child { node {Expr}
+    child { node {consE} }
+  }
+  child { node {Expr}
+    child { node {consE} }
+  }
+  child { node {)} };
+\end{tikzpicture}
+
+\end{center}
+Los árboles de sintaxis concreta de -, * , / , = , <, >, <= , >= , !=  son análogos a este.
+La cantidad de hijos de nuestro árbol dependerá de la cantidad de argumentos de entrada que tegamos.
+
+
+Ahora pasemos con los ASC que son unarios(\textit{unop}), los cuales serían de la siguiente forma.
+
+\begin{center}
+% Poner en el preámbulo: \usepackage{tikz}
+\begin{tikzpicture}[level distance=60pt,
+  every node/.style={circle,draw,minimum size=6mm},
+  sibling distance=50pt]
+\node {Expr}
+  child { node {(} }
+  child { node {unop} }
+  child { node {Expr}
+    child { node {consE} }
+  }
+  child { node {)} };
+\end{tikzpicture}
+\end{center}
+
+Con este tipo de árbol estamos representando a las expresiones que sepueden generar con \textit{null , sqrt ,expt ,fst ,scnd ,cond ,head ,tail ,add1 , sub1} ,por lo que son análogos.
+
+Ahora veamos casos más concretos:\\
+
+\begin{itemize}
+    \item \textbf{ASC de par con coma:}
+\end{itemize}
+
+\begin{center}
+\begin{tikzpicture}[
+  level distance=60pt,
+  level 1/.style={sibling distance=50pt},
+  level 2/.style={sibling distance=50pt},
+  every node/.style={draw, rectangle, rounded corners, minimum width=1.5cm, align=center}
+]
+\node {PairS}
+  child {node {'('}}
+  child {node {SASA}
+    child {node[font=\itshape] {expr1}}
+  }
+  child {node {','}}
+  child {node {SASA}
+    child {node[font=\itshape] {expr2}}
+  }
+  child {node {')'}}
+;
+\end{tikzpicture}
+\end{center}
+
+
+\begin{itemize}
+    \item \textbf{ASC de if:}
+\end{itemize}
+\begin{center}
+\begin{tikzpicture}[
+  level distance=1.5cm,
+  level 1/.style={sibling distance=2.5cm},
+  level 2/.style={sibling distance=2cm},
+  every node/.style={draw, rectangle, rounded corners, minimum width=1.5cm, align=center}
+]
+\node {IfS}
+  child {node {'('}}
+  child {node {if}}
+  child {node {SASA}
+    child {node[font=\itshape] {condición}}
+  }
+  child {node {SASA}
+    child {node[font=\itshape] {entonces}}
+  }
+  child {node {SASA}
+    child {node[font=\itshape] {sino}}
+  }
+  child {node {')'}}
+;
+\end{tikzpicture}
+\end{center}
+
+\vspace{1cm}
+
+En los árboles obtenidos podemos observar que:
+
+\begin{itemize}
+    \item La raíz está etiquetada como expr, derivando la estructura completa.
+    \item Se incluyen todos los elementos sintácticos, como los paréntesis y operadores.
+   \item Cada nodo refleja una regla aplicada de la gramática, de forma que la estructura del
+árbol corresponde a la derivación concreta de la expresión.
+\end{itemize}
+
+A partir de estas bases teóricas, procederemos a definir los Árboles de Sintaxis Concreta correspondientes a las distintas construcciones que forman parte de nuestro lenguaje de programación. Para ello, presentaremos ejemplos representativos de expresiones válidas dentro del lenguaje y su respectiva interpretación mediante un ASC. Este enfoque nos permitirá ilustrar cómo las reglas gramaticales se reflejan de forma explícita en la estructura jerárquica del árbol, mostrando con claridad la combinación y precedencia de los elementos sintácticos que intervienen en cada expresión. De esta manera, se establecerá una correspondencia precisa entre la especificación formal del lenguaje y su representación estructurada, lo cual será fundamental para etapas posteriores del análisis y procesamiento del código.
+
+
+
+
+\subsubsection{Árboles de sintaxis abstracta (ASA)}
+
+Un árbol de sintaxis abstracta (AST) es una estructura de datos de tipo árbol que representa la estructura sintáctica abstracta de un fragmento de código fuente en un lenguaje de programación. 
+
+“Abstracta” significa que no incluye todos los detalles del texto fuente tal como estaban escritos, sino sólo los elementos relevantes para la estructura del programa (por ejemplo, se omiten paréntesis redundantes, llaves, puntos y comas cuando no cambian la estructura semántica). 
+
+Representa de forma jerárquica los constructores del lenguaje (como expresiones, sentencias, declaraciones) como nodos conectados. Por ejemplo, una operación binaria “a + b” se representa por un nodo “+” con dos hijos: “a” y “b”. 
+
+
+Es el resultado habitual de la fase de análisis sintáctico (parser) en la construcción de compiladores o intérpretes, que transforma el código fuente en una estructura más manejable para el análisis posterior.
+
+\begin{tcolorbox}[title=Definición: Árboles de sintaxis abstracta]
+Un árbol de sintaxis abstracta es un árbol ordenado $A = (N, A, R)$ donde:
+
+\begin{itemize}
+    \item $N$ es un conjunto finito de nodos que representan las construcciones del lenguaje mediante etiquetas, y las hojas representan sus respectivos valores.
+    
+    \item $A \subseteq N \times N$ es un conjunto de aristas dirigidas que conectan a los nodos.
+    
+    \item $R \in N$ es la raíz del árbol.\cite{UNAMTesis,Dragon}
+\end{itemize}
+    
+\end{tcolorbox}
+
+Así pues, el AST captura lo esencial de la estructura del programa, dejando de lado detalles de la representación textual que no afectan su significado.
+
+
+En el caso del lenguaje LAMBDAE, los árboles de sintaxis abstracta serán los que se generarán una vez que quitemos el azúcar sintáctica de todas las expresiones de  nuestro lenguaje. Podemos decir que los ASA que tendremos en nuestro lenguaje serán de la sigueinte forma: 
+
+
+
+
+
+
+
+La conexión entre la sintaxis concreta y la sintaxis abstracta puede describirse de forma rigurosa mediante la composición de los procesos de análisis léxico y análisis sintáctico, ya mencionados previamente en clase. En este proceso, el analizador léxico (\textit{lexer}) recibe como entrada el código fuente y lo convierte en una lista de tokens, mientras que el analizador sintáctico (\textit{parser}) toma dicha lista de tokens y genera una representación estructurada, como lo es un Árbol de Sintaxis Abstracta (ASA).
+
+\textbf{Descripción formal:}
+
+Sea $S$ una cadena de texto proveniente del programa fuente. El \textit{lexer} se encarga de producir una lista de tokens $[Token]$ aplicando una función de transformación definida como:
+\[
+S \rightarrow [Token].
+\]
+Cada token corresponde a una unidad léxica relevante del lenguaje: identificadores, operadores, palabras clave, entre otros.
+
+A continuación, el \textit{parser} utiliza esa lista $[Token]$ para construir una estructura sintáctica jerárquica,típicamente un ASA, mediante una función definida como:
+\[
+[Token] \rightarrow ASA.
+\]
+
+En consecuencia, la relación entre la sintaxis concreta y la sintaxis abstracta, que denotamos mediante $\varphi$, se define como la composición de ambas funciones:\cite{LambdaSpace05,Dragon,Aho}
+\[
+\varphi = parser \circ lexer : S \rightarrow ASA. 
+\] 
+
+\begin{tcolorbox}[title=Correción:ASA de  LAMBDAE    MÓDULO A3, breakable]
+    \textbf{Representación por reglas}
+
+    
+    Un árbol de sintaxis abstracta se puede interpretar como una estructura arbórea ordenada donde cada punto del árbol lleva la etiqueta de un operador específico. Cada uno de estos operadores tiene asociado un valor numérico que especifica cuántos argumentos puede recibir, y este valor coincide exactamente con la cantidad de nodos descendientes que deben existir en los puntos donde se emplea ese operador. 
+    
+    Con base en estos conceptos, se establece la relación eASA, que señala que e representa un árbol de sintaxis abstracta válido. La construcción de estos árboles se especifica mediante las siguientes reglas:\cite{LambdaSpace05,UNAMTesis,UNAMMaterial}\\
+    
+    Tenemos entonces los siguientes tipos de expresiones:
+
+\begin{itemize}
+    \item \textbf{Enteros}, los cuales representaremos con la etiqueta \texttt{Num}. 
+    Al ser un valor atómico, únicamente tendrán como hijo al valor entero que representan.
+
+    \item \textbf{Booleanos}, los representaremos con ls etiqueta \texttt{Bool}.
+     Al ser un valor atómico, únicamente tendrán como hijo al valor booleano que representan.
+
+     \item \textbf{Variables}, las cuales etiquetaremos con la etiqueta \texttt{Id}. 
+    Al ser un valor atómico, únicamente tendrán como hijo al valor de una varibale que representan.
+     
+    \item \textbf{Operaciones Binarias}, las cuales etiquetaremos con la etiqueta \texttt{BinOp}. 
+    Como podemos apreciar en la gramática, las operaciones aritméticas y las comparaciones requieren dos expresiones, por lo que 
+    se trata de un nodo con dos hijos.
+
+    \item \textbf{Raíz cuadrada}, las cuales etiquetaremos con la etiqueta \texttt{Sqrt}. 
+    Se tratará de un nodo que tengan un solo hijo.
+
+    \item \textbf{Negación}, las cuales etiquetaremos con la etiqueta \texttt{Not}. 
+    Al igual que la raiz cuadrada, se tratará de un nodo con un solo hijo.
+
+    \item \textbf{Operaciones Unarias}, las cuales etiquetaremos con la etiqueta \texttt{UnOp}. 
+    Se tratará de nodos que tengan un solo hijo.
+
+    \item \textbf{Pares}, las cuales etiquetaremos con la etiqueta \texttt{Pair}. 
+    Se tratará de nodos que tengan dos hijos.
+
+    \item \textbf{Primer elemento de un par ordenado}, las cuales etiquetaremos con la etiqueta \texttt{Pair}. 
+    Se tratará de nodos que tengan dos hijos.
+
+    \item \textbf{Segundo elemento de un par ordenado}, las cuales etiquetaremos con la etiqueta \texttt{Snd}. 
+    Se tratará de nodos que tengan dos hijos.
+
+    \item \textbf{If}, las cuales etiquetaremos con la etiqueta \texttt{If}. 
+    Se tratará de nodos que tengan dos o tres hijos.
+
+    \item \textbf{Funciones}, las cuales etiquetaremos con la etiqueta \texttt{Fun}. 
+    Al igual que las operaciones binarias, se tratará de nodos que tengan dos hijos.
+
+    \item \textbf{Aplicaciones de función}, las cuales etiquetaremos con la etiqueta \texttt{App}. 
+    Se tratará de nodos que tengan dos hijos.
+
+    \item \textbf{Closure}, las cuales etiquetaremos con la etiqueta \texttt{Clousure}. 
+\end{itemize}
+
+Para definir las reglas que nos permitan especificar a los ASA, definimos la siguiente relación:
+
+\[
+a  \in \mathsf{ASA}
+\]
+
+que se lee como: a es un ASA. 
+
+Procedemos a definir las reglas y colocamos una descripción 
+de cuál sería su lectura.\cite{LambdaSpace05,UNAMTesis}
+
+\textbf{Enteros}
+
+\texttt{Num(n)} es un ASA si \(n\) es un n\'umero entero. Es un nodo hoja que contiene el valor num\'erico.
+
+\begin{prooftree}
+\AxiomC{$n \in \mathbb{Z}$}
+\UnaryInfC{$Num(n) \in ASA$}
+\end{prooftree}
+
+\textbf{Booleanos}
+
+\texttt{Boolean\, b} es un ASA si \( b \) es un valor booleano. Es un valor terminal.
+
+\begin{prooftree}
+\AxiomC{$b \in \{ \text{True}, \text{False} \}$}
+\UnaryInfC{$Boolean(b) \in ASA$}
+\end{prooftree}
+
+\textbf{Varibales}
+
+\texttt{Id\, x} es un ASA si \(x\) es una cadena que representa un identificador v\'alido. Es un valor terminal que representa variables.
+
+\begin{prooftree}
+\AxiomC{$x \in String$}
+\UnaryInfC{$Id(x) \in ASA$}
+\end{prooftree}
+
+
+\textbf{Operaciones Binarias}
+
+\texttt{BinOp}\; op\; e_{1}\; e_{2} \; \text{es un ASA si} \; op \; \text{es un operador v\'alido y tanto} \; e_{1} \; \text{como} \; e_{2} \; \text{son ASAs}.\\
+\text{Es un nodo con dos sub\'arboles que representa operaciones binarias.}\\
+
+\textbf{Operadores v\'alidos en \(Op\):}
+
+\begin{itemize}
+    \item \textbf{Aritm\'eticos:} \texttt{Add}, \texttt{Sub}, \texttt{Mul}, \texttt{Div}
+    \item \textbf{Comparaci\'on:} \texttt{Eq}, \texttt{Menor}, \texttt{Mayor}, \texttt{MenorIgual}, \texttt{MayorIgual}, \texttt{Distinto}
+\end{itemize}
+
+\begin{prooftree}
+\AxiomC{$Op \in Op \quad e_1 \in ASA \quad e_2 \in ASA$}
+\UnaryInfC{$BinOp(e_1, e_2) \in ASA$}
+\end{prooftree}
+
+
+\textbf{Raíz Cuadrada}
+
+\texttt{Sqrt\ e} es un ASA si \texttt{e} es un ASA. Representa la operaci\'on de ra\'iz cuadrada. Es un nodo con un sub\'arbol.\\
+
+
+\begin{prooftree}
+\AxiomC{$e \in ASA$}
+\UnaryInfC{$\text{Sqrt}\; e \in ASA$}
+\end{prooftree}
+
+\textbf{Negación}
+
+\texttt{Not\ e} es un ASA si \(e\) es un ASA. Representa la negaci\'on l\'ogica. Es un nodo con un sub\'arbol.\\
+
+
+\begin{prooftree}
+\AxiomC{$e \in ASA$}
+\UnaryInfC{$\text{Not}\; e \in ASA$}
+\end{prooftree}
+
+\textbf{Operaciones Unarias}
+\texttt{UnOp\ op\ e} es un ASA si \( op \) es un operador unario v\'alido y \( e \) es un ASA. Representa operaciones unarias gen\'ericas.
+
+\textbf{Operadores unarios v\'alidos:}\\
+\begin{itemize}
+    \item \texttt{NullOp} -- verificar lista vac\'ia
+    \item \texttt{Add1Op} -- incrementar en 1
+    \item \texttt{Sub1Op} -- decrementar en 1
+    \item \texttt{HeadOp} -- cabeza de lista
+    \item \texttt{TailOp} -- cola de lista
+\end{itemize}
+
+\begin{prooftree}
+\AxiomC{$op \in Op$}
+\AxiomC{$e \in ASA$}
+\BinaryInfC{$UnOp(op, e)\in ASA$}
+\end{prooftree}
+
+\textbf{Pares}
+
+\(\mathrm{Pair}\; e_{1}\; e_{2}\) es un ASA si tanto \(e_{1}\) como \(e_{2}\) son ASAs. 
+Representa un par ordenado (una tupla de dos elementos). Es un nodo con 
+
+\begin{prooftree}
+\AxiomC{$e_{1} \in ASA$}
+\AxiomC{$e_{2} \in ASA$}
+\BinaryInfC{$Pair(e_1, e_2) \in ASA$}
+\end{prooftree}
+
+\textbf{Primer elemento de un par ordenado}
+
+\(\mathrm{Fst}\; e\) es un ASA si \(e \in ASA\). Representa la extracci\'on del primer elemento de un par. Es un nodo con un sub\'arbol.
+
+\begin{prooftree}
+\AxiomC{$e \in ASA$}
+\UnaryInfC{$Fst (e) \in ASA$}
+\end{prooftree}
+
+\textbf{Segundo elemento de un par}
+
+ \texttt{Snd}\; e es un ASA si \( e \in ASA \). Extrae el segundo elemento de un par. Es un nodo con un sub\'arbol.
+
+\begin{prooftree}
+\AxiomC{$e \in ASA$}
+\UnaryInfC{$Snd (e) \in ASA$}
+\end{prooftree}
+
+\textbf{Condicional If}
+
+\(\mathrm{If}\;\mathit{cond}\;\mathit{e_{t}}\;\mathit{e_{e}}\) es un ASA si 
+\(\mathit{cond}\), \(\mathit{e_{t}}\) y \(\mathit{e_{e}}\) son ASAs. Representa una expresi\'on condicional con tres sub\'arboles: condici\'on, rama \textit{then} y rama \textit{else}.
+
+
+\begin{prooftree}
+\AxiomC{$cond \in ASA$}
+\AxiomC{$e_{t} \in ASA$}
+\AxiomC{$e_{e} \in ASA$}
+\TrinaryInfC{$If (cond, e_t , e_e) \in ASA$}
+\end{prooftree}
+
+\textbf{Funciones}
+
+\texttt{Fun}\; \param\; \body\; es un ASA si 
+\(\param\) es una cadena que representa el par\'ametro formal y 
+\(\body\) es un ASA que representa el cuerpo de la funci\'on.
+Esta construcci\'on corresponde a la forma n\'ucleo de una lambda unaria (con un solo par\'ametro).
+
+
+\begin{prooftree}
+\AxiomC{$param \in \text{String}$}
+\AxiomC{$body \in ASA$}
+\BinaryInfC{$Fun (param, body) \in ASA$}
+\end{prooftree}
+
+\medskip
+
+Las funciones con m\'ultiples par\'ametros se representan mediante \textit{currying}, es decir, lambdas anidadas.  
+Por ejemplo, en Haskell:
+
+\begin{verbatim}
+Fun "x" (Fun "y" (BinOp Add (Id "x") (Id "y")))
+\end{verbatim}
+
+Representa la expresi\'on lambda:
+
+\[
+(\lambda x.\, (\lambda y.\, x + y))
+\]
+
+\textbf{Aplicaciones de función (binaria)}
+
+\textbf{Descripci\'on:} \texttt{App}\; func\; arg es un ASA si tanto \(func\) como \(arg\) son ASAs. 
+Representa la aplicaci\'on de una funci\'on a un argumento. 
+Esta es la forma n\'ucleo de aplicaci\'on binaria (un solo argumento).
+
+
+\begin{prooftree}
+\AxiomC{$func \in ASA$}
+\AxiomC{$arg \in ASA$}
+\BinaryInfC{$App (func, arg) \in ASA$}
+\end{prooftree}
+
+\medskip
+ 
+Las aplicaciones con m\'ultiples argumentos se representan mediante aplicaciones anidadas (currying):
+
+\begin{verbatim}
+haskellApp (App (Id "suma") (Num 3)) (Num 5)
+\end{verbatim}
+
+Esto representa matem\'aticamente:
+
+\[
+(\text{suma}\; 3)\; 5
+\]
+
+\textbf{Closure}
+
+\texttt{Closure}\; \mathit{param}\; \mathit{body}\; \mathit{env} es un ASA si:
+
+\begin{itemize}
+    \item \(\mathit{param}\) es el par\'ametro formal (una cadena),
+    \item \(\mathit{body}\) es el cuerpo de la funci\'on (un ASA),
+    \item \(\mathit{env}\) es una lista de asociaciones (entorno capturado) donde cada par \((x, v)\) enlaza un identificador \(x\) con un valor \(v\).
+\end{itemize}
+
+
+\begin{prooftree}
+\AxiomC{$param \in \text{String}$}
+\AxiomC{$body \in ASA$}
+\AxiomC{$env \in [(String, ASA)]$}
+\TrinaryInfC{$Closure (param, body, env) \in ASA$}
+\end{prooftree}
+
+Una closure no aparece en el c\'odigo fuente, sino que es creado durante la evaluaci\'on cuando se encuentra una expresi\'on \texttt{Fun}. La clausura captura el entorno l\'exico en el momento de su creaci\'on.
+
+
+
+
+\begin{prooftree}
+\AxiomC{$e \in ASA$}
+\AxiomC{$env \in [(String, ASA)]$}
+\BinaryInfC{$Expr(e, env) \in ASA$}
+\end{prooftree}
+
+\(\text{Expr}\; e\; env\) es un ASA si:
+
+\begin{itemize}
+    \item \(e\) es la expresi\'on a evaluar (\(ASA\)),
+    \item \(env\) es una lista de asociaciones que representa el entorno de evaluaci\'on.
+\end{itemize}
+
+\(\text{Expr}\) no aparece en el c\'odigo fuente. Es una construcci\'on sem\'antica utilizada durante la evaluaci\'on para representar la evaluaci\'on de una expresi\'on en un entorno espec\'ifico.
+
+\medskip
+
+\noindent\textbf{Contexto de uso:} Se utiliza principalmente en la regla de aplicaci\'on de funciones (paso pequeño), donde es necesario evaluar el cuerpo de una funci\'on en el entorno capturado por la clausura, extendido con el enlace del par\'ametro al argumento.
+
+\end{tcolorbox}
+
+
+
+\section{Azúcar sintáctica}
+
+El azúcar sintáctica es un concepto fundamental en el diseño de lenguajes de programación que data de 1964, cuando el científico de la computación Peter J. Landin acuñó este término para describir la sintaxis superficial de un lenguaje similar a ALGOL \cite{WikiSintaxis,IBMFortran}. Originalmente, Landin utilizó este concepto para referirse a características sintácticas que podían ser definidas semánticamente en términos de expresiones lambda más simples. Con el tiempo, lenguajes como CLU, ML y Scheme extendieron el término para referirse a cualquier sintaxis dentro de un lenguaje que pudiera ser definida en términos de un núcleo de construcciones esenciales.
+
+\begin{tcolorbox}[title= Definición: Azúcar Sintáctica]
+
+En ciencias de la computación, el azúcar sintáctica se refiere a la sintaxis dentro de un lenguaje de programación que está diseñada para hacer las cosas más fáciles de leer o expresar \cite{Serokell2020,Rathi2020,WikiSintaxis}. 
+
+Esta hace que el lenguaje sea ``más dulce'' para el uso humano: las cosas pueden expresarse con mayor claridad, de manera más concisa, o en un estilo alternativo que algunos programadores pueden preferir.\\
+De manera más formal, el azúcar sintáctica se define como aquellas características opcionales en los lenguajes de programación que proporcionan múltiples formas de realizar tareas similares \cite{UNAMMaterial}. \\
+Son construcciones sintácticas cuyos efectos están definidos en términos de otras construcciones sintácticas ya existentes en el lenguaje. Los procesadores de lenguaje, incluyendo compiladores y analizadores estáticos, frecuentemente expanden estas construcciones ``azucaradas'' en sus equivalentes más verbosos antes de procesarlas, un proceso denominado ``desazucarado'' o \textit{desugaring}.\\
+\end{tcolorbox}
+
+
+El azúcar sintáctica desempeña un papel crucial en el desarrollo moderno de software por diversas razones fundamentales:\\
+
+\textbf{Mejora de la legibilidad y expresividad.} El azúcar sintáctica permite que el código se escriba de manera más natural e intuitiva, facilitando que los programadores comprendan rápidamente el propósito y el flujo del código \cite{WikiSintaxis,Rathi2020}. Esto es particularmente valioso en proyectos grandes donde múltiples desarrolladores deben colaborar y entender código escrito por otros.
+
+\textbf{Reducción del código repetitivo.} Al proporcionar formas más concisas de expresar operaciones comunes, el azúcar sintáctica elimina la necesidad de código repetitivo (\textit{boilerplate}) y expresiones idiomáticas difíciles de descifrar. Esto no solo ahorra tiempo de desarrollo, sino que también reduce las oportunidades de introducir errores.
+
+\textbf{Abstracción de alto nivel.} El azúcar sintáctica permite a los programadores trabajar en un nivel de abstracción más elevado, enfocándose en la lógica del problema en lugar de los detalles de implementación de bajo nivel. Esto facilita la escritura de código que se asemeja más al lenguaje del dominio del problema que al lenguaje de la máquina \cite{OpenStax,WikiSintaxis}.
+
+\textbf{Simplificación de la implementación del compilador.} Al implementar características del lenguaje en el \textit{frontend} mediante desazucarado, se reduce la complejidad del \textit{backend} del compilador, ya que no es necesario agregar nuevos tipos de nodos al árbol de sintaxis abstracta (AST) para cada nueva característica sintáctica.
+
+Sin embargo, es importante reconocer que el azúcar sintáctica también presenta desafíos. La inclusión de múltiples características opcionales aumenta la complejidad de la especificación del lenguaje y puede causar problemas a medida que los programas crecen en tamaño y complejidad \cite{WikiSintaxis}. Algunos programadores, particularmente en la comunidad Lisp, consideran que estas características de usabilidad sintáctica son innecesarias o incluso frívolas, como lo expresó Alan Perlis en su famosa frase: ``El azúcar sintáctica causa cáncer de los punto y coma''.
+
+A pesar de estas críticas, el azúcar sintáctica continúa siendo una herramienta valiosa en el diseño de lenguajes de programación modernos, equilibrando la necesidad de expresividad y facilidad de uso con los requisitos de simplicidad y uniformidad del lenguaje.
+
+En el caso de LAMBDAE pasaremos de tener los SASA que son los definidos en la gramática, a tener los ASA. 
+
+\subsection{Eliminación de azúcar sintáctica: el Proceso de Desugaring en LAMBDAE}
+
+\subsubsection*{Justificación Teórica del Desugaring}
+
+El proceso de desugaring es una técnica fundamental en el diseño e implementación de lenguajes de programación modernos. Como establece la literatura, los procesadores de lenguaje, incluyendo compiladores y analizadores estáticos, frecuentemente expanden las construcciones azucaradas en sus equivalentes más verbosos antes de procesarlas \cite{Rathi2020, Serokell2020}. Este enfoque arquitectónico permite separar claramente la sintaxis superficial del lenguaje de su semántica esencial.
+
+El desugaring es esencialmente una transformación de sintaxis a sintaxis: una función que mapea expresiones escritas en una sintaxis rica y conveniente hacia un conjunto reducido de construcciones primitivas \cite{Rathi2020}. Esta estrategia ofrece beneficios arquitectónicos significativos: al reducir el número de construcciones que deben ser procesadas por las etapas posteriores del compilador (evaluación, análisis de tipos, optimización), se simplifica dramáticamente la implementación de estos componentes \cite{desugaring,Serokell2020}.
+
+En el contexto de nuestro lenguaje LAMBDAE, el proceso de desugaring se manifiesta como una transformación explícita entre dos representaciones de árbol sintáctico abstracto (AST): \textbf{SASA} (Syntactic Abstract Syntax tree with Sugar Added) y \textbf{ASA} (Abstract Syntax tree After desugaring). Esta distinción arquitectónica refleja el principio de que las características sintácticas convenientes deben ser eliminadas antes del procesamiento semántico.
+
+\subsubsection*{SASA y ASA}
+
+La arquitectura de LAMBDAE implementa una separación clara entre la sintaxis superficial (SASA) y el lenguaje núcleo (ASA). Esta separación es consistente con las prácticas establecidas en el diseño de lenguajes funcionales, donde el azúcar sintáctica se define en términos de un núcleo de construcciones esenciales.
+
+\subsubsection{SASA: Sintaxis Rica con Azúcar Sintáctica}
+
+El árbol SASA es producido directamente por el parser y contiene todas las construcciones sintácticas convenientes que el lenguaje ofrece al programador. Estas construcciones incluyen:
+
+\begin{enumerate}
+    \item \textbf{Operaciones n-arias}: Expresiones como \texttt{(+ e1 e2 ... en)} permiten operaciones sobre múltiples argumentos, eliminando la necesidad de anidar operaciones binarias.
+    
+    \item \textbf{Funciones lambda con múltiples parámetros}: La sintaxis \texttt{(lambda (x y z) body)} es más natural que las funciones unarias anidadas.
+    
+    \item \textbf{Construcciones let especializadas}: LAMBDAE distingue entre \texttt{let}, \texttt{let*} y \texttt{letrec}, cada una con semántica diferente para el alcance de variables.
+    
+    \item \textbf{Azúcar sintáctica de conveniencia}: Expresiones como \texttt{(add1 e)} y \texttt{(sub1 e)} que son abreviaciones de operaciones más complejas.
+    
+    \item \textbf{Expresiones condicionales múltiples}: La construcción \texttt{cond} que maneja múltiples casos de manera más elegante que \texttt{if} anidados.
+\end{enumerate}
+
+Como observa Rathi en su análisis de compiladores, estas abstracciones sintácticas ``hacen la programación más dulce'' al permitir código más legible y conciso, pero complican las etapas posteriores del compilador si no se eliminan \cite{Rathi2020}.
+
+\begin{tcolorbox}[title= Correción: Reglas de Inferencia SASA, breakable]
+A continuación se presentan las \textbf{reglas formales del árbol sintáctico SASA}, expresadas mediante sistemas de inferencia. Estas reglas especifican cómo cada construcción del lenguaje es reconocida y estructurada por el parser dentro del árbol SASA, asignando una forma canónica a expresiones que, aunque puedan variar en su superficie sintáctica, comparten una misma interpretación semántica. El objetivo de estas reglas es capturar de manera precisa la correspondencia entre la sintaxis concreta del lenguaje y su representación abstracta, facilitando posteriormente las fases de desazucaramiento, análisis semántico y traducción a la representación AL. Las reglas se presentan usando el estilo de derivación típico en la literatura formal, donde cada constructor del lenguaje queda caracterizado como un nodo válido del árbol SASA.
+
+
+\begin{prooftree}
+\AxiomC{$n \in int$}
+\UnaryInfC{$n \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$b \in bool$}
+\UnaryInfC{$b \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$x \in var$}
+\UnaryInfC{$x \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e \in SASA$}
+\UnaryInfC{$(not\ e) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e \in SASA$}
+\UnaryInfC{$(null?\ e) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e \in SASA$}
+\UnaryInfC{$(sqrt\ e) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e \in SASA$}
+\UnaryInfC{$(fst\ e) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e \in SASA$}
+\UnaryInfC{$(snd\ e) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e \in SASA$}
+\UnaryInfC{$(add1\ e) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e \in SASA$}
+\UnaryInfC{$(sub1\ e) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e_1,\dots,e_n \in SASA$}
+\UnaryInfC{$(+\ e_1\ \dots\ e_n) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e_1,\dots,e_n \in SASA$}
+\UnaryInfC{$(-\ e_1\ \dots\ e_n) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e_1,\dots,e_n \in SASA$}
+\UnaryInfC{$(*\ e_1\ \dots\ e_n) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e_1,\dots,e_n \in SASA$}
+\UnaryInfC{$(/ \ e_1\ \dots\ e_n) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e_1,\dots,e_n \in SASA$}
+\UnaryInfC{$(= \ e_1\ \dots\ e_n) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e_1 \in SASA$}
+\AxiomC{$e_2 \in SASA$}
+\BinaryInfC{$(pair\ e_1\ e_2) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e_1 \in SASA$}
+\AxiomC{$e_2 \in SASA$}
+\BinaryInfC{$(e_1,\ e_2) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$c \in SASA$}
+\AxiomC{$t \in SASA$}
+\AxiomC{$f \in SASA$}
+\TrinaryInfC{$(if\ c\ t\ f) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$(x_1,e_1),\dots,(x_n,e_n)$ son bindings}
+\AxiomC{$e_{body} \in SASA$}
+\BinaryInfC{$(let\ ((x_1\ e_1)\dots(x_n\ e_n))\ e_{body}) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$(x_1,e_1),\dots,(x_n,e_n)$}
+\AxiomC{$e_{body} \in SASA$}
+\BinaryInfC{$(let^*\ ((x_1\ e_1)\dots(x_n\ e_n))\ e_{body}) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$x \in var$}
+\AxiomC{$e_1 \in SASA$}
+\AxiomC{$e_2 \in SASA$}
+\TrinaryInfC{$(letrec\ (x\ e_1)\ e_2) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$x_1,\dots,x_n \in var$}
+\AxiomC{$e \in SASA$}
+\BinaryInfC{$(lambda\ (x_1\dots x_n)\ e) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e_1,\dots,e_n \in SASA$}
+\UnaryInfC{$[e_1,\dots,e_n] \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{}
+\UnaryInfC{$[] \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e \in SASA$}
+\UnaryInfC{$(head\ e) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$e \in SASA$}
+\UnaryInfC{$(tail\ e) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$[c_1\ e_1],\dots,[c_n\ e_n]$ cláusulas válidas}
+\UnaryInfC{$(cond\ [c_1\ e_1]\dots[c_n\ e_n]) \in SASA$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$f \in SASA$}
+\AxiomC{$a_1,\dots,a_n \in SASA$}
+\BinaryInfC{$(f\ a_1\ \dots\ a_n) \in SASA$}
+\end{prooftree}
+
+\end{tcolorbox}
+
+
+\subsubsection{ASA: Lenguaje Núcleo Desugared}
+
+El árbol ASA representa el lenguaje núcleo de LAMBDAE, conteniendo únicamente las construcciones primitivas necesarias para la evaluación. Este núcleo se caracteriza por:
+
+\begin{enumerate}
+    \item \textbf{Operaciones binarias exclusivamente}: Todas las operaciones n-arias se reducen a composiciones de operaciones binarias mediante \texttt{foldl1} o \texttt{foldr1}.
+    
+    \item \textbf{Funciones lambda unarias}: Toda función lambda acepta exactamente un parámetro. Las funciones multi-parámetro se representan mediante \textit{currying}.
+    
+    \item \textbf{Aplicación de función binaria}: La aplicación de función es estrictamente binaria, siguiendo el modelo del cálculo lambda.
+    
+    \item \textbf{Eliminación de construcciones derivadas}: Expresiones como \texttt{let}, \texttt{let*} y \texttt{cond} se traducen a combinaciones de \texttt{lambda}, aplicación de función, e \texttt{if}.
+\end{enumerate}
+
+Esta reducción a un núcleo mínimo es consistente con el principio de que ``el azúcar sintáctica se puede definir en términos de un conjunto núcleo de construcciones esenciales'' \cite{Rathi2020}.
+
+\subsection{Transformaciones de Desugaring en LAMBDAE}
+
+El módulo \texttt{Desugar} de LAMBDAE implementa la función central \texttt{desugar :: SASA -> ASA} que realiza la transformación sintáctica. A continuación, analizamos las transformaciones más significativas:
+
+\subsubsection{Desugaring de Operaciones N-arias}
+
+Las operaciones aritméticas y relacionales que aceptan múltiples argumentos se transforman en cadenas de operaciones binarias:
+
+\begin{lstlisting}[style=haskellstyle, caption={Desugaring de operaciones n-arias}]
+desugar (AddListS es) = foldl1 (BinOp AddOp) (map desugar es)
+desugar (SubListS es) = foldl1 (BinOp SubOp) (map desugar es)
+desugar (MulListS es) = foldl1 (BinOp MulOp) (map desugar es)
+\end{lstlisting}
+
+Por ejemplo, la expresión SASA \texttt{(+ 1 2 3 4)} se desugarea a:
+
+\begin{equation*}
+\texttt{BinOp AddOp (BinOp AddOp (BinOp AddOp (Num 1) (Num 2)) (Num 3)) (Num 4)}
+\end{equation*}
+
+Esta transformación refleja el principio de que operaciones complejas pueden expresarse mediante composición de operaciones más simples \cite{Krishnamurthi2015}.
+
+\subsubsection{Desugaring de Funciones Lambda Multi-parámetro}
+
+Las funciones lambda con múltiples parámetros se transforman en funciones unarias anidadas mediante currying:
+
+\begin{lstlisting}[style=haskellstyle, caption={Desugaring de funciones lambda}]
+desugar (FunListS [] body)     = desugar body
+desugar (FunListS (x:xs) body) = Fun x (desugar (FunListS xs body))
+\end{lstlisting}
+
+Una expresión SASA como \texttt{(lambda (x y z) (+ x y z))} se convierte en:
+
+\begin{equation*}
+\texttt{Fun "x" (Fun "y" (Fun "z" (BinOp AddOp (BinOp AddOp (Id "x") (Id "y")) (Id "z"))))}
+\end{equation*}
+
+Esta transformación implementa el concepto clásico de currying, donde funciones multi-argumento se representan como secuencias de funciones unarias \cite{Krishnamurthi2015,Rathi2020}.
+
+\subsubsection{Desugaring de Construcciones Let}
+
+El desugaring de las construcciones \texttt{let} demuestra uno de los principios más elegantes del diseño de lenguajes funcionales: \texttt{let} es simplemente azúcar sintáctica para la aplicación inmediata de una función lambda.
+
+\begin{lstlisting}[style=haskellstyle, caption={Desugaring de let}]
+desugar (LetS [(x,e)] body) = App (Fun x (desugar body)) (desugar e)
+\end{lstlisting}
+
+Esta transformación implementa la equivalencia:
+
+\begin{equation*}
+\texttt{(let ((x e)) body)} \equiv \texttt{((lambda (x) body) e)}
+\end{equation*}
+
+Esta es una de las transformaciones de desugaring más fundamentales en lenguajes funcionales, demostrando que el enlace de variables puede expresarse completamente en términos de abstracción y aplicación \cite{Rathi2020,Serokell2020}.
+
+\subsubsection{Desugaring de Let*}
+
+La construcción \texttt{let*}, que permite referencias secuenciales entre bindings, se desugarea recursivamente en \texttt{let} anidados:
+
+\begin{lstlisting}[style=haskellstyle, caption={Desugaring de let*}]
+desugar (LetStarS [] body) = desugar body
+desugar (LetStarS ((x,e):rest) body) =
+desugar (LetS [(x,e)] (LetStarS rest body))
+\end{lstlisting}
+
+Esta transformación ilustra cómo el azúcar sintáctica puede construirse en capas: \texttt{let*} se reduce a \texttt{let}, que a su vez se reduce a \texttt{lambda} y aplicación.
+
+\subsubsection{Desugaring de Expresiones Condicionales Múltiples}
+
+La construcción \texttt{cond} se desugarea recursivamente en expresiones \texttt{if} anidadas:
+
+\begin{lstlisting}[style=haskellstyle, caption={Desugaring de cond}]
+desugarCond :: [(SASA, SASA)] -> ASA
+desugarCond [] = error "cond sin clausulas"
+desugarCond [(g,e)] = desugar e
+desugarCond ((g,e):rest) = 
+  If (desugar g) (desugar e) (desugarCond rest)
+\end{lstlisting}
+
+Una expresión como:
+
+\begin{lstlisting}[style=haskellstyle]
+(cond 
+  [(< x 0) "negativo"]
+  [(= x 0) "cero"]
+  [else "positivo"])
+\end{lstlisting}
+
+Se transforma en:
+
+\begin{equation*}
+\texttt{If (BinOp LtOp x 0) "negativo" (If (BinOp EqOp x 0) "cero" "positivo")}
+\end{equation*}
+
+\subsubsection{Desugaring de Azúcar de Conveniencia}
+
+LAMBDAE incluye construcciones de conveniencia como \texttt{add1} y \texttt{sub1} que se desugarean directamente en el parser:
+
+\begin{lstlisting}[style=haskellstyle, caption={Azúcar sintáctica de conveniencia}]
+| '(' "add1" SASA ')' { AddListS [$3, NumS 1] }
+| '(' "sub1" SASA ')' { SubListS [$3, NumS 1] }
+\end{lstlisting}
+
+Estas expresiones ilustran el principio de que incluso operaciones simples pueden beneficiarse del azúcar sintáctica para mejorar la legibilidad del código.
+
+\begin{tcolorbox}[title= Corrección: Desugar modulo A4, breakable]
+
+\section*{Proceso de Desazucaramiento en \texttt{LAMBDAE}}
+
+\subsection*{Introducción al Desazucaramiento}
+
+El \textit{desazucaramiento} (\textit{desugaring}) es el proceso de traducción desde una sintaxis superficial rica (SASA -- \textit{Surface Abstract Syntax}) hacia una sintaxis núcleo minimal (ASA -- \textit{Abstract Syntax}). Este proceso es fundamental en el diseño de \texttt{LAMBDAE}, ya que permite ofrecer al programador construcciones expresivas y convenientes, mientras se mantiene un núcleo semántico simple y bien definido.
+
+\texttt{LAMBDAE} es un lenguaje que extiende \texttt{MiniLisp} con las siguientes características clave:
+
+\begin{itemize}
+    \item \textbf{Alcance estático (léxico):} Las variables se resuelven según el entorno donde fueron definidas, no donde fueron invocadas.
+    \item \textbf{Estrategia de evaluación ansiosa} (\textit{eager}/\textit{call-by-value}): Los argumentos se evalúan completamente antes de aplicar funciones.
+    \item \textbf{Notación prefija:} Los operadores preceden a sus operandos, siguiendo la tradición de Lisp.
+\end{itemize}
+
+\section*{1. Arquitectura del Sistema de Desazucaramiento}
+
+\subsection*{1.1 Separación de Sintaxis}
+
+El diseño del compilador separa claramente dos niveles sintácticos:
+
+\subsubsection*{SASA (Surface Abstract Syntax)}
+\begin{itemize}
+    \item Generada directamente por el parser (\textit{Happy}).
+    \item Contiene toda la riqueza sintáctica del lenguaje.
+    \item Incluye construcciones convenientes como operadores variádicos, \texttt{let*}, \texttt{letrec}, \texttt{cond}, listas con sintaxis \texttt{[\,]}.
+\end{itemize}
+
+\subsubsection*{ASA (Abstract Syntax)}
+\begin{itemize}
+    \item Representación núcleo minimal.
+    \item Solo dos formas de función:
+    \begin{itemize}
+        \item lambda unaria: \texttt{Fun}
+        \item aplicación binaria: \texttt{App}
+    \end{itemize}
+    \item Operadores convertidos a forma binaria mediante \texttt{BinOp}.
+    \item Base para la evaluación mediante la semántica operacional.
+\end{itemize}
+
+\begin{verbatim}
+-- Sintaxis núcleo minimal
+data ASA
+  = Num Int | Boolean Bool | Id String
+  | BinOp Op ASA ASA          -- Operadores binarios
+  | Fun String ASA            -- Lambda UNARIA (núcleo)
+  | App ASA ASA               -- Aplicación BINARIA (núcleo)
+  | If ASA ASA ASA
+  | Pair ASA ASA | Fst ASA | Snd ASA
+  | Sqrt ASA | Not ASA | UnOp Op ASA
+  | Closure String ASA [(String, ASA)]  -- Runtime
+  | Expr ASA [(String, ASA)]            -- Runtime
+\end{verbatim}
+
+\vspace{0,5 cm}
+
+\vspace{0,5 cm}\textbf{} La estructura de desazucaramiento se fundamenta en la transformación de constructos variádicos a una forma binaria estricta mediante el uso de funciones de orden superior. Mecánicamente, estas funciones iteran sobre la lista de argumentos desazucarados, aplicando progresivamente el constructor binario (\texttt{BinOp}) para generar una estructura anidada. Se distinguen dos estrategias críticas:\begin{itemize} \item Se emplea pliegue por la izquierda (\textit{fold-left}) para operadores aritméticos estándar (resta, división), garantizando la asociatividad izquierda necesaria para preservar la semántica matemática$((a - b) - c)$. \item Se emplea pliegue por la derecha (\textit{fold-right}) para casos específicos como la exponenciación (\texttt{expt}) y la construcción de listas (\texttt{cons}).Esto asegura que la evaluación procede desde el último elemento hacia el primero.$(a^{\wedge}(b^{\wedge}c))$, respetando la naturaleza recursiva de estas operaciones. \end{itemize}
+
+
+\section{Desazucaramiento de Operadores Variádicos}
+
+\subsection{El Papel Fundamental de \texttt{fold}}
+
+Una decisión de diseño crucial en \texttt{LAMBDAE} es que todos los operadores son
+\textbf{prefijos} y se \textbf{asocian hacia la izquierda}. Esto tiene profundas implicaciones semánticas:
+
+\[
+(+\; 1\; 2\; 3\; 4) \;\equiv\; (((1 + 2) + 3) + 4)
+\qquad \text{(asociatividad izquierda)}
+\]
+
+Para implementar esta asociatividad, el desazucaramiento utiliza \texttt{foldl1}
+(\emph{fold left}), que es esencial para:
+
+\begin{itemize}
+    \item Preservar la semántica de asociatividad izquierda.
+    \item Reducir operaciones n-arias a operaciones binarias.
+    \item Mantener el orden de evaluación ansioso (\emph{call-by-value}).
+\end{itemize}
+
+\subsection{Operadores Aritméticos}
+
+\begin{verbatim}
+desugar (AddListS es) = foldl1 (BinOp AddOp) (map desugar es)
+desugar (SubListS es) = foldl1 (BinOp SubOp) (map desugar es)
+desugar (MulListS es) = foldl1 (BinOp MulOp) (map desugar es)
+desugar (DivListS es) = foldl1 (BinOp DivOp) (map desugar es)
+\end{verbatim}
+
+\subsubsection*{Ejemplo detallado}
+
+\[
+(-\; 10\; 3\; 2)
+\]
+
+\noindent\textbf{Proceso de desazucaramiento:}
+
+\begin{enumerate}
+    \item El parser genera:
+    \[
+    \texttt{SubListS [NumS 10,\; NumS 3,\; NumS 2]}
+    \]
+    \item Aplicación de \texttt{map desugar}:
+    \[
+    [\texttt{Num 10},\; \texttt{Num 3},\; \texttt{Num 2}]
+    \]
+    \item Aplicación de:
+    \[
+    \texttt{foldl1 (BinOp SubOp)}
+    \]
+    Recordando que:
+    \[
+    \texttt{foldl1}\ f\ [a, b, c] = f (f\ a\ b)\ c
+    \]
+    \item Resultado final:
+    \[
+    \texttt{BinOp SubOp (BinOp SubOp (Num 10)\ (Num 3))\ (Num 2)}
+    \]
+\end{enumerate}
+
+\subsubsection*{Representación en árbol}
+
+\begin{verbatim}
+       BinOp SubOp
+          /    \
+    BinOp SubOp  Num 2
+       /    \
+    Num 10  Num 3
+\end{verbatim}
+
+\section{Importancia de \texttt{foldl1} y \texttt{foldr1}}
+
+\subsection{Asociatividad Izquierda en Operadores Aritméticos}
+
+La función \texttt{foldl1} es crucial en el desazucaramiento de operadores variádicos, pues garantiza la asociatividad izquierda. Por ejemplo:
+
+\[
+(+\; 1\; 2\; 3\; 4)
+\;\;\equiv\;\;
+(((1 + 2) + 3) + 4)
+\]
+
+Si se utilizara \texttt{foldr1}, se obtendría una semántica incorrecta. En particular, para la resta:
+
+\[
+\texttt{foldl1}:\quad (10 - 3) - 2 = 5
+\]
+\[
+\texttt{foldr1}:\quad 10 - (3 - 2) = 9
+\]
+
+Lo cual no coincide con la notación prefija asociativa a la izquierda establecida en LAMBDAE.
+
+\subsection{Exponenciación: Asociatividad Derecha}
+
+La exponenciación es la única operación que debe asociarse hacia la derecha. Por ello, se usa:
+
+\[
+\texttt{foldr1 (BinOp ExptOp)}
+\]
+
+Ejemplo:
+
+\[
+(\text{expt}\; 2\; 3\; 2)
+\;\;\equiv\;\;
+2^{(3^{2})}
+=
+2^{9}
+= 512
+\]
+
+Si se aplicara asociatividad izquierda:
+
+\[
+(2^3)^2 = 8^2 = 64
+\]
+
+lo cual sería incorrecto.
+
+\subsection{Comparaciones Encadenadas}
+
+Los operadores de comparación se traducen en comparaciones consecutivas, todas las cuales deben evaluarse (estrategia ansiosa):
+
+\[
+(<\; 1\; 2\; 3)
+\;\;\equiv\;\;
+\text{and}\bigl(1 < 2,\; 2 < 3\bigr)
+\]
+A diferencia de las operaciones aritméticas, los operadores relacionales ($<, >, =, \dots$) no son cerrados sobre su dominio (reciben números pero regresan booleanos), lo que impide el uso de una reducción simple (\textit{fold}). Por ello, la transformación se define formalmente como una cadena recursiva de conjunciones lógicas que verifican la propiedad de adyacencia:$$\mathcal{D}\llbracket (op \ e_1 \ e_2 \ \dots \ e_n) \rrbracket = 
+\text{BinOp}(\text{And}, 
+\underbrace{\text{BinOp}_{op}(\mathcal{D}\llbracket e_1 \rrbracket, \mathcal{D}\llbracket e_2 \rrbracket)}_{\text{Comparación Binaria}}, 
+\underbrace{\mathcal{D}\llbracket (op \ e_2 \ \dots \ e_n) \rrbracket}_{\text{Recursión}})$$Con el caso base para un solo elemento:$\mathcal{D}\llbracket (op \ e_n) \rrbracket = \text{Boolean}(\text{True})$. Esta expansión garantiza semánticamente que se verifiquen todos los intervalos$(e_i \ op \ e_{i+1})$de izquierda a derecha.
+
+\section{Implementación}
+
+\begin{lstlisting}[language=Haskell]
+chainCompare :: Op -> [ASA] -> ASA
+chainCompare _ []  = Boolean True
+chainCompare _ [_] = Boolean True
+chainCompare op (x:y:rest) =
+  let cmp = BinOp op x y
+  in case rest of
+       [] -> cmp
+       _  -> BinOp AndOp cmp (chainCompare op (y:rest))
+\end{lstlisting}
+
+Ejemplo:
+
+\[
+(<\ 1\ 5\ 10\ 15)
+\]
+
+Se desazucara a:
+
+\[
+\mathrm{BinOp}\ \mathrm{AndOp}\ 
+  \bigl(\mathrm{BinOp}\ \mathrm{LtOp}\ 1\ 5 \bigr)
+  \bigl(\mathrm{BinOp}\ \mathrm{AndOp}\ 
+      (\mathrm{BinOp}\ \mathrm{LtOp}\ 5\ 10)
+      (\mathrm{BinOp}\ \mathrm{LtOp}\ 10\ 15)
+  \bigr)
+\]
+
+Este diseño evita el cortocircuito del operador \texttt{and} y garantiza evaluación completa.
+
+\textbf{} La implementación concreta materializa la regla recursiva definida anteriormente, transformando la lista lineal de operandos en una jerarquía de conjunciones anidadas. Esta estructura garantiza que se verifique la relación binaria para cada par de elementos adyacentes.$(e_i, e_{i+1})$en la secuencia.Por ejemplo, la expresión variádica:$$(<\ 1\ 5\ 10\ 15)$$Se transforma sistemáticamente en el siguiente árbol de sintaxis abstracta (ASA), donde el operador lógico \texttt{And} unifica las validaciones individuales:$$\mathrm{BinOp}(\mathrm{And},
+  \underbrace{\mathrm{BinOp}(\mathrm{Lt}, 1, 5)}_{\text{Par } 1-2},
+  \mathrm{BinOp}(\mathrm{And},
+    \underbrace{\mathrm{BinOp}(\mathrm{Lt}, 5, 10)}_{\text{Par } 2-3},
+    \underbrace{\mathrm{BinOp}(\mathrm{Lt}, 10, 15)}_{\text{Par } 3-4}
+  )
+)$$Este diseño hace explícito el flujo de evaluación, forzando la comprobación de todos los intervalos sin depender de mecanismos de cortocircuito implícitos del lenguaje anfitrión.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Currying: Lambdas Multivariádicas a Unarias}
+
+\subsection{Principio de Currying}
+
+En LAMBDAE toda función del núcleo es una lambda unaria:
+
+\[
+\lambda(x,y,z).\ (+\ x\ y\ z)
+\]
+
+Se desazucara a:
+
+\[
+\mathrm{Fun}\ "x"\ (\mathrm{Fun}\ "y"\ (\mathrm{Fun}\ "z"\ (\dots )))
+\]
+
+Implementación:
+
+\begin{lstlisting}[language=Haskell]
+desugar (FunListS [] body)     = desugar body
+desugar (FunListS (x:xs) body) = Fun x (desugar (FunListS xs body))
+\end{lstlisting}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Aplicación Multivariádica}
+
+\[
+(f\ 1\ 2\ 3)
+\]
+
+Se traduce mediante asociatividad izquierda:
+
+\[
+\mathrm{App}(\mathrm{App}(\mathrm{App}\ f\ 1)\ 2)\ 3
+\]
+
+\vspace{0,5 cm}\textbf{} La transformación de funciones y aplicaciones multivariádicas responde a la restricción del núcleo mínimo de LAMBDAE, que opera exclusivamente con aridad unaria. Formalmente, este proceso se define mediante dos reglas recursivas que garantizan la equivalencia semántica con el Cálculo Lambda:\begin{itemize} \item \textbf{Abstracción (Currying):} Se descomponen los parámetros múltiples en una cadena de funciones unarias anidadas:$$\mathcal{D}\llbracket \lambda(x_1 \dots x_n). e \rrbracket = \text{Fun}(x_1, \mathcal{D}\llbracket \lambda(x_2 \dots x_n). e \rrbracket)$$\item \textbf{Aplicación (Asociatividad Izquierda):} La aplicación de argumentos se reduce secuencialmente para respetar la precedencia estándar:
+\[
+\mathcal{D}\llbracket (f \ e_1 \dots e_n) \rrbracket = \text{App}(\mathcal{D}\llbracket (f \ e_1 \dots e_{n-1}) \rrbracket, \mathcal{D}\llbracket e_n \rrbracket)
+\]
+\end{itemize} Esta formalización asegura que cualquier construcción de alto nivel sea reducible a términos válidos del núcleo semántico sin ambigüedad.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Desazucaramiento de Enlaces}
+
+\subsection{Let Simple}
+
+Caso unidad:
+
+\[
+\mathrm{desugar}\bigl(\mathrm{LetS}[(x,e)]\ \text{body}\bigr)
+=
+\mathrm{App}\bigl( \mathrm{Fun}\ x\ (\mathrm{desugar}\ \text{body}) \bigr)
+               (\mathrm{desugar}\ e)
+\]
+
+Caso múltiple:
+
+\[
+\text{let }[(x,e),(y,e')] \ \text{body}
+\]
+
+Se traduce a:
+
+\[
+\mathrm{App}\Bigl(
+   \mathrm{App}(\mathrm{Fun}\ x\ (\mathrm{Fun}\ y\ \text{body}))\ e
+\Bigr)\ e'
+\]
+
+
+\vspace{0,5 cm}
+\textbf{} La transformación de un \texttt{let} con Múltiples enlaces requiere construir simultáneamente una abstracción currificada y su correspondiente secuencia de aplicaciones. Formalmente, esto se implementa mediante la composición de dos reducciones estructurales:\begin{enumerate} \item Se aplica \texttt{foldr} sobre la lista de variables para construir el núcleo funcional anidado (\texttt{Fun}), encapsulando el cuerpo de adentro hacia afuera ($\lambda x. \lambda y. \text{body}$). \item Se aplica \texttt{foldl} sobre la lista de expresiones para generar la cadena de aplicaciones (\texttt{App}), asegurando que la función currificada consuma sus argumentos en orden de izquierda a derecha$(\dots e)\ e'$. \end{enumerar}Esta estrategia garantiza que la estructura sintáctica \texttt{let} sea isomorfa a la aplicación inmediata de una lambda n-aria en el núcleo.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{let*}
+
+\begin{lstlisting}[language=Haskell]
+desugar (LetStarS [] body) = desugar body
+desugar (LetStarS ((x,e):rest) body) =
+  desugar (LetS [(x,e)] (LetStarS rest body))
+\end{lstlisting}
+
+\vspace{0,5 cm}\textbf{} A diferencia del \texttt{let} paralelo, la construcción \texttt{let*} permite que cada definición haga referencia a las variables vinculadas anteriormente en la misma lista. Formalmente, esto se define mediante una transformación recursiva que expande la lista de enlaces en una jerarquía de expresiones \texttt{let} anidadas (que a su vez se desazucaran a lambdas).La función de transformación $\mathcal{D}$ se define inductivamente sobre la lista de enlaces:\begin{itemize} \item \textbf{Caso Base:} Si no hay enlaces pendientes, se procesa el cuerpo directamente:$$ \mathcal{D}\llbracket (\text{let*} \ () \ \text{body}) \rrbracket = \mathcal{D}\llbracket \text{body} \rrbracket $$\item \textbf{Caso Recursivo:} Se extrae el primer par $(x, e)$ para formar un \texttt{let} externo, cuyo cuerpo contiene el resto de los enlaces:$$ \mathcal{D}\llbracket (\text{let*} \ ((x, e) : \text{rest}) \ \text{body}) \rrbracket = \mathcal{D}\llbracket (\text{let } (x, e) \ (\text{let*} \ (\text{rest}) \ \text{body})) \rrbracket $$\end{itemize}Esta definición recursiva garantiza que el alcance de la variable $x$ cubre tanto las definiciones siguientes en \texttt{rest} como el \texttt{body} final.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{letrec y el Combinador Z}
+
+Traducción:
+
+\[
+\text{letrec } (f\ v)\ c
+\quad\Rightarrow\quad
+\text{let } (f = Z\ (\lambda(f).\, v))\ c
+\]
+
+El combinador \(Z\), apto para evaluación ansiosa, es:
+
+\[
+Z = \lambda f.\ 
+      (\lambda x.\ f(\lambda v.\ (x x)\ v))
+      (\lambda x.\ f(\lambda v.\ (x x)\ v))
+\]
+
+\vspace{0,5 cm}\textbf{} Para introducir definiciones recursivas en un núcleo de cálculo lambda puro (que carece de autorreferencia nativa), la construcción \texttt{letrec} se transforma formalmente en un enlace \texttt{let} donde la función se define como el punto fijo de su abstracción. Es fundamental notar que, debido a la estrategia de evaluación ansiosa  de LAMBDAE, el uso del combinador Y estándar provocaría divergencia (no terminación) inmediata. Por esta razón, la formalización implementa el Combinador Z. Este operador presenta una $\eta$-expansión amplia$(\lambda v.\ (x x)\ v)$dentro de la autoaplicación, lo que retrasa la evaluación del paso recursivo hasta que el argumento es estrictamente necesario, garantizando así la convergencia de la definición en un entorno estricto.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Listas y Desazucaramiento}
+
+\subsection{Construcción}
+
+\[
+[1,2,3] \equiv ( \mathrm{cons}\ 1\ (\mathrm{cons}\ 2\ (\mathrm{cons}\ 3\ \mathrm{nil})))
+\]
+
+Implementación:
+
+\begin{lstlisting}[language=Haskell]
+desugar (ListS [])     = Id "nil"
+desugar (ListS (x:xs)) =
+  App (App (Id "cons") (desugar x))
+      (desugar (ListS xs))
+\end{lstlisting}
+
+\vspace{0.5cm}\textbf{}Con el objetivo de dotar al lenguaje de una notación intuitiva sin comprometer la parsimonia del núcleo, se decidió implementar una versión propia de listas basada en azúcar sintáctica. Dado que el núcleo (ASA) carece de un tipo de dato primitivo para secuencias, las listas se definen formalmente mediante una transformación inductiva. La notación de corchetes \texttt{[,]} se traduce en una estructura de pares enlazados mediante las siguientes reglas recursivas:\begin{itemize}\item \textbf{Caso Base (Vacío):} La lista vacía se reduce directamente al identificador centinela:$$ \mathcal{D}\llbracket [\ ] \rrbracket = \text{Id}(\text{"nil"}) $$\item \textbf{Caso Inductivo (Construcción):} Una lista no vacía se descompone estructuralmente, aplicando el constructor \texttt{cons} a la cabeza desazucarada y al resultado de la transformación recursiva de la cola:$$ \mathcal{D}\llbracket [x : xs] \rrbracket = \text{App}(\text{App}(\text{Id}(\text{"cons"}), \mathcal{D}\llbracket x \rrbracket), \mathcal{D}\llbracket xs \rrbracket) $$\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Desazucaramiento de \texttt{cond}}
+
+\[
+\mathrm{cond}\ 
+[(g_1,e_1), (g_2,e_2), \dots]
+\quad\Rightarrow\quad
+\mathrm{if}\ g_1\ e_1\ (\mathrm{if}\ g_2\ e_2\ \dots)
+\]
+
+Código:
+
+\begin{lstlisting}[language=Haskell]
+desugarCond []           = error "cond sin cláusulas"
+desugarCond [(g,e)]      = desugar e
+desugarCond ((g,e):rest) =
+  If (desugar g) (desugar e) (desugarCond rest)
+\end{lstlisting}
+
+Ejemplo:
+
+\[
+\mathrm{cond}\ [
+ (x < 0,\ -1),
+ (x = 0,\ 0),
+ (\mathrm{else},\ 1)
+]
+\]
+
+\[
+\Rightarrow\ 
+\mathrm{if}\ x<0\ -1\ (\mathrm{if}\ x=0\ 0\ 1)
+\]
+
+
+\vspace{0.5cm}\textbf{}La expresión \texttt{cond} proporciona una sintaxis para la evaluación condicional de múltiples ramas, eliminando la necesidad de anidar manualmente expresiones \texttt{if}. Formalmente, esta construcción se define como azúcar sintáctica que se reduce recursivamente a una cascada de condicionales binarios en el núcleo.La transformación $\mathcal{D}$ procesa la lista de cláusulas $\{(g_1, e_1), \dots, (g_n, e_n)\}$ de la siguiente manera:\begin{itemize}\item \textbf{Caso Recursivo :} Si existen múltiples cláusulas pendientes, se genera un nodo \texttt{If} donde la primera guardia $g_1$ decide si evaluar su expresión $e_1$ o continuar con la expansión recursiva del resto de la lista:$$\mathcal{D}\llbracket (\text{cond } (g, e) : \text{rest}) \rrbracket = \text{If}(\mathcal{D}\llbracket g \rrbracket, \mathcal{D}\llbracket e \rrbracket, \mathcal{D}\llbracket (\text{cond } \text{rest}) \rrbracket)$$\item \textbf{Caso Base (Cláusula Final/Else):} La última cláusula de la lista se interpreta como la rama "sino" (\textit{else}) del condicional inmediatamente anterior, devolviendo su expresión directamente:
+\[
+\mathcal{D}\llbracket (\text{cond } [(g_{final}, e_{final})]) \rrbracket = \mathcal{D}\llbracket e_{final} \rrbracket
+\]
+\end{itemize}
+\end{tcolorbox}
+
+
+\subsection{Beneficios Arquitectónicos del Desugaring en LAMBDAE}
+
+La implementación de desugaring en LAMBDAE proporciona múltiples ventajas arquitectónicas:
+
+\subsubsection{Simplificación del Evaluador}
+
+Al reducir SASA a ASA antes de la evaluación, el intérprete de LAMBDAE solo necesita manejar un conjunto reducido de construcciones. Esto reduce significativamente la complejidad del evaluador y facilita la verificación de su correctitud.
+
+\subsubsection{Reutilización de Código y Demostraciones}
+
+Como observa el material de la Universidad de Tübingen, si se han escrito algoritmos o demostrado propiedades sobre el lenguaje núcleo (ASA), estos automáticamente se aplican a todas las construcciones del lenguaje superficial (SASA) después del desugaring. Esto representa una economía significativa en el esfuerzo de desarrollo y verificación.
+
+\subsubsection{Extensibilidad del Lenguaje}
+
+La arquitectura de dos niveles facilita la adición de nuevas características al lenguaje. Nuevas construcciones sintácticas pueden agregarse al nivel SASA siempre que puedan expresarse en términos del núcleo ASA, sin necesidad de modificar el evaluador.
+
+\subsubsection{Claridad Semántica}
+
+El desugaring hace explícita la semántica de cada construcción sintáctica al mostrar exactamente cómo se traduce en términos del núcleo. Esto proporciona una especificación formal del significado de cada característica del lenguaje.
+
+
+
+\section{Semántica operacional}
+
+La semántica operacional describe cómo se ejecutan los programas de un lenguaje paso a paso. A diferencia de la semántica denotacional (que define el significado de un programa como funciones matemáticas) o la axiomatica (que define propiedades lógicas de los programas), la semántica operacional se centra en la evolución del estado del programa durante su ejecución.
+
+Se puede ver como “un conjunto de reglas que explican cómo cada instrucción afecta al estado del programa”.
+
+\subsubsection*{SmallStep: Semántica con ambientes}
+
+\begin{tcolorbox}[title= Correción:Definición Notación de Paso Pequeño\textit{(small-step)}   MÓDULO A5]
+
+La semántica de paso pequeño (\textit{small-step semantics}) o semántica operacional estructural, es un método formal para especificar el comportamiento de los lenguajes de programación que describe la evaluación de programas como una secuencia de pasos de reducción atómicos.
+
+En este enfoque, se define una relación de transición (típicamente denotada como \(\to\)) que describe cómo una expresión o configuración del programa se reduce a otra en un único paso de cómputo. La evaluación completa de un programa se modela como una secuencia de estas transiciones individuales hasta alcanzar un valor final o un estado terminal.
+
+\textbf{Características principales:}
+
+\begin{itemize}
+    \item \textbf{Granularidad fina:} Cada paso de reducción representa la operación más pequeña de cómputo posible.
+    \item \textbf{Determinismo o no-determinismo:} Puede especificar tanto evaluaciones deterministas como no deterministas.
+    \item \textbf{Orden de evaluación explícito:} Hace explícito el orden en que se evalúan las subexpresiones.
+    \item \textbf{Facilita el razonamiento:} Permite razonar sobre propiedades como la terminación, el progreso y la preservación de tipos.
+\end{itemize}
+
+
+Esto contrasta con la semántica de paso grande (\textit{big-step semantics}), que describe directamente la relación entre una expresión y su resultado final sin detallar los pasos intermedios.\cite{plotkin2004,pierce2002,wright1994}
+
+    
+\end{tcolorbox}
+A continuación se muestran las reglas de paso pequeño (\textit{small-step semantics\footnotemark}) 
+para el lenguaje, considerando ambientes explícitos $\varepsilon$.
+
+\begin{tcolorbox}[title= Correción: Reglas de paso pequeño LAMBDAE   MÓDULO A5,breakable]
+    
+\[
+\textbf{Relación de evaluación: } \langle e, \varepsilon \rangle \;\longrightarrow\; \langle e', \varepsilon' \rangle
+\]
+Donde:
+
+\begin{itemize}
+    \item expresión: es la expresión a evaluar
+    \item $\varepsilon$: es el ambiente (environment) que mapea identificadores a valores
+    \item valor: es el resultado de la evaluación
+    \item $\varepsilon$: es el ambiente (potencialmente modificado) después de la evaluación
+\end{itemize}
+
+
+
+\bigskip
+
+
+\subsection{\textbf{Reglas Básicas}}
+
+Se presentan las construcciones de las reglas básicas de nuestro lenguaje, de tal froma que cada una de estas representan los estados terminales de LAMBDAE.\\
+
+\textbf{Identificadores}
+\begin{center}
+\begin{mathpar}
+\frac{}{ \langle Id("nil"), \varepsilon \rangle \rightarrow \langle Id("nil"), \varepsilon \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item La lista vacía representada por el identificador especial ``nil'' es un valor terminal. 
+    \item En \texttt{LAMBDAE}, las listas vacías se representan mediante \texttt{[]} en la sintaxis concreta, pero en el AST (Árbol de Sintaxis Abstracta) se representan como \texttt{Id(``nil'')}, pues caemos en el caso en el que el identificador en el ambiente p es vacío. 
+    \item Esta regla establece que \texttt{nil} ya está completamente evaluado y no requiere más reducciones. 
+    \item El ambiente $\varepsilon$ permanece sin cambios porque no se realizan sustituciones ni búsquedas.
+\end{itemize}
+
+\textbf{Números}
+\begin{center}
+\begin{mathpar}
+\and
+\frac{}{ \langle Num(n), \varepsilon \rangle \rightarrow \langle Num(n), \varepsilon \rangle }
+\end{mathpar}
+\end{center}
+\begin{itemize}
+    \item Un número entero \textit{n} es un valor terminal según la sintaxis léxica de LAMBDAE: int ::= 0 | [1-9][0-9]*.
+    \item En el AST, los números se representan mediante el constructor \textit{Num(n)}, donde \textit{n} es el valor numérico.
+    \item Esta regla indica que los números ya están en su forma evaluada y no pueden reducirse más.
+    \item El ambiente $\varepsilon$ no se modifica.
+\end{itemize}
+
+
+\textbf{Constantes booleanas}
+\begin{center}
+\begin{mathpar}
+\frac{}{ \langle Boolean(b), \varepsilon \rangle \rightarrow \langle Boolean(b), \varepsilon \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item Un valor booleano \textit{b} (que puede ser True o False según la sintaxis léxica: bool ::= true | false) es un valor terminal.
+    \item En el AST, los booleanos se representan mediante el constructor \texttt{Boolean(b)}, donde \( b \in \{ \text{True}, \text{False} \}. \)
+    \item Esta regla establece que los booleanos ya están completamente evaluados.
+    \item El ambiente $\varepsilon$ no se modifica.
+\end{itemize}
+
+\textbf{Variables}
+\begin{center}
+\begin{mathpar}
+\frac{lookupEnv(i, \varepsilon) = v}
+     { \langle Id(i), \varepsilon \rangle \rightarrow \langle v, \varepsilon \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item Un identificador \texttt{i} (que según la sintaxis léxica cumple: \texttt{id ::= [A-Za-z][A-Za-z0-9\_]*}) representa una \textbf{variable} en el programa.
+    
+    \item En el AST, los identificadores se representan mediante el constructor \texttt{Id(i)}, donde \texttt{i} es el nombre de la variable.
+    
+    \item Definimos la construcción de la función \texttt{lookupEnv(i, $\varepsilon$)} busca el identificador \texttt{i} en el ambiente \(\varepsilon\) y regresa su valor asociado \(v\).
+    
+    \item  Si la búsqueda es exitosa, la expresión \texttt{Id(i)} se \textbf{reduce al valor} \(v\) que tenía almacenado en el ambiente.
+    
+    \item El ambiente \(\varepsilon\) no se modifica (solo se consulta).
+\end{itemize}
+
+
+\bigskip
+
+\textbf{Operaciones Binarias y Unarias}
+
+Como habíamos menciondo previamente, estas reglas implementan la estrategia de evaluación \textit{call-by-value} (estricta) de izquierda a derecha, donde los argumentos deben evaluarse completamente antes de aplicar el operador.
+
+\subsection*{Operadores Binarios (\texttt{BinOp})}
+
+En \texttt{LAMBDAE}, los operadores binarios incluyen:
+\texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}, \texttt{=}, \texttt{<}, \texttt{>}, \texttt{<=}, \texttt{>=}, \texttt{pair}.\\
+
+
+\textbf{Regla que comprueba si es un valor canónico:}
+
+
+En el caso de las operaciones binarias, contamos con la construcción \textit{isValue}, la cual verifica si los operandos ya se encuentran en su forma canónica. Esta construcción devuelve un valor booleano: \textit{True} indica que el operando es canónico, mientras que \textit{False} señala que aún no lo es. 
+
+Como consecuencia, una vez que un operando es canónico, debe considerarse irreducibles, además el ambiente de evaluación no se modifica.
+
+
+\begin{center}
+\begin{mathpar}
+\frac{isValue(v_1) \ \text{y}\ isValue(v_2)}
+     { \langle BinOp(op, v_1, v_2), \varepsilon \rangle \rightarrow \langle evalBinOp(op, v_1, v_2), \varepsilon \rangle }
+
+\and
+\frac{isValue(v_1) \quad \langle e_2, \varepsilon \rangle \rightarrow \langle e_2', \varepsilon' \rangle}
+     { \langle BinOp(op, v_1, e_2), \varepsilon \rangle \rightarrow \langle BinOp(op, v_1, e_2'), \varepsilon' \rangle }
+\and
+\frac{ \langle e_1, \varepsilon \rangle \rightarrow \langle e_1', \varepsilon' \rangle }
+     { \langle BinOp(op, e_1, e_2), \varepsilon \rangle \rightarrow \langle BinOp(op, e_1', e_2), \varepsilon' \rangle }
+\end{mathpar}
+\end{center}
+
+\textbf{Raíz Cuadrada}
+\begin{center}
+\begin{mathpar}
+\frac{}{ \langle Sqrt(Num(n)), \varepsilon \rangle \rightarrow \langle Num(\lfloor \sqrt{n} \rfloor), \varepsilon \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item El argumento es un número $\text{Num}(n)$.
+    \item Se calcula la raíz cuadrada de $n$ y se trunca al entero más cercano hacia abajo (función piso $\lfloor \ \rfloor$).
+    \item El ambiente $\varepsilon$ no cambia.
+\end{itemize}
+
+
+\begin{center}
+\begin{mathpar}
+\frac{ \langle e, \varepsilon \rangle \rightarrow \langle e', \varepsilon' \rangle }
+     { \langle Sqrt(e), \varepsilon \rangle \rightarrow \langle Sqrt(e'), \varepsilon' \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item El argumento $e$ no es un valor y puede dar un paso de evaluación  a $e'$.
+    \item Se mantiene la estructura \textit{Sqrt} pero se reemplaza $e$ por $e'$.
+    \item Esta regla asegura que el argumento se evalúe completamente antes de aplicar la raíz cuadrada.
+\end{itemize}
+
+\textbf{Negación}   
+\begin{center}
+\begin{mathpar}
+\frac{}{ \langle Not(Boolean(b)), \varepsilon \rangle \rightarrow \langle Boolean(\neg b), \varepsilon \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item El argumento es un valor booleano $\text{Boolean}(b)$, donde $b \in \{\text{True}, \text{False}\}$.
+    \item Se aplica la negación lógica $\lnot$:
+    \begin{itemize}
+    \item Si $b = \text{True}$, entonces $\lnot b = \text{False}$.
+    \item Si $b = \text{False}$, entonces $\lnot b = \text{True}$.
+\end{itemize}
+\end{itemize}
+
+
+
+\begin{center}
+\begin{mathpar}
+\frac{ \langle e, \varepsilon \rangle \rightarrow \langle e', \varepsilon' \rangle }
+     { \langle Not(e), \varepsilon \rangle \rightarrow \langle Not(e'), \varepsilon' \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item El argumento $e$ no es un valor booleano y puede dar un paso de evaluación a $e'$.
+    \item Se mantiene la estructura \textit{Not} pero se reemplaza $e$ por $e'$.
+\end{itemize}
+
+Esta regla asegura que el argumento se evalúe completamente antes de aplicar la negación.
+
+
+
+
+\textbf{Listas y Pares}
+\begin{center}
+\begin{mathpar}
+\frac{e = Pair(v_1,v_2)}
+     { \langle UnOp(NullOp, e), \varepsilon \rangle \rightarrow \langle Boolean(False), \varepsilon \rangle }
+\and
+\frac{ \langle e, \varepsilon \rangle \rightarrow \langle e', \varepsilon' \rangle }
+     { \langle UnOp(NullOp, e), \varepsilon \rangle \rightarrow \langle UnOp(NullOp, e'), \varepsilon' \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item  La expresión $e$ es un par $\text{Pair}(v_1, v_2)$, donde $v_1$ y $v_2$ son valores.
+    \item La operación \textit{null?} regresa \text{False} porque un par no es la lista vacía.
+    \item En \textsc{LAMBDAE}, las listas se construyen usando pares enlazados, donde la lista vacía se representa como $\text{Id}(\textit{"nil"})$.
+    \item El ambiente $\varepsilon$ no cambia.
+\end{itemize}
+
+
+\textbf{Caso 2:}
+\begin{itemize}
+    \item El argumento $e$ no es un valor y puede dar un paso de evaluación a $e'$.
+    \item Se mantiene la estructura $\text{UnOp}(\text{NullOp},\, \cdot)$ pero se reemplaza $e$ por $e'$.
+    \item Esta regla asegura que el argumento se evalúe completamente antes de verificar si es \textit{nil}.
+
+\end{itemize}
+
+\textbf{Pares (pair)}
+\begin{center}
+\begin{mathpar}
+\frac{isValue(v_1) \ \text{y}\ isValue(v_2)}
+     { \langle Pair(v_1,v_2), \varepsilon \rangle \rightarrow \langle Pair(v_1,v_2), \varepsilon \rangle }
+\and
+\frac{isValue(v_1) \quad \langle e_2, \varepsilon \rangle \rightarrow \langle e_2', \varepsilon' \rangle}
+     { \langle Pair(v_1, e_2), \varepsilon \rangle \rightarrow \langle Pair(v_1, e_2'), \varepsilon' \rangle }
+\and
+\frac{ \langle e_1, \varepsilon \rangle \rightarrow \langle e_1', \varepsilon' \rangle }
+     { \langle Pair(e_1,e_2), \varepsilon \rangle \rightarrow \langle Pair(e_1', e_2), \varepsilon' \rangle }
+\end{mathpar}
+\end{center}
+
+\textbf{Caso 1}
+
+\begin{itemize}
+    \item El primer componente $v_1$ ya es un valor.
+    \item El segundo componente $e_2$ no es un valor y puede dar un paso de evaluación a $e_2'$.
+    \item Se mantiene la estructura \textit{Pair} pero se reemplaza $e_2$ por $e_2'$.
+\end{itemize}
+
+Esta regla implementa evaluación de izquierda a derecha: primero se evalúa $v_1$, luego $e_2$.
+
+\textbf{Caso 2:}
+
+\begin{itemize}
+    \item El primer componente $e_1$ no es un valor y puede dar un paso de evaluación a $e_1'$.
+    \item Se mantiene la estructura \textit{Pair} pero se reemplaza $e_1$ por $e_1'$.
+    \item El segundo componente $e_2$ permanece sin cambios (aún no se evalúa).
+\end{itemize}
+
+Esta regla tiene prioridad sobre la Regla 4, asegurando evaluación de izquierda a derecha.
+
+\textbf{Primer elemento de un par(fst)}
+\begin{center}
+\begin{mathpar}
+\frac{isValue(v_1) \ \text{y}\ isValue(v_2)}
+     { \langle Fst(Pair(v_1,v_2)), \varepsilon \rangle \rightarrow \langle v_1, \varepsilon \rangle }
+\and
+\frac{ \langle e, \varepsilon \rangle \rightarrow \langle e', \varepsilon' \rangle }
+     { \langle Fst(e), \varepsilon \rangle \rightarrow \langle Fst(e'), \varepsilon' \rangle }
+\end{mathpar}
+\end{center}
+
+\textbf{Caso 1:}
+
+\begin{itemize}
+    \item El argumento es un par completamente evaluado $\text{Pair}(v_1, v_2)$.
+    \item La operación \textit{fst} extrae y retorna el primer componente $v_1$ del par.
+    \item El ambiente $\varepsilon$ no cambia.
+\end{itemize}
+
+\textbf{Caso 2:}
+\begin{itemize}
+    \item El argumento $e$ no es un par completamente evaluado y puede dar un paso de evaluación a $e'$
+    \item Se mantiene la estructura \textit{Fst} pero se reemplaza $e$ por $e'$.
+    \item Esta regla asegura que el argumento se evalúe completamente antes de extraer su primer componente.
+\end{itemize}
+
+
+\textbf{Segundo elemento de un par(snd)}
+\begin{center}
+\begin{mathpar}
+\frac{isValue(v_1) \ \text{y}\ isValue(v_2)}
+     { \langle Snd(Pair(v_1,v_2)), \varepsilon \rangle \rightarrow \langle v_2, \varepsilon \rangle }
+\and
+\frac{ \langle e, \varepsilon \rangle \rightarrow \langle e', \varepsilon' \rangle }
+     { \langle Snd(e), \varepsilon \rangle \rightarrow \langle Snd(e'), \varepsilon' \rangle }
+\end{mathpar}
+\end{center}
+
+\textbf{Caso 1:}
+\begin{itemize}
+    \item  El argumento es un par completamente evaluado $\text{Pair}(v_1, v_2)$.
+    \item La operación \textit{snd} extrae y retorna el segundo componente $v_2$ del par.
+    \item El ambiente $\varepsilon$ no cambia.
+\end{itemize}
+
+\textbf{Caso 2:}
+\begin{itemize}
+    \item El primer componente $v_1$ ya es un valor.
+    \item El segundo componente $e_2$ no es un valor y puede dar un paso de evaluación a $e_2'$.
+\end{itemize}
+
+\begin{itemize}
+    \item Se mantiene la estructura \textit{Pair} pero se reemplaza $e_2$ por $e_2'$.
+
+    \item Esta regla implementa evaluación de izquierda a derecha: primero se evalúa $v_1$, luego $e_2$.
+
+\end{itemize}
+
+\textbf{Condicionales y Funciones}\\
+
+\textbf{Condicional If}
+\begin{center}
+\begin{mathpar}
+\frac{}{ \langle If(Boolean(True), e_t, e_f), \varepsilon \rangle \rightarrow \langle e_t, \varepsilon \rangle }
+\end{mathpar}
+\end{center}
+\begin{itemize}
+    \item La condición ya está evaluada y es $\text{Boolean}(\text{True})$.
+    \item Se selecciona la rama \textit{then} ($e_t$) y se descarta la rama \textit{else} ($e_f$).
+    \item La expresión se reduce directamente a $e_t$, que luego debe evaluarse.
+    \item El ambiente $\varepsilon$ no cambia.
+    \item Esta regla implementa la semántica \textit{lazy} para las ramas: solo se evalúa la rama seleccionada.
+\end{itemize}
+
+\begin{center}
+\begin{mathpar}
+\frac{}{ \langle If(Boolean(False), e_t, e_f), \varepsilon \rangle \rightarrow \langle e_f, \varepsilon \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item La condición ya está evaluada y es $\text{Boolean}(\text{False})$.
+    \item Se selecciona la rama \textit{else} ($e_f$) y se descarta la rama \textit{then} ($e_t$).
+    \item La expresión se reduce directamente a $e_f$, que luego debe evaluarse.
+    \item El ambiente $\varepsilon$ no cambia.
+\end{itemize}
+
+\begin{center}
+\begin{mathpar}
+\frac{ \langle cond, \varepsilon \rangle \rightarrow \langle cond', \varepsilon' \rangle }
+     { \langle If(cond, e_t, e_f), \varepsilon \rangle \rightarrow \langle If(cond', e_t, e_f), \varepsilon' \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item La condición $\mathit{cond}$ no es un valor booleano y puede dar un paso de evaluación a $\mathit{cond}'$.
+    \item Se mantiene la estructura \textit{If} pero se reemplaza $\mathit{cond}$ por $\mathit{cond}'$.
+    \item Las ramas $e_t$ y $e_f$ permanecen sin cambios (aún no se evalúan).
+    \item Esta regla asegura que la condición se evalúe completamente antes de seleccionar una rama.
+\end{itemize}
+
+
+\textbf{Funciones anónimas}
+
+\begin{center}
+\begin{mathpar}
+\frac{}{ \langle Fun(p, body), \varepsilon \rangle \rightarrow \langle Closure(p, body, \varepsilon), \varepsilon \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item Se tiene una definición de función con parámetro $p$ y cuerpo $body$.
+    \item Se crea una clausura (\textit{closure}) que captura:
+    \begin{itemize}
+        \item $p$: el parámetro formal de la función,
+        \item $body$: el cuerpo de la función (expresión),
+        \item $\varepsilon$: el ambiente en el momento de la definición (captura léxica).
+    \end{itemize}
+    \item Una clausura es un valor terminal que representa una función.
+    \item El ambiente externo $\varepsilon$ no cambia.
+\end{itemize}
+
+Esto implementa el \textbf{alcance léxico (lexical scoping)}: la función ``recuerda'' el ambiente donde fue definida.\\
+
+\textbf{Concepto clave.} Una \textit{closure} encapsula tres componentes:
+
+\begin{itemize}
+    \item \textbf{Parámetro:} el nombre del argumento.
+    \item \textbf{Cuerpo:} la expresión que se evaluará cuando la función sea invocada.
+    \item \textbf{Ambiente:} las variables visibles en el momento de definición.
+\end{itemize}
+
+
+\textbf{Aplicaciones de función(app)}
+\begin{center}
+\begin{mathpar}
+\frac{ e_1 = Closure(p, body, \varepsilon') \quad isValue(e_2) }
+     { \langle App(e_1, e_2), \varepsilon \rangle \rightarrow \langle Expr(body, (p,e_2):\varepsilon'), \varepsilon \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item $e_1$ es una clausura $\text{Closure}(p, body, \varepsilon')$ (función completamente evaluada).
+    \item $e_2$ es un valor (argumento completamente evaluado).
+\end{itemize}
+
+Se aplica la función mediante los siguientes pasos:
+\begin{enumerate}
+    \item Se toma el cuerpo de la función ($body$).
+    \item Se crea un nuevo ambiente extendiendo $\varepsilon'$ (el ambiente capturado) con el enlace $(p, e_2)$.
+    \item Se evalúa $body$ en este nuevo ambiente usando la construcción \textit{Expr}.
+\end{enumerate}
+
+\textbf{Nota importante:} El ambiente externo $\varepsilon$ se preserva, pero no se usa para evaluar el cuerpo.
+
+La notación $(p, e_2):\varepsilon'$ significa agregar el enlace \textit{``p $\rightarrow$ e\_2''} al frente del ambiente $\varepsilon'$.
+
+ Esta regla implementa la sustitución mediante ambientes: en lugar de reemplazar textualmente $p$ por $e_2$ en $body$, se evalúa $body$ en un ambiente donde $p$ está enlazado a $e_2$.
+
+
+
+\begin{center}
+\begin{mathpar}
+\frac{isValue(e_1) \quad \langle e_2, \varepsilon \rangle \rightarrow \langle e_2', \varepsilon' \rangle}
+     { \langle App(e_1, e_2), \varepsilon \rangle \rightarrow \langle App(e_1, e_2'), \varepsilon' \rangle }
+\end{mathpar}
+\end{center}
+
+
+\begin{itemize}
+    \item La función $e_1$ ya es un valor (clausura completamente evaluada).
+    \item El argumento $e_2$ no es un valor y puede dar un paso de evaluación a $e_2'$.
+\end{itemize}
+
+Como podemos observar se mantiene la estructura \textit{App} pero se reemplaza $e_2$ por $e_2'$.
+
+Esta regla implementa evaluación de izquierda a derecha: primero se evalúa la función y luego el argumento.
+
+
+\begin{center}
+\begin{mathpar}
+\frac{ \langle e_1, \varepsilon \rangle \rightarrow \langle e_1', \varepsilon' \rangle }
+     { \langle App(e_1, e_2), \varepsilon \rangle \rightarrow \langle App(e_1', e_2), \varepsilon' \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item La función $e_1$ no es un valor (no es una clausura todavía) y puede dar un paso de evaluación a $e_1'$.
+    \item Se mantiene la estructura \textit{App} pero se reemplaza $e_1$ por $e_1'$.
+    \item El argumento $e_2$ permanece sin cambios (aún no se evalúa).
+\end{itemize}
+
+Esta regla tiene prioridad sobre la Regla 6, asegurando que primero se evalúe la función.\\
+
+\textbf{Evaluación de la expresión en el ambiente interno}
+\begin{center}
+\begin{mathpar}
+\frac{isValue(e)}
+     { \langle Expr(e, \varepsilon_{in}), \varepsilon_{out} \rangle \rightarrow \langle e, \varepsilon_{out} \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item La expresión $e$ ya es un valor (completamente evaluada en el ambiente $\varepsilon_{\text{in}}$).
+    \item Se regresa el valor $e$ y se \textbf{restaura el ambiente externo} $\varepsilon_{\text{out}}$.\\
+\textbf{Algo importante que debemos de notar es :}
+    \begin{itemize}
+        \item $\varepsilon_{\text{in}}$ se usa para evaluar $e$ (ambiente interno).
+        \item $\varepsilon_{\text{out}}$ se restaura después de la evaluación (ambiente externo).
+    \end{itemize}
+\end{itemize}
+
+Esta regla es esencial para mantener el \textbf{alcance léxico}: después de evaluar el cuerpo de una función, se vuelve al ambiente donde se hizo la llamada.
+
+\textbf{Contexto:} Esta regla se usa principalmente  cuando el cuerpo de una función ya se ha evaluado completamente.
+
+
+
+
+\begin{center}
+\begin{mathpar}
+\frac{ \langle e, \varepsilon_{in} \rangle \rightarrow \langle e', \varepsilon_{in}' \rangle }
+     { \langle Expr(e, \varepsilon_{in}), \varepsilon_{out} \rangle \rightarrow \langle Expr(e', \varepsilon_{in}'), \varepsilon_{out} \rangle }
+\end{mathpar}
+\end{center}
+
+\begin{itemize}
+    \item La expresión $e$ no es un valor y puede dar un paso de evaluación a $e'$ en el entorno $\varepsilon_{\text{in}}$.
+    \item Se actualiza la expresión a $e'$ y el ambiente interno a $\varepsilon_{\text{in}}'$, pero se mantiene el entorno externo $\varepsilon_{\text{out}}$ sin cambios.
+    \item Esta regla permite que la evaluación continúe dentro del ambiente interno hasta que se produzca un valor.
+\end{itemize}
+
+\textit{Expr} actúa como un ``contexto de evaluación'' que permite evaluar una expresión en un ambiente específico mientras se preserva otro entorno para uso posterior.
+
+\end{tcolorbox}
+
+
+\footnotetext{Semántica de paso pequeño}
+
+\newpage
+
+\section{Conclusiones}
+
+\begin{tcolorbox}[title= Conclusiones     MÓDULO D3, breakable]
+    El desarrollo del Proyecto 1, enfocado en la formalización e implementación del lenguaje LAMBDAE (una extensión de MiniLisp), ha representado una aplicación rigurosa de los principios del diseño de lenguajes de programación. Se ha logrado definir formalmente la sintaxis léxica, la gramática libre de contexto en notación EBNF y la sintaxis abstracta (ASA). Las extensiones incorporadas, tales como operadores variádicos, estructuras de datos (pares, listas), condicionales por clausulado cond y funciones con múltiples parámetros, han ampliado significativamente la expresividad del lenguaje.
+
+
+La implementación del proceso de \textit{desugaring} en \textsc{LAMBDAE}, mediante la transformación de SASA a ASA, representa una aplicación rigurosa de principios establecidos en el diseño de lenguajes de programación. Al separar explícitamente la sintaxis superficial del núcleo semántico, \textsc{LAMBDAE} logra un balance entre expresividad para el programador y simplicidad para el implementador. Esta arquitectura no solo simplifica la implementación del intérprete, sino que también proporciona una base sólida para razonar formalmente sobre las propiedades del lenguaje, facilitando su extensión y mantenimiento futuro.
+
+El proceso de quitar elementos sintácticos no esenciales, como paréntesis redundantes, y representar todas las expresiones en formas canónicas (operaciones binarias, funciones unarias, aplicación binaria) demuestra el poder del \textit{desugaring} como herramienta de diseño de lenguajes. Como establece la literatura, esta técnica es fundamental no solo para la implementación práctica de lenguajes, sino también para su estudio teórico y su enseñanza.\cite{Krishnamurthi2015}
+
+
+A pesar de la solidez de la formalización alcanzada, el lenguaje \texttt{LAMBDAE} no es completamente ``total'' y su robustez puede mejorarse, ya que ciertas complejidades (como la evaluación de comparaciones y el manejo de errores) se manejan de manera implícita o se delegan al lenguaje anfitrión (Haskell). Para avanzar hacia un lenguaje \textbf{más total y con mayor autonomía semántica}, es fundamental incluir las siguientes mejoras en el trabajo futuro:
+
+\section*{Puntos importantes para mejorar la calidad y la totalidad de LAMBDAE}
+
+\begin{enumerate}
+    \item \textbf{Flujo Explícito para Operadores Variádicos de Comparación.}  
+    Se debe construir un mecanismo auxiliar para los operadores variádicos que se reducen a operadores binarios al comparar expresiones tales como $=, <, >$, entre otros, con el fin de asegurar un flujo explícito. Actualmente, la semántica verifica implícitamente que:
+    \[
+        e_{1} = e_{2} \;\wedge\; e_{2} = e_{3} \;\wedge\; \dots \;\wedge\; e_{n-1} = e_{n}.
+    \]
+    Para formalizarlo de forma clara, se propone \textbf{desazucarar} estas expresiones en una secuencia de conjunciones binarias. Por ejemplo, para la igualdad:
+    \[
+        \text{And}\big(\text{Eq } e_{1}\, e_{2},\; \text{And}(\text{Eq } e_{2}\, e_{3},\dots )\big).
+    \]
+    Esta transformación hace explícito el flujo de evaluación y garantiza el comportamiento de \textit{short-circuiting}: si una comparación falla, toda la expresión resulta falsa.
+
+    \item \textbf{Manejo de Excepciones Interno para Variables Libres.}  
+    En el caso de la función \texttt{lookupEnv(}$i, \varepsilon$\texttt{)}, es necesario que \textbf{el manejo de excepciones sea propio de LAMBDAE} y no delegado a Haskell. Actualmente, la terminación del programa ante una variable libre no está definida por las reglas formales del lenguaje, lo cual limita su \textbf{totalidad}.  
+    Una solución consiste en implementar una \textbf{función auxiliar} y una \textbf{regla semántica adicional} que detecte cuando una variable es libre y produzca un valor de error interno $\text{ErrorV}$. Esto permitiría que el propio lenguaje gestione sus fallos de alcance y tipado.
+\end{enumerate}
+
+\noindent
+En conclusión, la implementación de \texttt{LAMBDAE} ha cumplido los objetivos de formalización y ha demostrado la viabilidad de utilizar el \textit{desugaring} y las cerraduras para construir un intérprete funcional coherente con el alcance estático. Las extensiones futuras, centradas en la explicitación del flujo de control lógico y la \textbf{internalización de las excepciones semánticas}, constituyen el paso natural hacia la \textbf{completitud semántica} del lenguaje, permitiendo que LAMBDAE maneje todo su comportamiento —incluyendo los errores— dentro de su propio marco formal. Esto fortalece el puente entre la teoría y la práctica al diseñar un lenguaje cuyas propiedades de terminación y corrección pueden ser razonadas con mayor precisión.
+
+\medskip
+
+\noindent
+El proceso de hacer un lenguaje más total, asumiendo la responsabilidad de manejar todas las condiciones posibles (incluyendo fallas de \textit{lookup} y optimizaciones de flujo), es similar a un cocinero que, en lugar de comprar ingredientes ya procesados y depender de un proveedor externo (Haskell), decide cultivar y preparar todos sus insumos desde cero, asegurando la calidad y el control de cada componente del plato final (el programa).
+\end{tcolorbox}
+
+
+
+\newpage
+\section{Referencias}
+
+\begin{thebibliography}{99}
+
+\bibitem{LambdaSpace2}
+LambdaSpace. (s. f.). Notas de la asignatura Lenguajes de Programación (n.º 02)[PDF]. Recuperado de 
+\url{https://lambdasspace.github.io/LDP/notas/ldp_n02.pdf}
+
+\bibitem{LambdaSpace04}
+LambdaSpace. (s. f.). \textit{Notas de la asignatura Lenguajes de Programación (n.º 04)} [PDF]. Recuperado de
+\url{https://lambdasspace.github.io/LDP/notas/ldp_n04.pdf}
+
+\bibitem{LambdaSpace05}
+LambdaSpace. (s. f.). \textit{Notas de la asignatura Lenguajes de Programación (n.º 05)} [PDF]. Recuperado de 
+\url{https://lambdasspace.github.io/LDP/notas/ldp_n05.pdf}
+
+\bibitem{UNAMMaterial}
+Universidad Nacional Autónoma de México, Facultad de Ciencias. (s. f.). \textit{Material de Lenguajes de Programación}. Recuperado de 
+\url{https://sites.google.com/ciencias.unam.mx/lengprog/material?authuser=0}
+
+\bibitem{UNAMTesis}
+Universidad Nacional Autónoma de México. (2025 jul-sep). \textit{Cálculo de Compiladores Correctos: Del Régimen Estricto al Perezoso}. Tesis / Documento DGB-UNAM. Recuperado de 
+\url{https://tesiunamdocumentos.dgb.unam.mx/ptd2025/jul_sep/0877653/Index.html}
+
+\bibitem{Dragon}
+Aho A.,Lam M., Sethi R.,Ullman J.,(s.f.).\textit{Compiladores. Principios, técnicas y herramientas.Segunda Edición.}.PEARSON. Recuperado de
+\url{https://es.scribd.com/document/857303172/Compiladores}
+
+\bibitem{Winskel93}
+Winskel, G. (1993). \textit{The Formal Semantics of Programming Languages: An Introduction}. Cambridge, MA: MIT Press.
+
+\bibitem{Scott07}
+Scott, M. L. (2007). \textit{Programming Language Pragmatics}. Amsterdam/Boston et al.: Morgan Kaufmann.
+
+\bibitem{Krishnamurthi07}
+Krishnamurthi, S. (2007). \textit{Programming Languages: Application and Interpretation}. Brown University. Recuperado de 
+\url{https://cs.brown.edu/~sk/Publications/Books/ProgLangs/2007-04-26/plai-2007-04-26.pdf}
+
+\bibitem{Harper}
+Harper, R. (s. f.). \textit{Practical Foundations for Programming Languages}. 
+
+\bibitem{ISO14977}
+International Organization for Standardization \& International Electrotechnical Commission. (1996).
+\textit{ISO/IEC 14977:1996 – Information technology — Syntactic metalanguage — Extended BNF} (Edición 1). Ginebra: ISO.
+
+\bibitem{Krishnamurthi2015}
+Krishnamurthi, S. (2015). \textit{Desugaring in Practice: Opportunities and Challenges}. PEPM 2015. Recuperado de \url{https://dl.acm.org/doi/10.1145/2678015.2678016}
+
+\bibitem{Krishnamurthi2007}
+Krishnamurthi, S. (2007). \textit{Programming Languages: Application and Interpretation} (2.\textsuperscript{a} ed.). Brown University. Recuperado de 
+\url{https://cs.brown.edu/courses/cs173/2012/book/}
+
+\bibitem{Rathi2020}
+Rathi, M. (2020, 1 de julio). \textit{Desugaring – taking our high-level language and simplifying it!}. Recuperado de 
+\url{https://mukulrathi.com/create-your-own-programming-language/lower-language-constructs-to-llvm/}
+
+\bibitem{Serokell2020}
+Serokell. (2020, 11 de agosto). \textit{Understanding Haskell Features Through Their Desugaring}. Recuperado de
+\url{https://serokell.io/blog/haskell-to-core}
+
+\bibitem{WikipediaDesugaring}
+Syntactic sugar. (s. f.). En Wikipedia. Recuperado de 
+\url{https://en.wikipedia.org/wiki/Syntactic_sugar}
+
+\bibitem{IBMFortran}
+IBM. (s.f.). \textit{Fortran: The world’s first programming language standard opened the door to modern computing}. IBM Heritage Center. Recuperado de \url{https://www.ibm.com/history/fortran}
+
+\bibitem{IBMCobol}
+IBM. (s.f.). \textit{What is COBOL?} IBM Think. Recuperado de \url{https://www.ibm.com/think/topics/cobol}
+
+\bibitem{OpenStax}
+OpenStax. (2024). \textit{Introduction to Computer Science} (Cap. 7.1). Houston, TX: OpenStax. Recuperado de \url{https://openstax.org/books/introduction-computer-science/pages/7-1-programming-language-foundations}
+
+\bibitem{LDPnota3}
+F. E. Miranda Perea y L. D. C. González Huesca,Lenguajes de programación. notade clase 03: Sintaxis, Recuperado de \url{https://sites.google.com/ciencias.unam.mx/lengprog/material}, Facultad de Ciencias, UNAM., sep. de 2025.
+
+\bibitem{Mitchell}
+J. C. Mitchell,Concepts in Programming Languages. Cambridge University Press, 2002
+
+\bibitem{Aho}
+V.Alfred,Compilers: Principles, Techniques and Tools Second Edition,(2006),Columbia University, Stanford University , Recuperado de:
+\url{https://pdfcoffee.com/aho-compilers-principles-techniques-and-tools-2e-pdf-free.html}
+
+\bibitem{WikiSintaxis}
+Wikipedia,Syntax,(s.f), Recuperado de:\url{https://en.wikipedia.org/wiki/Syntax}
+
+\bibitem{desugaring}
+ps-tuebingen-courses. (s.f.). \textit{Desugaring}. En \textit{Programming Languages I}. Recuperado de: 
+\url{https://ps-tuebingen-courses.github.io/pl1-lecture-notes/04-desugaring/desugaring.html}
+
+\bibitem{pierce2002}
+Pierce, B. C. (2002). \textit{Types and programming languages}. MIT Press.
+
+\bibitem{plotkin2004}
+Plotkin, G. D. (2004). A structural approach to operational semantics. 
+\textit{The Journal of Logic and Algebraic Programming, 60-61}, 17--139. 
+\url{https://doi.org/10.1016/j.jlap.2004.05.001}
+
+\bibitem{wright1994}
+Wright, A. K., \& Felleisen, M. (1994). A syntactic approach to type soundness. 
+\textit{Information and Computation, 115}(1), 38--94. 
+\url{https://doi.org/10.1006/inco.1994.1093}
+
+\end{thebibliography}
+
+\end{document}
+
